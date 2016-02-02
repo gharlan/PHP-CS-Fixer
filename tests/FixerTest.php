@@ -57,7 +57,7 @@ final class FixerTest extends \PHPUnit_Framework_TestCase
             ->finder(new \DirectoryIterator(__DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'FixerTest'.DIRECTORY_SEPARATOR.'fix'))
             ->fixers(array(
                 new \PhpCsFixer\Fixer\PSR2\VisibilityRequiredFixer(),
-                new \PhpCsFixer\Fixer\Symfony\NoUnusedImportsFixer(), // will be ignored cause of test keyword in namespace
+                new Fixer\Import\NoUnusedImportsFixer(), // will be ignored cause of test keyword in namespace
             ))
             ->setUsingCache(false)
         ;
@@ -84,7 +84,7 @@ final class FixerTest extends \PHPUnit_Framework_TestCase
             ->finder(new \DirectoryIterator(__DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'FixerTest'.DIRECTORY_SEPARATOR.'invalid'))
             ->fixers(array(
                 new \PhpCsFixer\Fixer\PSR2\VisibilityRequiredFixer(),
-                new \PhpCsFixer\Fixer\Symfony\NoUnusedImportsFixer(), // will be ignored cause of test keyword in namespace
+                new Fixer\Import\NoUnusedImportsFixer(), // will be ignored cause of test keyword in namespace
             ))
             ->setUsingCache(false)
         ;
