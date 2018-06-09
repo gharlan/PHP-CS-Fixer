@@ -1,0 +1,1097 @@
+<?php
+
+/*
+ * This file is part of PHP CS Fixer.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace PhpCsFixer\Tests\Fixer\Import;
+
+use PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer;
+use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
+use PhpCsFixer\Tokenizer\Tokens;
+
+/**
+ * @author Gregor Harlan <gharlan@web.de>
+ *
+ * @internal
+ *
+ * @covers \PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer
+ */
+final class GlobalNamespaceImportFixerTest extends AbstractFixerTestCase
+{
+    /**
+     * @param string      $expected
+     * @param null|string $input
+     *
+     * @dataProvider provideFixImportConstantsCases
+     */
+    public function testFixImportConstants($expected, $input = null)
+    {
+        $this->fixer->configure(['import_constants' => true]);
+        $this->doTest($expected, $input);
+    }
+
+    public function provideFixImportConstantsCases()
+    {
+        return [
+            'non-global names' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+echo FOO, \Bar\BAZ, namespace\FOO2;
+EXPECTED
+            ],
+            'name already used [1]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+echo \FOO, FOO, \FOO;
+EXPECTED
+            ],
+            'name already used [2]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use const Bar\FOO;
+echo \FOO;
+EXPECTED
+            ],
+            'name already used [3]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+const FOO = 1;
+echo \FOO;
+EXPECTED
+            ],
+            'without namespace / only import once' => [
+                <<<'EXPECTED'
+<?php
+
+use const BAR;
+use const FOO;
+echo FOO, BAR, FOO;
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+echo \FOO, \BAR, \FOO;
+INPUT
+            ],
+            'with namespace' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use const FOO;
+use const BAR;
+echo FOO, BAR;
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+echo \FOO, \BAR;
+INPUT
+            ],
+            'with namespace with {} syntax' => [
+                <<<'EXPECTED'
+<?php
+namespace Test {
+use const FOO;
+use const BAR;
+    echo FOO, BAR;
+}
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test {
+    echo \FOO, \BAR;
+}
+INPUT
+            ],
+            'ignore other imported types' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use BAR;
+use const FOO;
+use const BAR;
+echo FOO, BAR;
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use BAR;
+echo \FOO, \BAR;
+INPUT
+            ],
+            'respect already imported names [1]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use const BAR;
+use const FOO;
+echo FOO, BAR;
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use const BAR;
+echo \FOO, \BAR;
+INPUT
+            ],
+            'respect already imported names [2]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use const \BAR;
+use const FOO;
+echo FOO, BAR, BAR;
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use const \BAR;
+echo \FOO, \BAR, BAR;
+INPUT
+            ],
+            'handle aliased imports' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use const BAR as BAZ;
+use const FOO;
+echo FOO, BAZ;
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use const BAR as BAZ;
+echo \FOO, \BAR;
+INPUT
+            ],
+            'ignore class constants' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use const FOO;
+class Bar {
+    const FOO = 1;
+}
+echo FOO;
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+class Bar {
+    const FOO = 1;
+}
+echo \FOO;
+INPUT
+            ],
+        ];
+    }
+
+    /**
+     * @param string      $expected
+     * @param null|string $input
+     *
+     * @dataProvider provideFixImportFunctionsCases
+     */
+    public function testFixImportFunctions($expected, $input = null)
+    {
+        $this->fixer->configure(['import_functions' => true]);
+        $this->doTest($expected, $input);
+    }
+
+    public function provideFixImportFunctionsCases()
+    {
+        return [
+            'non-global names' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+foo();
+Bar\baz();
+namespace\foo2();
+EXPECTED
+            ],
+            'name already used [1]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+\foo();
+foo();
+\foo();
+EXPECTED
+            ],
+            'name already used [2]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use function Bar\foo;
+\foo();
+EXPECTED
+            ],
+            'name already used [3]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+function foo() {}
+\foo();
+EXPECTED
+            ],
+            'without namespace / only import once' => [
+                <<<'EXPECTED'
+<?php
+
+use function bar;
+use function foo;
+foo();
+bar();
+foo();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+\foo();
+\bar();
+\foo();
+INPUT
+            ],
+            'with namespace' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use function foo;
+use function bar;
+foo();
+bar();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+\foo();
+\bar();
+INPUT
+            ],
+            'with namespace with {} syntax' => [
+                <<<'EXPECTED'
+<?php
+namespace Test {
+use function foo;
+use function bar;
+    foo();
+    bar();
+}
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test {
+    \foo();
+    \bar();
+}
+INPUT
+            ],
+            'ignore other imported types' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use bar;
+use function foo;
+use function bar;
+foo();
+bar();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use bar;
+\foo();
+\bar();
+INPUT
+            ],
+            'respect already imported names [1]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use function bar;
+use function foo;
+foo();
+bar();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use function bar;
+\foo();
+\bar();
+INPUT
+            ],
+            'respect already imported names [2]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use function \bar;
+use function foo;
+foo();
+bar();
+bar();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use function \bar;
+\foo();
+\bar();
+bar();
+INPUT
+            ],
+            'handle aliased imports' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use function bar as baz;
+use function foo;
+foo();
+baz();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use function bar as baz;
+\foo();
+\bar();
+INPUT
+            ],
+            'ignore class methods' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use function foo;
+class Bar {
+    function foo() {}
+}
+foo();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+class Bar {
+    function foo() {}
+}
+\foo();
+INPUT
+            ],
+        ];
+    }
+
+    /**
+     * @param string      $expected
+     * @param null|string $input
+     *
+     * @dataProvider provideFixImportFunctions70Cases
+     * @requires PHP 7.0
+     */
+    public function testFixImportFunctions70($expected, $input = null)
+    {
+        $this->fixer->configure(['import_functions' => true]);
+        $this->doTest($expected, $input);
+    }
+
+    public function provideFixImportFunctions70Cases()
+    {
+        return [
+            'name already used' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+class Bar {
+    function baz() {
+        new class() {
+            function baz() {
+                function foo() {}
+            }
+        };
+    }
+}
+\foo();
+EXPECTED
+            ],
+        ];
+    }
+
+    /**
+     * @param string      $expected
+     * @param null|string $input
+     *
+     * @dataProvider provideFixImportClassesCases
+     */
+    public function testFixImportClasses($expected, $input = null)
+    {
+        $this->fixer->configure(['import_classes' => true]);
+        $this->doTest($expected, $input);
+    }
+
+    public function provideFixImportClassesCases()
+    {
+        return [
+            'non-global names' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+new Foo();
+new Bar\Baz();
+new namespace\Foo2();
+
+/** @var Foo|Bar\Baz $x */
+$x = x();
+EXPECTED
+            ],
+            'name already used [1]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+new \Foo();
+new Foo();
+
+/** @var \Foo $foo */
+$foo = new \Foo();
+EXPECTED
+            ],
+            'name already used [2]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use Bar\Foo;
+
+/** @var \Foo $foo */
+$foo = new \Foo();
+EXPECTED
+            ],
+            'name already used [3]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+class Foo {}
+
+/** @var \Foo $foo */
+$foo = new \Foo();
+EXPECTED
+            ],
+            'name already used [4]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+
+/** @return array<string, Foo> */
+function x() {}
+
+/** @var \Foo $foo */
+$foo = new \Foo();
+EXPECTED
+            ],
+            'without namespace / only import once' => [
+                <<<'EXPECTED'
+<?php
+
+use Bar;
+use Foo;
+/** @var Foo $foo */
+$foo = new Foo();
+new Bar();
+Foo::baz();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+/** @var \Foo $foo */
+$foo = new \Foo();
+new \Bar();
+\Foo::baz();
+INPUT
+            ],
+            'with namespace' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use Bar;
+use Baz;
+use Foo;
+
+new Foo();
+Bar::baz();
+
+/** @return Baz<string, Foo> */
+function x() {}
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+
+new \Foo();
+\Bar::baz();
+
+/** @return \Baz<string, \Foo> */
+function x() {}
+INPUT
+            ],
+            'with namespace with {} syntax' => [
+                <<<'EXPECTED'
+<?php
+namespace Test {
+use Foo;
+use Bar;
+    new Foo();
+    Bar::baz();
+}
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test {
+    new \Foo();
+    \Bar::baz();
+}
+INPUT
+            ],
+            'ignore other imported types' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use function Bar;
+use Foo;
+use Bar;
+new Foo();
+Bar::baz();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use function Bar;
+new \Foo();
+\Bar::baz();
+INPUT
+            ],
+            'respect already imported names [1]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use Bar;
+use Foo;
+new Foo();
+Bar::baz();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use Bar;
+new \Foo();
+\Bar::baz();
+INPUT
+            ],
+            'respect already imported names [2]' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use \Bar;
+use Foo;
+new Foo();
+new Bar();
+new Bar();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use \Bar;
+new \Foo();
+new \Bar();
+new Bar();
+INPUT
+            ],
+            'handle aliased imports' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use Bar as Baz;
+use Foo;
+
+new Foo();
+
+/** @var Baz $bar */
+$bar = new Baz();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use Bar as Baz;
+
+new \Foo();
+
+/** @var \Bar $bar */
+$bar = new \Bar();
+INPUT
+            ],
+            'handle typehints' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use Bar;
+use Foo;
+use Baz;
+class Abc {
+    function bar(Foo $a, Bar $b, Foo &$c, Baz ...$d) {}
+}
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+class Abc {
+    function bar(\Foo $a, \Bar $b, \Foo &$c, \Baz ...$d) {}
+}
+INPUT
+            ],
+        ];
+    }
+
+    /**
+     * @param string      $expected
+     * @param null|string $input
+     *
+     * @dataProvider provideFixImportClasses71Cases
+     * @requires PHP 7.1
+     */
+    public function testFixImportClasses71($expected, $input = null)
+    {
+        $this->fixer->configure(['import_classes' => true]);
+        $this->doTest($expected, $input);
+    }
+
+    public function provideFixImportClasses71Cases()
+    {
+        return [
+            'handle typehints' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use Foo;
+use Bar;
+class Abc {
+    function bar(?Foo $a): ?Bar {}
+}
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+class Abc {
+    function bar(?\Foo $a): ?\Bar {}
+}
+INPUT
+            ],
+        ];
+    }
+
+    /**
+     * @param string      $expected
+     * @param null|string $input
+     *
+     * @dataProvider provideFixFullyQualifyConstantsCases
+     */
+    public function testFixFullyQualifyConstants($expected, $input = null)
+    {
+        $this->fixer->configure(['import_constants' => false]);
+        $this->doTest($expected, $input);
+    }
+
+    public function provideFixFullyQualifyConstantsCases()
+    {
+        return [
+            'already fqn or sub namespace' => [
+                <<<'EXPECTED'
+<?php
+use const FOO;
+use const BAR;
+echo \FOO, Baz\BAR;
+EXPECTED
+            ],
+            'handle all occurrences' => [
+                <<<'EXPECTED'
+<?php
+use const FOO;
+use const BAR;
+echo \FOO, \BAR, \FOO;
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+use const FOO;
+use const BAR;
+echo FOO, BAR, FOO;
+INPUT
+            ],
+            'ignore other imports and non-imported names' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use FOO;
+use const BAR;
+echo FOO, \BAR, BAZ;
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use FOO;
+use const BAR;
+echo FOO, BAR, BAZ;
+INPUT
+            ],
+        ];
+    }
+
+    /**
+     * @param string      $expected
+     * @param null|string $input
+     *
+     * @dataProvider provideFixFullyQualifyFunctionsCases
+     */
+    public function testFixFullyQualifyFunctions($expected, $input = null)
+    {
+        $this->fixer->configure(['import_functions' => false]);
+        $this->doTest($expected, $input);
+    }
+
+    public function provideFixFullyQualifyFunctionsCases()
+    {
+        return [
+            'already fqn or sub namespace' => [
+                <<<'EXPECTED'
+<?php
+use function foo;
+use function bar;
+\foo();
+Baz\bar();
+EXPECTED
+            ],
+            'handle all occurrences' => [
+                <<<'EXPECTED'
+<?php
+use function foo;
+use function bar;
+\foo();
+\bar();
+\foo();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+use function foo;
+use function bar;
+foo();
+bar();
+foo();
+INPUT
+            ],
+            'ignore other imports and non-imported names' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use foo;
+use function bar;
+foo();
+\bar();
+baz();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use foo;
+use function bar;
+foo();
+bar();
+baz();
+INPUT
+            ],
+        ];
+    }
+
+    /**
+     * @param string      $expected
+     * @param null|string $input
+     *
+     * @dataProvider provideFixFullyQualifyClassesCases
+     */
+    public function testFixFullyQualifyClasses($expected, $input = null)
+    {
+        $this->fixer->configure(['import_classes' => false]);
+        $this->doTest($expected, $input);
+    }
+
+    public function provideFixFullyQualifyClassesCases()
+    {
+        return [
+            'already fqn or sub namespace' => [
+                <<<'EXPECTED'
+<?php
+use Foo;
+use Bar;
+
+new \Foo();
+Baz\Bar::baz();
+
+/**
+ * @param \Foo $foo
+ * @param Baz\Bar $bar
+ */
+function abc(\Foo $foo, Baz\Bar $bar = null) {}
+EXPECTED
+            ],
+            'handle all occurrences' => [
+                <<<'EXPECTED'
+<?php
+use Foo;
+use Bar;
+
+new \Foo();
+new \Bar();
+\Foo::baz();
+
+/**
+ * @param \Foo|string $foo
+ * @param null|\Bar[] $bar
+ * @return array<string, ?\Bar<int, \Foo>>|null
+ */
+function abc($foo, \Bar $bar = null) {}
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+use Foo;
+use Bar;
+
+new Foo();
+new Bar();
+Foo::baz();
+
+/**
+ * @param Foo|string $foo
+ * @param null|Bar[] $bar
+ * @return array<string, ?Bar<int, Foo>>|null
+ */
+function abc($foo, Bar $bar = null) {}
+INPUT
+            ],
+            'ignore other imports and non-imported names' => [
+                <<<'EXPECTED'
+<?php
+namespace Test;
+use function Foo;
+use Bar;
+new Foo();
+new \Bar();
+new Baz();
+EXPECTED
+                ,
+                <<<'INPUT'
+<?php
+namespace Test;
+use function Foo;
+use Bar;
+new Foo();
+new Bar();
+new Baz();
+INPUT
+            ],
+        ];
+    }
+
+    /**
+     * @param string $source
+     *
+     * @dataProvider provideIsGlobalOrImportedClassyInvocationCases
+     */
+    public function testIsGlobalOrImportedClassyInvocation($source, array $expected)
+    {
+        $tokens = Tokens::fromCode($source);
+
+        $method = new \ReflectionMethod(GlobalNamespaceImportFixer::class, 'isGlobalOrImportedClassyInvocation');
+        $method->setAccessible(true);
+
+        foreach ($expected as $index => $isClassy) {
+            static::assertSame($isClassy, $method->invoke(null, $tokens, $index), 'Token at index '.$index.' should match the expected value.');
+        }
+    }
+
+    public function provideIsGlobalOrImportedClassyInvocationCases()
+    {
+        return [
+            [
+                '<?php new Foo;',
+                [3 => true],
+            ],
+            [
+                '<?php new \Foo;',
+                [4 => true],
+            ],
+            [
+                '<?php new Bar\Foo;',
+                [3 => false, 5 => false],
+            ],
+            [
+                '<?php new namespace\Foo;',
+                [5 => false],
+            ],
+            [
+                '<?php Foo::bar();',
+                [1 => true, 3 => false],
+            ],
+            [
+                '<?php \Foo::bar();',
+                [2 => true, 4 => false],
+            ],
+            [
+                '<?php Bar\Foo::bar();',
+                [1 => false, 3 => false, 5 => false],
+            ],
+            [
+                '<?php $foo instanceof Foo;',
+                [5 => true],
+            ],
+            [
+                '<?php class Foo extends \A {}',
+                [3 => false, 8 => true],
+            ],
+            [
+                '<?php class Foo implements A, B\C, \D, E {}',
+                [3 => false, 7 => true, 10 => false, 12 => false, 16 => true, 19 => true],
+            ],
+            [
+                '<?php class Foo { use A, B\C, \D, E { A::bar insteadof \E; } }',
+                [3 => false, 9 => true, 12 => false, 14 => false, 18 => true, 21 => true, 25 => true, 32 => true],
+            ],
+            [
+                '<?php function foo(Foo $foo, Bar &$bar, \Baz ...$baz, Foo\Bar $fooBar) {}',
+                [3 => false, 5 => true, 10 => true, 17 => true, 23 => false, 25 => false],
+            ],
+            [
+                '<?php class Foo { function bar() { parent::bar(); self::baz(); $a instanceof self; } }',
+                [3 => false, 9 => false, 15 => false, 17 => false, 22 => false, 24 => false, 33 => false],
+            ],
+            [
+                '<?php echo FOO, \BAR;',
+                [3 => false, 7 => false],
+            ],
+            [
+                '<?php FOO & $bar;',
+                [1 => false],
+            ],
+            [
+                '<?php foo(); \bar();',
+                [1 => false, 7 => false],
+            ],
+        ];
+    }
+
+    /**
+     * @param string $source
+     *
+     * @dataProvider provideIsGlobalOrImportedClassyInvocation70Cases
+     * @requires PHP 7.0
+     */
+    public function testIsGlobalOrImportedClassyInvocation70($source, array $expected)
+    {
+        $tokens = Tokens::fromCode($source);
+
+        $method = new \ReflectionMethod(GlobalNamespaceImportFixer::class, 'isGlobalOrImportedClassyInvocation');
+        $method->setAccessible(true);
+
+        foreach ($expected as $index => $isClassy) {
+            static::assertSame($isClassy, $method->invoke(null, $tokens, $index), 'Token at index '.$index.' should match the expected value.');
+        }
+    }
+
+    public function provideIsGlobalOrImportedClassyInvocation70Cases()
+    {
+        return [
+            [
+                '<?php function foo(int $foo, string &$bar): self {}',
+                [3 => false, 5 => false, 10 => false, 17 => false],
+            ],
+            [
+                '<?php function foo(): Foo {}',
+                [3 => false, 8 => true],
+            ],
+            [
+                '<?php function foo(): \Foo {}',
+                [3 => false, 9 => true],
+            ],
+        ];
+    }
+
+    /**
+     * @param string $source
+     *
+     * @dataProvider provideIsGlobalOrImportedClassyInvocation71Cases
+     * @requires PHP 7.1
+     */
+    public function testIsGlobalOrImportedClassyInvocation71($source, array $expected)
+    {
+        $tokens = Tokens::fromCode($source);
+
+        $method = new \ReflectionMethod(GlobalNamespaceImportFixer::class, 'isGlobalOrImportedClassyInvocation');
+        $method->setAccessible(true);
+
+        foreach ($expected as $index => $isClassy) {
+            static::assertSame($isClassy, $method->invoke(null, $tokens, $index), 'Token at index '.$index.' should match the expected value.');
+        }
+    }
+
+    public function provideIsGlobalOrImportedClassyInvocation71Cases()
+    {
+        return [
+            [
+                '<?php function foo(): \Foo {}',
+                [3 => false, 9 => true],
+            ],
+            [
+                '<?php function foo(?Foo $foo, ?Foo\Bar $fooBar): ?\Foo {}',
+                [3 => false, 6 => true, 12 => false, 14 => false, 22 => true],
+            ],
+            [
+                '<?php function foo(iterable $foo): string {}',
+                [3 => false, 5 => false, 11 => false],
+            ],
+            [
+                '<?php function foo(?int $foo): ?string {}',
+                [3 => false, 6 => false, 13 => false],
+            ],
+        ];
+    }
+}

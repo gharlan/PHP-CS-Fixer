@@ -1,0 +1,796 @@
+<?php
+
+/*
+ * This file is part of PHP CS Fixer.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace PhpCsFixer\Fixer\Import;
+
+use PhpCsFixer\AbstractFixer;
+use PhpCsFixer\DocBlock\Annotation;
+use PhpCsFixer\DocBlock\DocBlock;
+use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
+use PhpCsFixer\Fixer\WhitespacesAwareFixerInterface;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
+use PhpCsFixer\FixerDefinition\CodeSample;
+use PhpCsFixer\FixerDefinition\FixerDefinition;
+use PhpCsFixer\Preg;
+use PhpCsFixer\Tokenizer\Analyzer\Analysis\NamespaceUseAnalysis;
+use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
+use PhpCsFixer\Tokenizer\Analyzer\NamespacesAnalyzer;
+use PhpCsFixer\Tokenizer\Analyzer\NamespaceUsesAnalyzer;
+use PhpCsFixer\Tokenizer\CT;
+use PhpCsFixer\Tokenizer\Token;
+use PhpCsFixer\Tokenizer\Tokens;
+use PhpCsFixer\Tokenizer\TokensAnalyzer;
+
+/**
+ * @author Gregor Harlan <gharlan@web.de>
+ */
+final class GlobalNamespaceImportFixer extends AbstractFixer implements ConfigurationDefinitionFixerInterface, WhitespacesAwareFixerInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefinition()
+    {
+        return new FixerDefinition(
+            'Imports or fully qualifies global classes/functions/constants.',
+            [
+                new CodeSample(
+                    '<?php
+
+namespace Foo;
+
+$d = new \DateTimeImmutable();
+'
+                ),
+                new CodeSample(
+                    '<?php
+
+namespace Foo;
+
+if (\count($x)) {
+    /** @var \DateTimeImmutable $d */
+    $d = new \DateTimeImmutable();
+    $p = \M_PI;
+}
+',
+                    ['import_classes' => true, 'import_constants' => true, 'import_functions' => true]
+                ),
+                new CodeSample(
+                    '<?php
+
+namespace Foo;
+
+use DateTimeImmutable;
+use function count;
+use const M_PI;
+
+if (count($x)) {
+    /** @var DateTimeImmutable $d */
+    $d = new DateTimeImmutable();
+    $p = M_PI;
+}
+',
+                    ['import_classes' => false, 'import_constants' => false, 'import_functions' => false]
+                ),
+            ]
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPriority()
+    {
+        // must be run after NativeConstantInvocationFixer, NativeFunctionInvocationFixer
+        // must be run before NoUnusedImportsFixer, OrderedImportsFixer
+        return 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isCandidate(Tokens $tokens)
+    {
+        return $tokens->isAnyTokenKindsFound([T_USE, T_NS_SEPARATOR])
+            && (Tokens::isLegacyMode() || $tokens->countTokenKind(T_NAMESPACE) < 2)
+            && $tokens->isMonolithicPhp();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    {
+        if (Tokens::isLegacyMode() && $tokens->isTokenKindFound(T_NAMESPACE) && \count((new NamespacesAnalyzer())->getDeclarations($tokens)) > 1) {
+            return;
+        }
+
+        $useDeclarations = (new NamespaceUsesAnalyzer())->getDeclarationsFromTokens($tokens);
+
+        $newImports = [];
+
+        if (true === $this->configuration['import_constants']) {
+            $newImports['const'] = $this->importConstants($tokens, $useDeclarations);
+        } elseif (false === $this->configuration['import_constants']) {
+            $this->fullyQualifyConstants($tokens, $useDeclarations);
+        }
+
+        if (true === $this->configuration['import_functions']) {
+            $newImports['function'] = $this->importFunctions($tokens, $useDeclarations);
+        } elseif (false === $this->configuration['import_functions']) {
+            $this->fullyQualifyFunctions($tokens, $useDeclarations);
+        }
+
+        if (true === $this->configuration['import_classes']) {
+            $newImports['class'] = $this->importClasses($tokens, $useDeclarations);
+        } elseif (false === $this->configuration['import_classes']) {
+            $this->fullyQualifyClasses($tokens, $useDeclarations);
+        }
+
+        $newImports = array_filter($newImports);
+
+        if ($newImports) {
+            $this->insertImports($tokens, $newImports, $useDeclarations);
+        }
+    }
+
+    protected function createConfigurationDefinition()
+    {
+        return new FixerConfigurationResolver([
+            (new FixerOptionBuilder('import_constants', 'Whether to import, not import or ignore global constants.'))
+                ->setDefault(null)
+                ->setAllowedValues([true, false, null])
+                ->getOption(),
+            (new FixerOptionBuilder('import_functions', 'Whether to import, not import or ignore global functions.'))
+                ->setDefault(null)
+                ->setAllowedValues([true, false, null])
+                ->getOption(),
+            (new FixerOptionBuilder('import_classes', 'Whether to import, not import or ignore global classes.'))
+                ->setDefault(true)
+                ->setAllowedValues([true, false, null])
+                ->getOption(),
+        ]);
+    }
+
+    /**
+     * @param Tokens                 $tokens
+     * @param NamespaceUseAnalysis[] $useDeclarations
+     *
+     * @return array
+     */
+    private function importConstants(Tokens $tokens, array $useDeclarations)
+    {
+        list($global, $other) = $this->filterUseDeclarations($useDeclarations, static function (NamespaceUseAnalysis $declaration) {
+            return $declaration->isConstant();
+        });
+
+        // find namespaced const declarations (`const FOO = 1`)
+        // and add them to the not importable names (already used)
+        for ($index = 0, $count = $tokens->count(); $index < $count; ++$index) {
+            $token = $tokens[$index];
+
+            if ($token->isClassy()) {
+                $index = $tokens->getNextTokenOfKind($index, ['{']);
+                $index = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_CURLY_BRACE, $index);
+
+                continue;
+            }
+
+            if (!$token->isGivenKind(T_CONST)) {
+                continue;
+            }
+
+            $index = $tokens->getNextMeaningfulToken($index);
+            $other[$tokens[$index]->getContent()] = true;
+        }
+
+        $analyzer = new TokensAnalyzer($tokens);
+
+        $indexes = [];
+
+        for ($index = $tokens->count() - 1; $index >= 0; --$index) {
+            $token = $tokens[$index];
+
+            if (!$token->isGivenKind(T_STRING)) {
+                continue;
+            }
+
+            $name = $token->getContent();
+
+            if (isset($other[$name])) {
+                continue;
+            }
+
+            if (!$analyzer->isConstantInvocation($index)) {
+                continue;
+            }
+
+            $nsSeparatorIndex = $tokens->getPrevMeaningfulToken($index);
+            if (!$tokens[$nsSeparatorIndex]->isGivenKind(T_NS_SEPARATOR)) {
+                if (!isset($global[$name])) {
+                    // found an unqualified constant invocation
+                    // add it to the not importable names (already used)
+                    $other[$name] = true;
+                }
+
+                continue;
+            }
+
+            $prevIndex = $tokens->getPrevMeaningfulToken($nsSeparatorIndex);
+            if ($tokens[$prevIndex]->isGivenKind([CT::T_NAMESPACE_OPERATOR, T_STRING])) {
+                continue;
+            }
+
+            $indexes[] = $index;
+        }
+
+        return $this->prepareImports($tokens, $indexes, $global, $other);
+    }
+
+    /**
+     * @param Tokens                 $tokens
+     * @param NamespaceUseAnalysis[] $useDeclarations
+     *
+     * @return array
+     */
+    private function importFunctions(Tokens $tokens, array $useDeclarations)
+    {
+        list($global, $other) = $this->filterUseDeclarations($useDeclarations, static function (NamespaceUseAnalysis $declaration) {
+            return $declaration->isFunction();
+        });
+
+        // find function declarations
+        // and add them to the not importable names (already used)
+        foreach ($this->findFunctionDeclarations($tokens, 0, $tokens->count() - 1) as $name) {
+            $other[$name] = true;
+        }
+
+        $analyzer = new FunctionsAnalyzer();
+
+        $indexes = [];
+
+        for ($index = $tokens->count() - 1; $index >= 0; --$index) {
+            $token = $tokens[$index];
+
+            if (!$token->isGivenKind(T_STRING)) {
+                continue;
+            }
+
+            $name = $token->getContent();
+
+            if (isset($other[$name])) {
+                continue;
+            }
+
+            if (!$analyzer->isGlobalFunctionCall($tokens, $index)) {
+                continue;
+            }
+
+            $nsSeparatorIndex = $tokens->getPrevMeaningfulToken($index);
+            if (!$tokens[$nsSeparatorIndex]->isGivenKind(T_NS_SEPARATOR)) {
+                if (!isset($global[$name])) {
+                    $other[$name] = true;
+                }
+
+                continue;
+            }
+
+            $indexes[] = $index;
+        }
+
+        return $this->prepareImports($tokens, $indexes, $global, $other);
+    }
+
+    /**
+     * @param Tokens                 $tokens
+     * @param NamespaceUseAnalysis[] $useDeclarations
+     *
+     * @return array
+     */
+    private function importClasses(Tokens $tokens, array $useDeclarations)
+    {
+        list($global, $other) = $this->filterUseDeclarations($useDeclarations, static function (NamespaceUseAnalysis $declaration) {
+            return $declaration->isClass();
+        });
+
+        /** @var DocBlock[] $docBlocks */
+        $docBlocks = [];
+
+        // find class declarations and class usages in docblocks
+        // and add them to the not importable names (already used)
+        for ($index = 0, $count = $tokens->count(); $index < $count; ++$index) {
+            $token = $tokens[$index];
+
+            if ($token->isGivenKind(T_DOC_COMMENT)) {
+                $docBlocks[$index] = new DocBlock($token->getContent());
+
+                $this->traverseDocBlockTypes($docBlocks[$index], static function ($type) use (&$other) {
+                    if (false === strpos($type, '\\')) {
+                        $other[$type] = true;
+                    }
+                });
+            }
+
+            if (!$token->isClassy()) {
+                continue;
+            }
+
+            $index = $tokens->getNextMeaningfulToken($index);
+
+            if ($tokens[$index]->isGivenKind(T_STRING)) {
+                $other[$tokens[$index]->getContent()] = true;
+            }
+        }
+
+        $indexes = [];
+
+        for ($index = $tokens->count() - 1; $index >= 0; --$index) {
+            $token = $tokens[$index];
+
+            if (!$token->isGivenKind(T_STRING)) {
+                continue;
+            }
+
+            $name = $token->getContent();
+
+            if (isset($other[$name])) {
+                continue;
+            }
+
+            if (!self::isGlobalOrImportedClassyInvocation($tokens, $index)) {
+                continue;
+            }
+
+            $nsSeparatorIndex = $tokens->getPrevMeaningfulToken($index);
+            if (!$tokens[$nsSeparatorIndex]->isGivenKind(T_NS_SEPARATOR)) {
+                if (!isset($global[$name])) {
+                    $other[$name] = true;
+                }
+
+                continue;
+            }
+
+            $indexes[] = $index;
+        }
+
+        $imports = [];
+
+        foreach ($docBlocks as $index => $docBlock) {
+            $changed = $this->traverseDocBlockTypes($docBlock, static function ($type) use ($global, $other, &$imports) {
+                if ('\\' !== $type[0]) {
+                    return $type;
+                }
+
+                $name = substr($type, 1);
+
+                if (false !== strpos($name, '\\') || isset($other[$name])) {
+                    return $type;
+                }
+
+                if (isset($global[$name])) {
+                    return $global[$name];
+                }
+
+                $imports[$name] = true;
+
+                return $name;
+            });
+
+            if ($changed) {
+                $tokens[$index] = new Token([T_DOC_COMMENT, $docBlock->getContent()]);
+            }
+        }
+
+        return $imports + $this->prepareImports($tokens, $indexes, $global, $other);
+    }
+
+    /**
+     * Removes the leading slash at the given indexes (when the name is not already used).
+     *
+     * @param Tokens $tokens
+     * @param int[]  $indexes
+     * @param array  $global
+     * @param array  $other
+     *
+     * @return array array keys contain the names that must be imported
+     */
+    private function prepareImports(Tokens $tokens, array $indexes, array $global, array $other)
+    {
+        $imports = [];
+
+        foreach ($indexes as $index) {
+            $name = $tokens[$index]->getContent();
+
+            if (isset($other[$name])) {
+                continue;
+            }
+
+            if (isset($global[$name])) {
+                $tokens[$index] = new Token([T_STRING, $global[$name]]);
+            } else {
+                $imports[$name] = true;
+            }
+
+            $tokens->clearAt($tokens->getPrevMeaningfulToken($index));
+        }
+
+        return $imports;
+    }
+
+    /**
+     * @param Tokens                 $tokens
+     * @param array                  $imports
+     * @param NamespaceUseAnalysis[] $useDeclarations
+     */
+    private function insertImports(Tokens $tokens, array $imports, array $useDeclarations)
+    {
+        if ($useDeclarations) {
+            $useDeclaration = end($useDeclarations);
+            $index = $useDeclaration->getEndIndex() + 1;
+        } else {
+            $namespace = (new NamespacesAnalyzer())->getDeclarations($tokens)[0];
+            $index = $namespace->getEndIndex() + 1;
+        }
+
+        $lineEnding = $this->whitespacesConfig->getLineEnding();
+
+        if (!$tokens[$index]->isWhitespace() || false === strpos($tokens[$index]->getContent(), "\n")) {
+            $tokens->insertAt($index, new Token([T_WHITESPACE, $lineEnding]));
+        }
+
+        foreach ($imports as $type => $typeImports) {
+            foreach ($typeImports as $name => $import) {
+                $items = [
+                    new Token([T_WHITESPACE, $lineEnding]),
+                    new Token([T_USE, 'use']),
+                    new Token([T_WHITESPACE, ' ']),
+                ];
+
+                if ('const' === $type) {
+                    $items[] = new Token([CT::T_CONST_IMPORT, 'const']);
+                    $items[] = new Token([T_WHITESPACE, ' ']);
+                } elseif ('function' === $type) {
+                    $items[] = new Token([CT::T_FUNCTION_IMPORT, 'function']);
+                    $items[] = new Token([T_WHITESPACE, ' ']);
+                }
+
+                $items[] = new Token([T_STRING, $name]);
+                $items[] = new Token(';');
+
+                $tokens->insertAt($index, $items);
+            }
+        }
+    }
+
+    /**
+     * @param Tokens                 $tokens
+     * @param NamespaceUseAnalysis[] $useDeclarations
+     */
+    private function fullyQualifyConstants(Tokens $tokens, array $useDeclarations)
+    {
+        if (!$tokens->isTokenKindFound(CT::T_CONST_IMPORT)) {
+            return;
+        }
+
+        list($global) = $this->filterUseDeclarations($useDeclarations, static function (NamespaceUseAnalysis $declaration) {
+            return $declaration->isConstant() && !$declaration->isAliased();
+        });
+
+        if (!$global) {
+            return;
+        }
+
+        $analyzer = new TokensAnalyzer($tokens);
+
+        for ($index = $tokens->count() - 1; $index >= 0; --$index) {
+            $token = $tokens[$index];
+
+            if (!$token->isGivenKind(T_STRING)) {
+                continue;
+            }
+
+            if (!isset($global[$token->getContent()])) {
+                continue;
+            }
+
+            if ($tokens[$tokens->getPrevMeaningfulToken($index)]->isGivenKind(T_NS_SEPARATOR)) {
+                continue;
+            }
+
+            if (!$analyzer->isConstantInvocation($index)) {
+                continue;
+            }
+
+            $tokens->insertAt($index, new Token([T_NS_SEPARATOR, '\\']));
+        }
+    }
+
+    /**
+     * @param Tokens                 $tokens
+     * @param NamespaceUseAnalysis[] $useDeclarations
+     */
+    private function fullyQualifyFunctions(Tokens $tokens, array $useDeclarations)
+    {
+        if (!$tokens->isTokenKindFound(CT::T_FUNCTION_IMPORT)) {
+            return;
+        }
+
+        list($global) = $this->filterUseDeclarations($useDeclarations, static function (NamespaceUseAnalysis $declaration) {
+            return $declaration->isFunction() && !$declaration->isAliased();
+        });
+
+        if (!$global) {
+            return;
+        }
+
+        $analyzer = new FunctionsAnalyzer();
+
+        for ($index = $tokens->count() - 1; $index >= 0; --$index) {
+            $token = $tokens[$index];
+
+            if (!$token->isGivenKind(T_STRING)) {
+                continue;
+            }
+
+            if (!isset($global[$token->getContent()])) {
+                continue;
+            }
+
+            if ($tokens[$tokens->getPrevMeaningfulToken($index)]->isGivenKind(T_NS_SEPARATOR)) {
+                continue;
+            }
+
+            if (!$analyzer->isGlobalFunctionCall($tokens, $index)) {
+                continue;
+            }
+
+            $tokens->insertAt($index, new Token([T_NS_SEPARATOR, '\\']));
+        }
+    }
+
+    /**
+     * @param Tokens                 $tokens
+     * @param NamespaceUseAnalysis[] $useDeclarations
+     */
+    private function fullyQualifyClasses(Tokens $tokens, array $useDeclarations)
+    {
+        if (!$tokens->isTokenKindFound(T_USE)) {
+            return;
+        }
+
+        list($global) = $this->filterUseDeclarations($useDeclarations, static function (NamespaceUseAnalysis $declaration) {
+            return $declaration->isClass() && !$declaration->isAliased();
+        });
+
+        if (!$global) {
+            return;
+        }
+
+        for ($index = $tokens->count() - 1; $index >= 0; --$index) {
+            $token = $tokens[$index];
+
+            if ($token->isGivenKind(T_DOC_COMMENT)) {
+                $doc = new DocBlock($token->getContent());
+
+                $changed = $this->traverseDocBlockTypes($doc, static function ($type) use ($global) {
+                    if (!isset($global[$type])) {
+                        return $type;
+                    }
+
+                    return '\\'.$type;
+                });
+
+                if ($changed) {
+                    $tokens[$index] = new Token([T_DOC_COMMENT, $doc->getContent()]);
+                }
+
+                continue;
+            }
+
+            if (!$token->isGivenKind(T_STRING)) {
+                continue;
+            }
+
+            if (!isset($global[$token->getContent()])) {
+                continue;
+            }
+
+            if ($tokens[$tokens->getPrevMeaningfulToken($index)]->isGivenKind(T_NS_SEPARATOR)) {
+                continue;
+            }
+
+            if (!self::isGlobalOrImportedClassyInvocation($tokens, $index)) {
+                continue;
+            }
+
+            $tokens->insertAt($index, new Token([T_NS_SEPARATOR, '\\']));
+        }
+    }
+
+    /**
+     * @param NamespaceUseAnalysis[] $declarations
+     * @param callable               $callback
+     *
+     * @return array
+     */
+    private function filterUseDeclarations(array $declarations, callable $callback)
+    {
+        $global = [];
+        $other = [];
+
+        foreach ($declarations as $declaration) {
+            if (!$callback($declaration)) {
+                continue;
+            }
+
+            $fullName = ltrim($declaration->getFullName(), '\\');
+
+            if (false !== strpos($fullName, '\\')) {
+                $other[$declaration->getShortName()] = true;
+
+                continue;
+            }
+
+            $global[$fullName] = $declaration->getShortName();
+        }
+
+        return [$global, $other];
+    }
+
+    private function findFunctionDeclarations(Tokens $tokens, $start, $end)
+    {
+        for ($index = $start; $index <= $end; ++$index) {
+            $token = $tokens[$index];
+
+            if ($token->isClassy()) {
+                $classStart = $tokens->getNextTokenOfKind($index, ['{']);
+                $classEnd = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_CURLY_BRACE, $classStart);
+
+                for ($index = $classStart; $index <= $classEnd; ++$index) {
+                    if (!$tokens[$index]->isGivenKind(T_FUNCTION)) {
+                        continue;
+                    }
+
+                    $methodStart = $tokens->getNextTokenOfKind($index, ['{', ';']);
+
+                    if ($tokens[$methodStart]->equals(';')) {
+                        $index = $methodStart;
+
+                        continue;
+                    }
+
+                    $methodEnd = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_CURLY_BRACE, $methodStart);
+
+                    foreach ($this->findFunctionDeclarations($tokens, $methodStart, $methodEnd) as $function) {
+                        yield $function;
+                    }
+
+                    $index = $methodEnd;
+                }
+
+                continue;
+            }
+
+            if (!$token->isGivenKind(T_FUNCTION)) {
+                continue;
+            }
+
+            $index = $tokens->getNextMeaningfulToken($index);
+
+            if ($tokens[$index]->isGivenKind(CT::T_RETURN_REF)) {
+                $index = $tokens->getNextMeaningfulToken($index);
+            }
+
+            if ($tokens[$index]->isGivenKind(T_STRING)) {
+                yield $tokens[$index]->getContent();
+            }
+        }
+    }
+
+    private function traverseDocBlockTypes(DocBlock $doc, callable $callback)
+    {
+        $annotations = $doc->getAnnotationsOfType(Annotation::getTagsWithTypes());
+
+        if (!$annotations) {
+            return false;
+        }
+
+        $changed = false;
+
+        foreach ($annotations as $annotation) {
+            $types = $new = $annotation->getTypes();
+
+            foreach ($types as $i => $fullType) {
+                $newFullType = $fullType;
+
+                Preg::matchAll('/[\\\\\w]+/', $fullType, $matches, PREG_OFFSET_CAPTURE);
+
+                foreach (array_reverse($matches[0]) as list($type, $offset)) {
+                    $newType = $callback($type);
+
+                    if (null !== $newType && $type !== $newType) {
+                        $newFullType = substr_replace($newFullType, $newType, $offset, \strlen($type));
+                    }
+                }
+
+                $new[$i] = $newFullType;
+            }
+
+            if ($types !== $new) {
+                $annotation->setTypes($new);
+                $changed = true;
+            }
+        }
+
+        return $changed;
+    }
+
+    private static function isGlobalOrImportedClassyInvocation(Tokens $tokens, $index)
+    {
+        $token = $tokens[$index];
+
+        if (!$token->isGivenKind(T_STRING)) {
+            throw new \LogicException(sprintf('No T_STRING at given index %d, got %s.', $index, $tokens[$index]->getName()));
+        }
+
+        if (\in_array(strtolower($token->getContent()), ['bool', 'float', 'int', 'iterable', 'object', 'parent', 'self', 'string', 'void'], true)) {
+            return false;
+        }
+
+        $next = $tokens->getNextMeaningfulToken($index);
+        $nextToken = $tokens[$next];
+
+        if ($nextToken->isGivenKind(T_NS_SEPARATOR)) {
+            return false;
+        }
+
+        $prev = $tokens->getPrevMeaningfulToken($index);
+
+        if ($tokens[$prev]->isGivenKind(T_NS_SEPARATOR)) {
+            $prev = $tokens->getPrevMeaningfulToken($prev);
+        }
+
+        $prevToken = $tokens[$prev];
+
+        if ($prevToken->isGivenKind([T_EXTENDS, T_INSTANCEOF, T_INSTEADOF, T_IMPLEMENTS, T_NEW, CT::T_NULLABLE_TYPE, CT::T_TYPE_ALTERNATION, CT::T_TYPE_COLON, CT::T_USE_TRAIT])) {
+            return true;
+        }
+
+        if ($prevToken->isGivenKind([CT::T_NAMESPACE_OPERATOR, T_STRING])) {
+            return false;
+        }
+
+        if ($nextToken->isGivenKind([T_DOUBLE_COLON, T_ELLIPSIS, CT::T_TYPE_ALTERNATION, T_VARIABLE])) {
+            return true;
+        }
+
+        // `Foo & $bar` could be:
+        //   - function reference parameter: function baz(Foo & $bar) {}
+        //   - bit operator: $x = Foo & $bar;
+        if ($nextToken->equals('&') && $tokens[$tokens->getNextMeaningfulToken($next)]->isGivenKind(T_VARIABLE)) {
+            $checkIndex = $tokens->getPrevTokenOfKind($index, [';', '{', '}', [T_FUNCTION], [T_OPEN_TAG], [T_OPEN_TAG_WITH_ECHO]]);
+
+            return $tokens[$checkIndex]->isGivenKind(T_FUNCTION);
+        }
+
+        if (!$prevToken->equals(',')) {
+            return false;
+        }
+
+        do {
+            $prev = $tokens->getPrevMeaningfulToken($prev);
+        } while ($tokens[$prev]->equalsAny([',', [T_NS_SEPARATOR], [T_STRING], [CT::T_NAMESPACE_OPERATOR]]));
+
+        return $tokens[$prev]->isGivenKind([T_IMPLEMENTS, CT::T_USE_TRAIT]);
+    }
+}
