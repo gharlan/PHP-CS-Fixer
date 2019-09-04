@@ -1,5 +1,7 @@
 <?php
 
+use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
+
 $header = <<<'EOF'
 This file is part of PHP CS Fixer.
 
@@ -25,6 +27,16 @@ $config = PhpCsFixer\Config::create()
         '@PhpCsFixer:risky' => true,
         'header_comment' => ['header' => $header],
         'list_syntax' => ['syntax' => 'long'],
+        'global_namespace_import' => [
+            'import_constants' => true,
+            'import_functions' => true,
+            'import_classes' => true,
+        ],
+        'ordered_imports' => ['imports_order' => [
+            OrderedImportsFixer::IMPORT_TYPE_CLASS,
+            OrderedImportsFixer::IMPORT_TYPE_FUNCTION,
+            OrderedImportsFixer::IMPORT_TYPE_CONST
+        ]],
     ])
     ->setFinder($finder)
 ;
