@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\FixerConfiguration;
 
+use Closure;
+
 final class FixerOptionBuilder
 {
     /**
@@ -45,7 +47,7 @@ final class FixerOptionBuilder
     private $allowedValues;
 
     /**
-     * @var null|\Closure
+     * @var null|Closure
      */
     private $normalizer;
 
@@ -102,11 +104,11 @@ final class FixerOptionBuilder
     }
 
     /**
-     * @param \Closure $normalizer
+     * @param Closure $normalizer
      *
      * @return $this
      */
-    public function setNormalizer(\Closure $normalizer)
+    public function setNormalizer(Closure $normalizer)
     {
         $this->normalizer = $normalizer;
 

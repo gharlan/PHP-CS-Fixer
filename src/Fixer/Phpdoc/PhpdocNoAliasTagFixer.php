@@ -22,8 +22,10 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
+use function is_string;
 
 /**
  * Case sensitive tag replace fixer (does not process inline tags like {@inheritdoc}).
@@ -93,7 +95,7 @@ final class Example
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $searchFor = array_keys($this->configuration['replacements']);
 
@@ -129,11 +131,11 @@ final class Example
                     $normalizedValue = [];
 
                     foreach ($value as $from => $to) {
-                        if (!\is_string($from)) {
+                        if (!is_string($from)) {
                             throw new InvalidOptionsException('Tag to replace must be a string.');
                         }
 
-                        if (!\is_string($to)) {
+                        if (!is_string($to)) {
                             throw new InvalidOptionsException(sprintf(
                                 'Tag to replace to from "%s" must be a string.',
                                 $from

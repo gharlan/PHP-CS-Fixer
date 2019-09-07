@@ -16,6 +16,8 @@ use PhpCsFixer\Tests\Test\AbstractTransformerTestCase;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\Transformer\SquareBraceTransformer;
+use ReflectionObject;
+use function in_array;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -39,7 +41,7 @@ final class SquareBraceTransformerTest extends AbstractTransformerTestCase
     public function testIsShortArray($source, $inspectIndexes, $expected)
     {
         $transformer = new SquareBraceTransformer();
-        $reflection = new \ReflectionObject($transformer);
+        $reflection = new ReflectionObject($transformer);
         $method = $reflection->getMethod('isShortArray');
         $method->setAccessible(true);
 
@@ -49,7 +51,7 @@ final class SquareBraceTransformerTest extends AbstractTransformerTestCase
         }
 
         foreach ($tokens as $index => $token) {
-            if (\in_array($index, $inspectIndexes, true)) {
+            if (in_array($index, $inspectIndexes, true)) {
                 static::assertSame('[', $tokens[$index]->getContent(), sprintf('Token @ index %d must have content \']\'', $index));
                 $exp = $expected;
             } elseif ('[' === $tokens[$index]->getContent()) {

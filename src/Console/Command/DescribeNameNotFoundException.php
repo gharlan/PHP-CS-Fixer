@@ -12,12 +12,14 @@
 
 namespace PhpCsFixer\Console\Command;
 
+use InvalidArgumentException;
+
 /**
  * @author SpacePossum
  *
  * @internal
  */
-final class DescribeNameNotFoundException extends \InvalidArgumentException
+final class DescribeNameNotFoundException extends InvalidArgumentException
 {
     /**
      * @var string

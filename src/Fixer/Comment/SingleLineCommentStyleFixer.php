@@ -22,6 +22,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function in_array;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -45,8 +47,8 @@ final class SingleLineCommentStyleFixer extends AbstractFixer implements Configu
     {
         parent::configure($configuration);
 
-        $this->asteriskEnabled = \in_array('asterisk', $this->configuration['comment_types'], true);
-        $this->hashEnabled = \in_array('hash', $this->configuration['comment_types'], true);
+        $this->asteriskEnabled = in_array('asterisk', $this->configuration['comment_types'], true);
+        $this->hashEnabled = in_array('hash', $this->configuration['comment_types'], true);
     }
 
     /**
@@ -109,7 +111,7 @@ $c = 3;
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($tokens as $index => $token) {
             if (!$token->isGivenKind(T_COMMENT)) {

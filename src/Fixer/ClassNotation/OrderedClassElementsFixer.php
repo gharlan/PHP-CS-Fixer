@@ -22,6 +22,11 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * @author Gregor Harlan <gharlan@web.de>
@@ -123,7 +128,7 @@ final class OrderedClassElementsFixer extends AbstractFixer implements Configura
             $this->typePosition[$type] = null;
         }
 
-        $lastPosition = \count($this->configuration['order']);
+        $lastPosition = count($this->configuration['order']);
         foreach ($this->typePosition as &$pos) {
             if (null === $pos) {
                 $pos = $lastPosition;
@@ -221,7 +226,7 @@ class Example
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($i = 1, $count = $tokens->count(); $i < $count; ++$i) {
             if (!$tokens[$i]->isClassy()) {
@@ -236,7 +241,7 @@ class Example
             }
 
             $sorted = $this->sortElements($elements);
-            $endIndex = $elements[\count($elements) - 1]['end'];
+            $endIndex = $elements[count($elements) - 1]['end'];
 
             if ($sorted !== $elements) {
                 $this->sortTokens($tokens, $i, $endIndex, $sorted);
@@ -324,7 +329,7 @@ class Example
                 }
 
                 $type = $this->detectElementType($tokens, $i);
-                if (\is_array($type)) {
+                if (is_array($type)) {
                     $element['type'] = $type[0];
                     $element['name'] = $type[1];
                 } else {
@@ -333,7 +338,7 @@ class Example
 
                 if ('property' === $element['type']) {
                     $element['name'] = $tokens[$i]->getContent();
-                } elseif (\in_array($element['type'], ['use_trait', 'constant', 'method', 'magic'], true)) {
+                } elseif (in_array($element['type'], ['use_trait', 'constant', 'method', 'magic'], true)) {
                     $element['name'] = $tokens[$tokens->getNextMeaningfulToken($i)]->getContent();
                 }
 
@@ -435,7 +440,7 @@ class Example
         foreach ($elements as &$element) {
             $type = $element['type'];
 
-            if (\array_key_exists($type, self::$specialTypes)) {
+            if (array_key_exists($type, self::$specialTypes)) {
                 if (isset($this->typePosition[$type])) {
                     $element['position'] = $this->typePosition[$type];
                     if ('phpunit' === $type) {
@@ -448,7 +453,7 @@ class Example
                 $type = 'method';
             }
 
-            if (\in_array($type, ['constant', 'property', 'method'], true)) {
+            if (in_array($type, ['constant', 'property', 'method'], true)) {
                 $type .= '_'.$element['visibility'];
                 if ($element['static']) {
                     $type .= '_static';

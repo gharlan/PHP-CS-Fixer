@@ -14,6 +14,7 @@ namespace PhpCsFixer\Report;
 
 use Symfony\Component\Finder\Finder as SymfonyFinder;
 use Symfony\Component\Finder\SplFileInfo;
+use UnexpectedValueException;
 
 /**
  * @author Boris Gorbylev <ekho@ekho.name>
@@ -67,7 +68,7 @@ final class ReporterFactory
         $format = $reporter->getFormat();
 
         if (isset($this->reporters[$format])) {
-            throw new \UnexpectedValueException(sprintf('Reporter for format "%s" is already registered.', $format));
+            throw new UnexpectedValueException(sprintf('Reporter for format "%s" is already registered.', $format));
         }
 
         $this->reporters[$format] = $reporter;
@@ -94,7 +95,7 @@ final class ReporterFactory
     public function getReporter($format)
     {
         if (!isset($this->reporters[$format])) {
-            throw new \UnexpectedValueException(sprintf('Reporter for format "%s" is not registered.', $format));
+            throw new UnexpectedValueException(sprintf('Reporter for format "%s" is not registered.', $format));
         }
 
         return $this->reporters[$format];

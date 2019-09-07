@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\Fixer\Comment;
 
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 use PhpCsFixer\Tokenizer\Tokens;
+use ReflectionMethod;
 
 /**
  * @author SpacePossum
@@ -229,7 +230,7 @@ echo 1;
         $tokens = Tokens::fromCode($source);
         static::assertTrue($tokens[$startIndex]->isComment(), sprintf('Misconfiguration of test, expected comment token at index "%d".', $startIndex));
 
-        $method = new \ReflectionMethod($this->fixer, 'getCommentBlock');
+        $method = new ReflectionMethod($this->fixer, 'getCommentBlock');
         $method->setAccessible(true);
 
         list($foundStart, $foundEnd, $foundIsEmpty) = $method->invoke($this->fixer, $tokens, $startIndex);

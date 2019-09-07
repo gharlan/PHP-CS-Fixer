@@ -12,18 +12,25 @@
 
 namespace PhpCsFixer\Runner;
 
+use FilterIterator;
+use Iterator;
 use PhpCsFixer\Cache\CacheManagerInterface;
 use PhpCsFixer\FileReader;
 use PhpCsFixer\FixerFileProcessedEvent;
+use RuntimeException;
+use SplFileInfo;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use function get_class;
+use function gettype;
+use function is_object;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  *
  * @internal
  */
-final class FileFilterIterator extends \FilterIterator
+final class FileFilterIterator extends FilterIterator
 {
     /**
      * @var null|EventDispatcherInterface
@@ -41,7 +48,7 @@ final class FileFilterIterator extends \FilterIterator
     private $visitedElements = [];
 
     public function __construct(
-        \Iterator $iterator,
+        Iterator $iterator,
         EventDispatcherInterface $eventDispatcher = null,
         CacheManagerInterface $cacheManager
     ) {
@@ -54,11 +61,11 @@ final class FileFilterIterator extends \FilterIterator
     public function accept()
     {
         $file = $this->current();
-        if (!$file instanceof \SplFileInfo) {
-            throw new \RuntimeException(
+        if (!$file instanceof SplFileInfo) {
+            throw new RuntimeException(
                 sprintf(
                     'Expected instance of "\SplFileInfo", got "%s".',
-                    \is_object($file) ? \get_class($file) : \gettype($file)
+                    is_object($file) ? get_class($file) : gettype($file)
                 )
             );
         }

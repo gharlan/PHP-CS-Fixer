@@ -15,6 +15,7 @@ namespace PhpCsFixer\Tokenizer\Transformer;
 use PhpCsFixer\Tokenizer\AbstractTransformer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use function strlen;
 
 /**
  * Move trailing whitespaces from comments and docs into following T_WHITESPACE token.
@@ -58,7 +59,7 @@ final class WhitespacyCommentTransformer extends AbstractTransformer
             return;
         }
 
-        $whitespaces = substr($content, \strlen($trimmedContent));
+        $whitespaces = substr($content, strlen($trimmedContent));
 
         $tokens[$index] = new Token([$token->getId(), $trimmedContent]);
 

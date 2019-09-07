@@ -19,6 +19,8 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Graham Campbell <graham@alt-three.com>
@@ -74,7 +76,7 @@ function foo() {}
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($tokens as $index => $token) {
             if (!$token->isGivenKind(T_DOC_COMMENT)) {
@@ -118,7 +120,7 @@ function foo() {}
     {
         $types = $annotation->getNormalizedTypes();
 
-        if (1 === \count($types) && ('null' === $types[0] || 'void' === $types[0])) {
+        if (1 === count($types) && ('null' === $types[0] || 'void' === $types[0])) {
             $annotation->remove();
         }
     }

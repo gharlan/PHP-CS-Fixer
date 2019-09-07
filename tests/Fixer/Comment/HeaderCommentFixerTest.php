@@ -16,6 +16,8 @@ use PhpCsFixer\ConfigurationException\InvalidFixerConfigurationException;
 use PhpCsFixer\Tests\Test\AbstractFixerWithAliasedOptionsTestCase;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\WhitespacesFixerConfig;
+use ReflectionMethod;
+use stdClass;
 
 /**
  * @internal
@@ -367,21 +369,21 @@ echo 1;'
             [
                 [
                     'header' => '',
-                    'commentType' => new \stdClass(),
+                    'commentType' => new stdClass(),
                 ],
                 'Invalid configuration: The option "comment_type" with value stdClass is invalid. Accepted values are: "PHPDoc", "comment".',
             ],
             [
                 [
                     'header' => '',
-                    'location' => new \stdClass(),
+                    'location' => new stdClass(),
                 ],
                 'Invalid configuration: The option "location" with value stdClass is invalid. Accepted values are: "after_open", "after_declare_strict".',
             ],
             [
                 [
                     'header' => '',
-                    'separate' => new \stdClass(),
+                    'separate' => new stdClass(),
                 ],
                 'Invalid configuration: The option "separate" with value stdClass is invalid. Accepted values are: "both", "top", "bottom", "none".',
             ],
@@ -445,7 +447,7 @@ echo 1;'
 
         $this->fixer->configure($config);
 
-        $method = new \ReflectionMethod($this->fixer, 'findHeaderCommentInsertionIndex');
+        $method = new ReflectionMethod($this->fixer, 'findHeaderCommentInsertionIndex');
         $method->setAccessible(true);
         static::assertSame($expected, $method->invoke($this->fixer, $tokens));
     }

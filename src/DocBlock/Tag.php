@@ -13,6 +13,8 @@
 namespace PhpCsFixer\DocBlock;
 
 use PhpCsFixer\Preg;
+use RuntimeException;
+use function in_array;
 
 /**
  * This represents a tag, as defined by the proposed PSR PHPDoc standard.
@@ -91,7 +93,7 @@ class Tag
         $current = $this->getName();
 
         if ('other' === $current) {
-            throw new \RuntimeException('Cannot set name on unknown tag.');
+            throw new RuntimeException('Cannot set name on unknown tag.');
         }
 
         $this->line->setContent(Preg::replace("/@{$current}/", "@{$name}", $this->line->getContent(), 1));
@@ -108,6 +110,6 @@ class Tag
      */
     public function valid()
     {
-        return \in_array($this->getName(), self::$tags, true);
+        return in_array($this->getName(), self::$tags, true);
     }
 }

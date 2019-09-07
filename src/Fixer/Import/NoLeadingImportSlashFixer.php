@@ -19,6 +19,7 @@ use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
 
 /**
  * @author Carlos Cirello <carlos.cirello.nl@gmail.com>
@@ -56,7 +57,7 @@ final class NoLeadingImportSlashFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $tokensAnalyzer = new TokensAnalyzer($tokens);
         $usesIndexes = $tokensAnalyzer->getImportUseIndexes();

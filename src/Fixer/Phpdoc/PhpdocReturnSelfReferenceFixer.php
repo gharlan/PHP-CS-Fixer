@@ -22,8 +22,16 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
+use function count;
+use function get_class;
+use function gettype;
+use function in_array;
+use function is_object;
+use function is_resource;
+use function is_string;
 
 /**
  * @author SpacePossum
@@ -98,7 +106,7 @@ class Sample
      */
     public function isCandidate(Tokens $tokens)
     {
-        return \count($tokens) > 10 && $tokens->isTokenKindFound(T_DOC_COMMENT) && $tokens->isAnyTokenKindsFound([T_CLASS, T_INTERFACE]);
+        return count($tokens) > 10 && $tokens->isTokenKindFound(T_DOC_COMMENT) && $tokens->isAnyTokenKindsFound([T_CLASS, T_INTERFACE]);
     }
 
     /**
@@ -113,7 +121,7 @@ class Sample
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $tokensAnalyzer = new TokensAnalyzer($tokens);
         foreach ($tokensAnalyzer->getClassyElements() as $index => $element) {
@@ -143,22 +151,22 @@ class Sample
                 ->setNormalizer(static function (Options $options, $value) use ($default) {
                     $normalizedValue = [];
                     foreach ($value as $from => $to) {
-                        if (\is_string($from)) {
+                        if (is_string($from)) {
                             $from = strtolower($from);
                         }
 
                         if (!isset($default[$from])) {
                             throw new InvalidOptionsException(sprintf(
                                 'Unknown key "%s", expected any of "%s".',
-                                \is_object($from) ? \get_class($from) : \gettype($from).(\is_resource($from) ? '' : '#'.$from),
+                                is_object($from) ? get_class($from) : gettype($from).(is_resource($from) ? '' : '#'.$from),
                                 implode('", "', array_keys($default))
                             ));
                         }
 
-                        if (!\in_array($to, self::$toTypes, true)) {
+                        if (!in_array($to, self::$toTypes, true)) {
                             throw new InvalidOptionsException(sprintf(
                                 'Unknown value "%s", expected any of "%s".',
-                                \is_object($to) ? \get_class($to) : \gettype($to).(\is_resource($to) ? '' : '#'.$to),
+                                is_object($to) ? get_class($to) : gettype($to).(is_resource($to) ? '' : '#'.$to),
                                 implode('", "', self::$toTypes)
                             ));
                         }
@@ -200,14 +208,14 @@ class Sample
         $docBlock = new DocBlock($tokens[$docIndex]->getContent());
         $returnsBlock = $docBlock->getAnnotationsOfType('return');
 
-        if (!\count($returnsBlock)) {
+        if (!count($returnsBlock)) {
             return; // no return annotation found
         }
 
         $returnsBlock = $returnsBlock[0];
         $types = $returnsBlock->getTypes();
 
-        if (!\count($types)) {
+        if (!count($types)) {
             return; // no return type(s) found
         }
 

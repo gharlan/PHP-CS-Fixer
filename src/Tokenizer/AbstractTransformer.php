@@ -13,6 +13,7 @@
 namespace PhpCsFixer\Tokenizer;
 
 use PhpCsFixer\Utils;
+use function strlen;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -27,7 +28,7 @@ abstract class AbstractTransformer implements TransformerInterface
     public function getName()
     {
         $nameParts = explode('\\', static::class);
-        $name = substr(end($nameParts), 0, -\strlen('Transformer'));
+        $name = substr(end($nameParts), 0, -strlen('Transformer'));
 
         return Utils::camelCaseToUnderscore($name);
     }

@@ -21,6 +21,7 @@ use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Utils;
+use SplFileInfo;
 
 /**
  * @author Matteo Beccati <matteo@beccati.com>
@@ -77,7 +78,7 @@ final class EregToPregFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $end = $tokens->count() - 1;
         $functionsAnalyzer = new FunctionsAnalyzer();

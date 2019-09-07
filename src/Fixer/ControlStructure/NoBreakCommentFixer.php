@@ -22,8 +22,11 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
+use function count;
+use function is_string;
 
 /**
  * Fixer for rule defined in PSR2 ¶5.2.
@@ -75,7 +78,7 @@ switch ($foo) {
                 ->setAllowedTypes(['string'])
                 ->setAllowedValues([
                     static function ($value) {
-                        if (\is_string($value) && Preg::match('/\R/', $value)) {
+                        if (is_string($value) && Preg::match('/\R/', $value)) {
                             throw new InvalidOptionsException('The comment text must not contain new lines.');
                         }
 
@@ -93,9 +96,9 @@ switch ($foo) {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        for ($position = \count($tokens) - 1; $position >= 0; --$position) {
+        for ($position = count($tokens) - 1; $position >= 0; --$position) {
             if ($tokens[$position]->isGivenKind([T_CASE, T_DEFAULT])) {
                 $this->fixCase($tokens, $position);
             }
@@ -111,7 +114,7 @@ switch ($foo) {
         $empty = true;
         $fallThrough = true;
         $commentPosition = null;
-        for ($i = $tokens->getNextTokenOfKind($casePosition, [':', ';']) + 1, $max = \count($tokens); $i < $max; ++$i) {
+        for ($i = $tokens->getNextTokenOfKind($casePosition, [':', ';']) + 1, $max = count($tokens); $i < $max; ++$i) {
             if ($tokens[$i]->isGivenKind([T_SWITCH, T_IF, T_ELSE, T_ELSEIF, T_FOR, T_FOREACH, T_WHILE, T_DO, T_FUNCTION, T_CLASS])) {
                 $empty = false;
                 $i = $this->getStructureEnd($tokens, $i);

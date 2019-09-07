@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\Fixer\Casing;
 
 use PhpCsFixer\Fixer\Casing\MagicMethodCasingFixer;
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
+use ReflectionClass;
 
 /**
  * @author SpacePossum
@@ -37,7 +38,7 @@ final class MagicMethodCasingFixerTest extends AbstractFixerTestCase
 
     public function provideFixCases()
     {
-        $fixerReflection = new \ReflectionClass(MagicMethodCasingFixer::class);
+        $fixerReflection = new ReflectionClass(MagicMethodCasingFixer::class);
         $property = $fixerReflection->getProperty('magicNames');
         $property->setAccessible(true);
         $allMethodNames = $property->getValue();

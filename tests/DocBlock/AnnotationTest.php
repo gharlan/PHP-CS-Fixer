@@ -16,6 +16,8 @@ use PhpCsFixer\DocBlock\Annotation;
 use PhpCsFixer\DocBlock\DocBlock;
 use PhpCsFixer\DocBlock\Line;
 use PhpCsFixer\Tests\TestCase;
+use RuntimeException;
+use Throwable;
 
 /**
  * @author Graham Campbell <graham@alt-three.com>
@@ -335,9 +337,9 @@ final class AnnotationTest extends TestCase
         return [
             [['Foo', 'null'], ['Bar[]'], '     * @param Foo|null $foo', '     * @param Bar[] $foo'],
             [['false'], ['bool'], '*   @return            false', '*   @return            bool'],
-            [['RUNTIMEEEEeXCEPTION'], [\Throwable::class], "* \t@throws\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n", "* \t@throws\t  \t Throwable\t\t\t\t\t\t\t\n\n\n"],
-            [['RUNTIMEEEEeXCEPTION'], [\Throwable::class], "*\t@throws\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n", "*\t@throws\t  \t Throwable\t\t\t\t\t\t\t\n\n\n"],
-            [['RUNTIMEEEEeXCEPTION'], [\Throwable::class], "*@throws\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n", "*@throws\t  \t Throwable\t\t\t\t\t\t\t\n\n\n"],
+            [['RUNTIMEEEEeXCEPTION'], [Throwable::class], "* \t@throws\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n", "* \t@throws\t  \t Throwable\t\t\t\t\t\t\t\n\n\n"],
+            [['RUNTIMEEEEeXCEPTION'], [Throwable::class], "*\t@throws\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n", "*\t@throws\t  \t Throwable\t\t\t\t\t\t\t\n\n\n"],
+            [['RUNTIMEEEEeXCEPTION'], [Throwable::class], "*@throws\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n", "*@throws\t  \t Throwable\t\t\t\t\t\t\t\n\n\n"],
             [['string'], ['string', 'null'], ' * @method string getString()', ' * @method string|null getString()'],
         ];
     }
@@ -367,7 +369,7 @@ final class AnnotationTest extends TestCase
 
     public function testGetTypesOnBadTag()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('This tag does not support types');
 
         $tag = new Annotation([new Line(' * @deprecated since 1.2')]);
@@ -377,7 +379,7 @@ final class AnnotationTest extends TestCase
 
     public function testSetTypesOnBadTag()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('This tag does not support types');
 
         $tag = new Annotation([new Line(' * @author Chuck Norris')]);

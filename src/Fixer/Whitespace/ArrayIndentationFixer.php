@@ -20,6 +20,8 @@ use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 final class ArrayIndentationFixer extends AbstractFixer implements WhitespacesAwareFixerInterface
 {
@@ -54,7 +56,7 @@ final class ArrayIndentationFixer extends AbstractFixer implements WhitespacesAw
         return -30;
     }
 
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($this->findArrays($tokens) as $array) {
             $indentLevel = 1;
@@ -127,10 +129,10 @@ final class ArrayIndentationFixer extends AbstractFixer implements WhitespacesAw
     {
         $arrays = [];
 
-        foreach ($this->findArrayTokenRanges($tokens, 0, \count($tokens) - 1) as $arrayTokenRanges) {
+        foreach ($this->findArrayTokenRanges($tokens, 0, count($tokens) - 1) as $arrayTokenRanges) {
             $array = [
                 'start' => $arrayTokenRanges[0][0],
-                'end' => $arrayTokenRanges[\count($arrayTokenRanges) - 1][1],
+                'end' => $arrayTokenRanges[count($arrayTokenRanges) - 1][1],
                 'token_ranges' => $arrayTokenRanges,
             ];
 

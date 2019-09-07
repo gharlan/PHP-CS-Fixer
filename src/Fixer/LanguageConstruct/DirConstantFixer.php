@@ -17,6 +17,7 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Vladimir Reznichenko <kalessil@gmail.com>
@@ -56,7 +57,7 @@ final class DirConstantFixer extends AbstractFunctionReferenceFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $currIndex = 0;
         while (null !== $currIndex) {

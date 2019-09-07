@@ -26,6 +26,9 @@ use PhpCsFixer\Tokenizer\Generator\NamespacedStringTokenGenerator;
 use PhpCsFixer\Tokenizer\Resolver\TypeShortNameResolver;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use const PHP_VERSION_ID;
 
 /**
  * @author VeeWee <toonverwerft@gmail.com>
@@ -88,15 +91,15 @@ class SomeClass
     public function isCandidate(Tokens $tokens)
     {
         return $tokens->isTokenKindFound(T_FUNCTION) && (
-            \count((new NamespacesAnalyzer())->getDeclarations($tokens)) ||
-            \count((new NamespaceUsesAnalyzer())->getDeclarationsFromTokens($tokens))
+            count((new NamespacesAnalyzer())->getDeclarations($tokens)) ||
+            count((new NamespaceUsesAnalyzer())->getDeclarationsFromTokens($tokens))
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $lastIndex = $tokens->count() - 1;
         for ($index = $lastIndex; $index >= 0; --$index) {
@@ -133,7 +136,7 @@ class SomeClass
      */
     private function fixFunctionReturnType(Tokens $tokens, $index)
     {
-        if (\PHP_VERSION_ID < 70000) {
+        if (PHP_VERSION_ID < 70000) {
             return;
         }
 

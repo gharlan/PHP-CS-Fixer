@@ -12,8 +12,13 @@
 
 namespace PhpCsFixer\FixerConfiguration;
 
+use LogicException;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function array_key_exists;
+use function in_array;
+use function is_callable;
+use function is_object;
 
 final class FixerConfigurationResolver implements FixerConfigurationResolverInterface
 {
@@ -37,7 +42,7 @@ final class FixerConfigurationResolver implements FixerConfigurationResolverInte
         }
 
         if (empty($this->registeredNames)) {
-            throw new \LogicException('Options cannot be empty.');
+            throw new LogicException('Options cannot be empty.');
         }
     }
 
@@ -62,9 +67,9 @@ final class FixerConfigurationResolver implements FixerConfigurationResolverInte
             if ($option instanceof AliasedFixerOption) {
                 $alias = $option->getAlias();
 
-                if (\array_key_exists($alias, $options)) {
+                if (array_key_exists($alias, $options)) {
                     // @TODO 2.12 Trigger a deprecation notice and add a test for it
-                    if (\array_key_exists($name, $options)) {
+                    if (array_key_exists($name, $options)) {
                         throw new InvalidOptionsException(sprintf('Aliased option %s/%s is passed multiple times.', $name, $alias));
                     }
 
@@ -82,7 +87,7 @@ final class FixerConfigurationResolver implements FixerConfigurationResolverInte
             $allowedValues = $option->getAllowedValues();
             if (null !== $allowedValues) {
                 foreach ($allowedValues as &$allowedValue) {
-                    if (\is_object($allowedValue) && \is_callable($allowedValue)) {
+                    if (is_object($allowedValue) && is_callable($allowedValue)) {
                         $allowedValue = function ($values) use ($allowedValue) {
                             return $allowedValue($values);
                         };
@@ -109,7 +114,7 @@ final class FixerConfigurationResolver implements FixerConfigurationResolverInte
     /**
      * @param FixerOptionInterface $option
      *
-     * @throws \LogicException when the option is already defined
+     * @throws LogicException when the option is already defined
      *
      * @return $this
      */
@@ -117,8 +122,8 @@ final class FixerConfigurationResolver implements FixerConfigurationResolverInte
     {
         $name = $option->getName();
 
-        if (\in_array($name, $this->registeredNames, true)) {
-            throw new \LogicException(sprintf('The "%s" option is defined multiple times.', $name));
+        if (in_array($name, $this->registeredNames, true)) {
+            throw new LogicException(sprintf('The "%s" option is defined multiple times.', $name));
         }
 
         $this->options[] = $option;

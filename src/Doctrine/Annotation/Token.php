@@ -13,6 +13,8 @@
 namespace PhpCsFixer\Doctrine\Annotation;
 
 use Doctrine\Common\Annotations\DocLexer;
+use function in_array;
+use function is_array;
 
 /**
  * A Doctrine annotation token.
@@ -82,11 +84,11 @@ final class Token
      */
     public function isType($types)
     {
-        if (!\is_array($types)) {
+        if (!is_array($types)) {
             $types = [$types];
         }
 
-        return \in_array($this->getType(), $types, true);
+        return in_array($this->getType(), $types, true);
     }
 
     /**

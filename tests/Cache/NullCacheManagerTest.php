@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\Cache;
 
 use PhpCsFixer\Cache\NullCacheManager;
 use PhpCsFixer\Tests\TestCase;
+use ReflectionClass;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -26,14 +27,14 @@ final class NullCacheManagerTest extends TestCase
 {
     public function testIsFinal()
     {
-        $reflection = new \ReflectionClass(\PhpCsFixer\Cache\NullCacheManager::class);
+        $reflection = new ReflectionClass(\PhpCsFixer\Cache\NullCacheManager::class);
 
         static::assertTrue($reflection->isFinal());
     }
 
     public function testImplementsCacheManagerInterface()
     {
-        $reflection = new \ReflectionClass(\PhpCsFixer\Cache\NullCacheManager::class);
+        $reflection = new ReflectionClass(\PhpCsFixer\Cache\NullCacheManager::class);
 
         static::assertTrue($reflection->implementsInterface(\PhpCsFixer\Cache\CacheManagerInterface::class));
     }

@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author SpacePossum
@@ -56,7 +58,7 @@ settype($bar, "null");
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $map = [
             'array' => [T_ARRAY_CAST, '(array)'],
@@ -77,7 +79,7 @@ settype($bar, "null");
             $functionNameIndex = $candidate[0];
 
             $arguments = $argumentsAnalyzer->getArguments($tokens, $candidate[1], $candidate[2]);
-            if (2 !== \count($arguments)) {
+            if (2 !== count($arguments)) {
                 continue; // function must be overridden or used incorrectly
             }
 
@@ -156,7 +158,7 @@ settype($bar, "null");
     {
         $candidates = [];
 
-        $end = \count($tokens);
+        $end = count($tokens);
         for ($i = 1; $i < $end; ++$i) {
             $candidate = $this->find('settype', $tokens, $i, $end);
             if (null === $candidate) {

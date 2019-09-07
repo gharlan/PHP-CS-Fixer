@@ -18,6 +18,9 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use function is_array;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -56,7 +59,7 @@ final class StrictParamFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         static $map = null;
 
@@ -121,7 +124,7 @@ final class StrictParamFixer extends AbstractFixer
             }
         }
 
-        $functionParamsQuantity = \count($functionParams);
+        $functionParamsQuantity = count($functionParams);
 
         if ($paramsQuantity === $functionParamsQuantity) {
             return;
@@ -137,7 +140,7 @@ final class StrictParamFixer extends AbstractFixer
             $tokensToInsert[] = new Token(',');
             $tokensToInsert[] = new Token([T_WHITESPACE, ' ']);
 
-            if (!\is_array($functionParams[$i])) {
+            if (!is_array($functionParams[$i])) {
                 $tokensToInsert[] = clone $functionParams[$i];
 
                 continue;

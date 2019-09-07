@@ -19,6 +19,9 @@ use PhpCsFixer\FixerDefinition\VersionSpecification;
 use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use const PHP_VERSION_ID;
 
 /**
  * @author Jordi Boggiano <j.boggiano@seld.be>
@@ -58,7 +61,7 @@ final class DeclareStrictTypesFixer extends AbstractFixer implements Whitespaces
      */
     public function isCandidate(Tokens $tokens)
     {
-        return \PHP_VERSION_ID >= 70000 && $tokens[0]->isGivenKind(T_OPEN_TAG);
+        return PHP_VERSION_ID >= 70000 && $tokens[0]->isGivenKind(T_OPEN_TAG);
     }
 
     /**
@@ -72,7 +75,7 @@ final class DeclareStrictTypesFixer extends AbstractFixer implements Whitespaces
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         // check if the declaration is already done
         $searchIndex = $tokens->getNextMeaningfulToken(0);
@@ -139,7 +142,7 @@ final class DeclareStrictTypesFixer extends AbstractFixer implements Whitespaces
     {
         $sequence = $this->getDeclareStrictTypeSequence();
         $sequence[] = new Token(';');
-        $endIndex = \count($sequence);
+        $endIndex = count($sequence);
 
         $tokens->insertAt(1, $sequence);
 
@@ -149,7 +152,7 @@ final class DeclareStrictTypesFixer extends AbstractFixer implements Whitespaces
             $tokens[0] = new Token([$tokens[0]->getId(), trim($tokens[0]->getContent()).' ']);
         }
 
-        if ($endIndex === \count($tokens) - 1) {
+        if ($endIndex === count($tokens) - 1) {
             return; // no more tokens afters sequence, single_blank_line_at_eof might add a line
         }
 

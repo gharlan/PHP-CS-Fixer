@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\Indicator;
 
+use LogicException;
 use PhpCsFixer\Indicator\PhpUnitTestCaseIndicator;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Tokens;
@@ -117,7 +118,7 @@ class Foo implements TestInterface, SomethingElse
     {
         $tokens = Tokens::fromCode('<?php echo 1;');
 
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessageRegExp('/^No T_CLASS at given index 1, got T_ECHO\.$/');
 
         $this->indicator->isPhpUnitClass($tokens, 1);

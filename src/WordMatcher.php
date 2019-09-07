@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer;
 
+use function strlen;
+
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  * @author SpacePossum
@@ -41,7 +43,7 @@ final class WordMatcher
     public function match($needle)
     {
         $word = null;
-        $distance = ceil(\strlen($needle) * 0.35);
+        $distance = ceil(strlen($needle) * 0.35);
 
         foreach ($this->candidates as $candidate) {
             $candidateDistance = levenshtein($needle, $candidate);

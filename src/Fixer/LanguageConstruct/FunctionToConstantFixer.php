@@ -22,6 +22,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function array_key_exists;
 
 /**
  * @author SpacePossum
@@ -117,7 +119,7 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = $tokens->count() - 4; $index > 0; --$index) {
             $candidate = $this->getReplaceCandidate($tokens, $index);
@@ -220,7 +222,7 @@ final class FunctionToConstantFixer extends AbstractFixer implements Configurati
 
         // test if the function call is to a native PHP function
         $lowerContent = strtolower($tokens[$index]->getContent());
-        if (!\array_key_exists($lowerContent, $this->functionsFixMap)) {
+        if (!array_key_exists($lowerContent, $this->functionsFixMap)) {
             return null;
         }
 

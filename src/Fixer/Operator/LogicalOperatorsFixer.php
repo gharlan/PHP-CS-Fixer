@@ -17,6 +17,7 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Haralan Dobrev <hkdobrev@gmail.com>
@@ -63,7 +64,7 @@ if ($a == "foo" and ($b == "bar" or $c == "baz")) {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($tokens as $index => $token) {
             if ($token->isGivenKind(T_LOGICAL_AND)) {

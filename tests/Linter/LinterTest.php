@@ -13,6 +13,7 @@
 namespace PhpCsFixer\Tests\Linter;
 
 use PhpCsFixer\Linter\Linter;
+use function defined;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -25,7 +26,7 @@ final class LinterTest extends AbstractLinterTestCase
 {
     public function testIsAsync()
     {
-        static::assertSame(!\defined('TOKEN_PARSE'), $this->createLinter()->isAsync());
+        static::assertSame(!defined('TOKEN_PARSE'), $this->createLinter()->isAsync());
     }
 
     /**

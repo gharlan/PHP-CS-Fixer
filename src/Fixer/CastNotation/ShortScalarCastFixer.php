@@ -17,6 +17,8 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function array_key_exists;
 
 /**
  * @author SpacePossum
@@ -45,7 +47,7 @@ final class ShortScalarCastFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         static $castMap = [
             'boolean' => 'bool',
@@ -63,7 +65,7 @@ final class ShortScalarCastFixer extends AbstractFixer
             $castFrom = trim(substr($tokens[$index]->getContent(), 1, -1));
             $castFromLowered = strtolower($castFrom);
 
-            if (!\array_key_exists($castFromLowered, $castMap)) {
+            if (!array_key_exists($castFromLowered, $castMap)) {
                 continue;
             }
 

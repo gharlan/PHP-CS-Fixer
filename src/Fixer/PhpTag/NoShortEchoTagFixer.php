@@ -17,6 +17,8 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Vincent Klaiber <hello@vinkla.com>
@@ -45,9 +47,9 @@ final class NoShortEchoTagFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        $i = \count($tokens);
+        $i = count($tokens);
 
         while ($i--) {
             $token = $tokens[$i];

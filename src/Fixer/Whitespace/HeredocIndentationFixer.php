@@ -20,6 +20,10 @@ use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use function strlen;
+use const PHP_VERSION_ID;
 
 /**
  * @author Gregor Harlan
@@ -67,12 +71,12 @@ SAMPLE
      */
     public function isCandidate(Tokens $tokens)
     {
-        return \PHP_VERSION_ID >= 70300 && $tokens->isTokenKindFound(T_START_HEREDOC);
+        return PHP_VERSION_ID >= 70300 && $tokens->isTokenKindFound(T_START_HEREDOC);
     }
 
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        for ($index = \count($tokens) - 1; 0 <= $index; --$index) {
+        for ($index = count($tokens) - 1; 0 <= $index; --$index) {
             if (!$tokens[$index]->isGivenKind(T_END_HEREDOC)) {
                 continue;
             }
@@ -95,7 +99,7 @@ SAMPLE
         Preg::match('/^[ \t]*/', $tokens[$end]->getContent(), $matches);
         $currentIndent = $matches[0];
 
-        $content = $indent.substr($tokens[$end]->getContent(), \strlen($currentIndent));
+        $content = $indent.substr($tokens[$end]->getContent(), strlen($currentIndent));
         $tokens[$end] = new Token([T_END_HEREDOC, $content]);
 
         if ($end === $start + 1) {
@@ -115,7 +119,7 @@ SAMPLE
         ++$index;
 
         if ($tokens[$index]->isGivenKind(T_ENCAPSED_AND_WHITESPACE)) {
-            $content = $indent.substr($tokens[$index]->getContent(), \strlen($currentIndent));
+            $content = $indent.substr($tokens[$index]->getContent(), strlen($currentIndent));
             $tokens[$index] = new Token([T_ENCAPSED_AND_WHITESPACE, $content]);
         } else {
             $tokens->insertAt($index, new Token([T_ENCAPSED_AND_WHITESPACE, $indent]));

@@ -15,6 +15,8 @@ namespace PhpCsFixer\Tests\AutoReview;
 use PhpCsFixer\Console\Application;
 use PhpCsFixer\Tests\TestCase;
 use Symfony\Component\Console\Command\Command;
+use function get_class;
+use function in_array;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -45,9 +47,9 @@ final class CommandTest extends TestCase
         $names = array_filter(array_keys($commands), static function ($name) use ($commands) {
             return
                 // is not an alias
-                !\in_array($name, $commands[$name]->getAliases(), true)
+                !in_array($name, $commands[$name]->getAliases(), true)
                 // and is our command
-                && 0 === strpos(\get_class($commands[$name]), 'PhpCsFixer\\')
+                && 0 === strpos(get_class($commands[$name]), 'PhpCsFixer\\')
             ;
         });
 

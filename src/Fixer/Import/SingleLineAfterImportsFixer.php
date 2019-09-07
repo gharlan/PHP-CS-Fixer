@@ -20,6 +20,8 @@ use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
 use PhpCsFixer\Utils;
+use SplFileInfo;
+use function count;
 
 /**
  * Fixer for rules defined in PSR2 ¶3.
@@ -76,7 +78,7 @@ final class Example
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $ending = $this->whitespacesConfig->getLineEnding();
         $tokensAnalyzer = new TokensAnalyzer($tokens);
@@ -105,7 +107,7 @@ final class Example
                 ++$added;
             }
 
-            if ($semicolonIndex === \count($tokens) - 1) {
+            if ($semicolonIndex === count($tokens) - 1) {
                 $tokens->insertAt($insertIndex + 1, new Token([T_WHITESPACE, $ending.$ending.$indent]));
                 ++$added;
             } else {

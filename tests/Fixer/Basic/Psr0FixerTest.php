@@ -13,6 +13,8 @@
 namespace PhpCsFixer\Tests\Fixer\Basic;
 
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
+use SplFileInfo;
+use function defined;
 
 /**
  * @internal
@@ -27,7 +29,7 @@ final class Psr0FixerTest extends AbstractFixerTestCase
         $this->fixer->configure(['dir' => __DIR__]);
 
         $fileProphecy = $this->prophesize();
-        $fileProphecy->willExtend(\SplFileInfo::class);
+        $fileProphecy->willExtend(SplFileInfo::class);
         $fileProphecy->getBasename()->willReturn('Bar.php');
         $fileProphecy->getRealPath()->willReturn(__DIR__.'/Psr0/Foo/Bar.php');
         $file = $fileProphecy->reveal();
@@ -305,7 +307,7 @@ EOF;
             'T_TRAIT' => 'trait',
             'T_TRAIT_C' => '__TRAIT__',
         ] as $tokenType => $tokenValue) {
-            if (\defined($tokenType)) {
+            if (defined($tokenType)) {
                 $ignoreCases[] = [$tokenValue.'.php'];
                 $ignoreCases[] = [strtolower($tokenValue).'.php'];
             }

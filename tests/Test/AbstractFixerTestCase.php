@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\Tests\Test;
 
+use Exception;
+use InvalidArgumentException;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\FixerInterface;
 use PhpCsFixer\Linter\CachingLinter;
@@ -22,6 +24,9 @@ use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use Prophecy\Argument;
+use RuntimeException;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -79,14 +84,14 @@ abstract class AbstractFixerTestCase extends TestCase
     /**
      * @param string $filename
      *
-     * @return \SplFileInfo
+     * @return SplFileInfo
      */
     protected function getTestFile($filename = __FILE__)
     {
         static $files = [];
 
         if (!isset($files[$filename])) {
-            $files[$filename] = new \SplFileInfo($filename);
+            $files[$filename] = new SplFileInfo($filename);
         }
 
         return $files[$filename];
@@ -102,14 +107,14 @@ abstract class AbstractFixerTestCase extends TestCase
      * This method throws an exception if $expected and $input are equal to prevent test cases that accidentally do
      * not test anything.
      *
-     * @param string            $expected The expected fixer output
-     * @param null|string       $input    The fixer input, or null if it should intentionally be equal to the output
-     * @param null|\SplFileInfo $file     The file to fix, or null if unneeded
+     * @param string           $expected The expected fixer output
+     * @param null|string      $input    The fixer input, or null if it should intentionally be equal to the output
+     * @param null|SplFileInfo $file     The file to fix, or null if unneeded
      */
-    protected function doTest($expected, $input = null, \SplFileInfo $file = null)
+    protected function doTest($expected, $input = null, SplFileInfo $file = null)
     {
         if ($expected === $input) {
-            throw new \InvalidArgumentException('Input parameter must not be equal to expected parameter.');
+            throw new InvalidArgumentException('Input parameter must not be equal to expected parameter.');
         }
 
         $file = $file ?: $this->getTestFile();
@@ -138,8 +143,8 @@ abstract class AbstractFixerTestCase extends TestCase
             $tokens->clearEmptyTokens();
 
             static::assertSame(
-                \count($tokens),
-                \count(array_unique(array_map(static function (Token $token) {
+                count($tokens),
+                count(array_unique(array_map(static function (Token $token) {
                     return spl_object_hash($token);
                 }, $tokens->toArray()))),
                 'Token items inside Tokens collection must be unique.'
@@ -177,7 +182,7 @@ abstract class AbstractFixerTestCase extends TestCase
     {
         try {
             $this->linter->lintSource($source)->check();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage()."\n\nSource:\n{$source}";
         }
     }
@@ -222,7 +227,7 @@ abstract class AbstractFixerTestCase extends TestCase
         ], function ($className) { return class_exists($className); });
 
         if (empty($candidates)) {
-            throw new \RuntimeException('PHPUnit not installed?!');
+            throw new RuntimeException('PHPUnit not installed?!');
         }
 
         $candidate = array_shift($candidates);

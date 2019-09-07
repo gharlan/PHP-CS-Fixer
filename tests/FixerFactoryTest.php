@@ -16,7 +16,12 @@ use PhpCsFixer\Fixer\FixerInterface;
 use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet;
 use PhpCsFixer\WhitespacesFixerConfig;
+use ReflectionMethod;
 use stdClass;
+use UnexpectedValueException;
+use function array_slice;
+use function count;
+use function in_array;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -71,7 +76,7 @@ final class FixerFactoryTest extends TestCase
         $factory = new FixerFactory();
         $factory->registerBuiltInFixers();
 
-        static::assertGreaterThan(0, \count($factory->getFixers()));
+        static::assertGreaterThan(0, count($factory->getFixers()));
     }
 
     /**
@@ -92,7 +97,7 @@ final class FixerFactoryTest extends TestCase
         }
 
         // There are no rules that forces $fxs[1] to be prioritized before $fxs[3]. We should not test against that
-        static::assertSame([$fxs[2], $fxs[0]], \array_slice($factory->getFixers(), 0, 2));
+        static::assertSame([$fxs[2], $fxs[0]], array_slice($factory->getFixers(), 0, 2));
     }
 
     /**
@@ -111,9 +116,9 @@ final class FixerFactoryTest extends TestCase
         $factory->registerFixer($f1, false);
         $factory->registerCustomFixers([$f2, $f3]);
 
-        static::assertTrue(\in_array($f1, $factory->getFixers(), true));
-        static::assertTrue(\in_array($f2, $factory->getFixers(), true));
-        static::assertTrue(\in_array($f3, $factory->getFixers(), true));
+        static::assertTrue(in_array($f1, $factory->getFixers(), true));
+        static::assertTrue(in_array($f2, $factory->getFixers(), true));
+        static::assertTrue(in_array($f3, $factory->getFixers(), true));
     }
 
     /**
@@ -121,7 +126,7 @@ final class FixerFactoryTest extends TestCase
      */
     public function testRegisterFixerWithOccupiedName()
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Fixer named "non_unique_name" is already registered.');
 
         $factory = new FixerFactory();
@@ -157,7 +162,7 @@ final class FixerFactoryTest extends TestCase
      */
     public function testUseRuleSetWithNonExistingRule()
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Rule "non_existing_rule" does not exist.');
 
         $factory = FixerFactory::create()
@@ -207,7 +212,7 @@ final class FixerFactoryTest extends TestCase
      */
     public function testConflictingFixers(RuleSet $ruleSet)
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessageRegExp('#^Rule contains conflicting fixers:\n#');
 
         FixerFactory::create()->registerBuiltInFixers()->useRuleSet($ruleSet);
@@ -224,7 +229,7 @@ final class FixerFactoryTest extends TestCase
     public function testNoDoubleConflictReporting()
     {
         $factory = new FixerFactory();
-        $method = new \ReflectionMethod($factory, 'generateConflictMessage');
+        $method = new ReflectionMethod($factory, 'generateConflictMessage');
         $method->setAccessible(true);
         static::assertSame(
             'Rule contains conflicting fixers:
@@ -265,7 +270,7 @@ final class FixerFactoryTest extends TestCase
 
         $fixer = $this->createFixerDouble('0');
 
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Fixer named "0" has invalid name.');
 
         $factory->registerFixer($fixer, false);

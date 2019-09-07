@@ -12,7 +12,11 @@
 
 namespace PhpCsFixer\Report;
 
+use DOMDocument;
+use DOMElement;
+use RuntimeException;
 use Symfony\Component\Console\Formatter\OutputFormatter;
+use function extension_loaded;
 
 /**
  * @author Boris Gorbylev <ekho@ekho.name>
@@ -34,11 +38,11 @@ final class XmlReporter implements ReporterInterface
      */
     public function generate(ReportSummary $reportSummary)
     {
-        if (!\extension_loaded('dom')) {
-            throw new \RuntimeException('Cannot generate report! `ext-dom` is not available!');
+        if (!extension_loaded('dom')) {
+            throw new RuntimeException('Cannot generate report! `ext-dom` is not available!');
         }
 
-        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom = new DOMDocument('1.0', 'UTF-8');
         // new nodes should be added to this or existing children
         $root = $dom->createElement('report');
         $dom->appendChild($root);
@@ -76,10 +80,10 @@ final class XmlReporter implements ReporterInterface
     }
 
     /**
-     * @param \DOMDocument $dom
-     * @param array        $fixResult
+     * @param DOMDocument $dom
+     * @param array       $fixResult
      *
-     * @return \DOMElement
+     * @return DOMElement
      */
     private function createAppliedFixersElement($dom, array $fixResult)
     {
@@ -95,12 +99,12 @@ final class XmlReporter implements ReporterInterface
     }
 
     /**
-     * @param \DOMDocument $dom
-     * @param array        $fixResult
+     * @param DOMDocument $dom
+     * @param array       $fixResult
      *
-     * @return \DOMElement
+     * @return DOMElement
      */
-    private function createDiffElement(\DOMDocument $dom, array $fixResult)
+    private function createDiffElement(DOMDocument $dom, array $fixResult)
     {
         $diffXML = $dom->createElement('diff');
         $diffXML->appendChild($dom->createCDATASection($fixResult['diff']));
@@ -109,12 +113,12 @@ final class XmlReporter implements ReporterInterface
     }
 
     /**
-     * @param float        $time
-     * @param \DOMDocument $dom
+     * @param float       $time
+     * @param DOMDocument $dom
      *
-     * @return \DOMElement
+     * @return DOMElement
      */
-    private function createTimeElement($time, \DOMDocument $dom)
+    private function createTimeElement($time, DOMDocument $dom)
     {
         $time = round($time / 1000, 3);
 
@@ -128,12 +132,12 @@ final class XmlReporter implements ReporterInterface
     }
 
     /**
-     * @param float        $memory
-     * @param \DOMDocument $dom
+     * @param float       $memory
+     * @param DOMDocument $dom
      *
-     * @return \DOMElement
+     * @return DOMElement
      */
-    private function createMemoryElement($memory, \DOMDocument $dom)
+    private function createMemoryElement($memory, DOMDocument $dom)
     {
         $memory = round($memory / 1024 / 1024, 3);
 

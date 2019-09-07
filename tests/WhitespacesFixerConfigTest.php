@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests;
 
+use InvalidArgumentException;
 use PhpCsFixer\WhitespacesFixerConfig;
 
 /**
@@ -33,7 +34,7 @@ final class WhitespacesFixerConfigTest extends TestCase
     public function testCases($indent, $lineEnding, $exceptionRegExp = null)
     {
         if (null !== $exceptionRegExp) {
-            $this->expectException(\InvalidArgumentException::class);
+            $this->expectException(InvalidArgumentException::class);
             $this->expectExceptionMessageRegExp('%^'.preg_quote($exceptionRegExp, '%').'$%');
         }
 

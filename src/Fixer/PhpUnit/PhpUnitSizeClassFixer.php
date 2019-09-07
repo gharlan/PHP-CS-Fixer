@@ -26,6 +26,8 @@ use PhpCsFixer\Indicator\PhpUnitTestCaseIndicator;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use SplFileInfo;
+use function array_slice;
+use function count;
 
 /**
  * @author Jefersson Nathan <malukenho.dev@gmail.com>
@@ -209,7 +211,7 @@ final class PhpUnitSizeClassFixer extends AbstractFixer implements WhitespacesAw
     private function makeDocBlockMultiLineIfNeeded(DocBlock $doc, Tokens $tokens, $docBlockIndex)
     {
         $lines = $doc->getLines();
-        if (1 === \count($lines) && empty($this->filterDocBlock($doc))) {
+        if (1 === count($lines) && empty($this->filterDocBlock($doc))) {
             $lines = $this->splitUpDocBlock($lines, $tokens, $docBlockIndex);
 
             return new DocBlock(implode('', $lines));
@@ -251,14 +253,14 @@ final class PhpUnitSizeClassFixer extends AbstractFixer implements WhitespacesAw
         $line = str_replace('*/', '', $line);
         $line = trim($line);
         $line = str_split($line);
-        $i = \count($line);
+        $i = count($line);
         do {
             --$i;
         } while ('*' !== $line[$i] && '*' !== $line[$i - 1] && '/' !== $line[$i - 2]);
         if (' ' === $line[$i]) {
             ++$i;
         }
-        $line = \array_slice($line, $i);
+        $line = array_slice($line, $i);
 
         return implode('', $line);
     }

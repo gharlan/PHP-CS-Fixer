@@ -22,7 +22,11 @@ use PhpCsFixer\Indicator\PhpUnitTestCaseIndicator;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
+use function get_class;
+use function gettype;
+use function is_object;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -314,7 +318,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $phpUnitTestCaseIndicator = new PhpUnitTestCaseIndicator();
         foreach ($phpUnitTestCaseIndicator->findPhpUnitClasses($tokens) as $indexes) {
@@ -344,7 +348,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
                                 sprintf(
                                     'Unexpected "methods" key, expected any of "%s", got "%s".',
                                     implode('", "', array_keys($thisFixer->staticMethods)),
-                                    \is_object($method) ? \get_class($method) : \gettype($method).'#'.$method
+                                    is_object($method) ? get_class($method) : gettype($method).'#'.$method
                                 )
                             );
                         }
@@ -355,7 +359,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
                                     'Unexpected value for method "%s", expected any of "%s", got "%s".',
                                     $method,
                                     implode('", "', array_keys($thisFixer->allowedValues)),
-                                    \is_object($value) ? \get_class($value) : (null === $value ? 'null' : \gettype($value).'#'.$value)
+                                    is_object($value) ? get_class($value) : (null === $value ? 'null' : gettype($value).'#'.$value)
                                 )
                             );
                         }

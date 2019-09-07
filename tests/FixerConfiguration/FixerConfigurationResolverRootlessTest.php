@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\FixerConfiguration;
 
+use LogicException;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverRootless;
 use PhpCsFixer\FixerConfiguration\FixerOption;
 use PhpCsFixer\Tests\TestCase;
@@ -25,7 +26,7 @@ final class FixerConfigurationResolverRootlessTest extends TestCase
 {
     public function testMapRootConfigurationTo()
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('The "bar" option is not defined.');
 
         new FixerConfigurationResolverRootless('bar', [

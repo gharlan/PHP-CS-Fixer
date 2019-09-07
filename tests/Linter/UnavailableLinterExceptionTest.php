@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\Linter;
 
 use PhpCsFixer\Linter\UnavailableLinterException;
 use PhpCsFixer\Tests\TestCase;
+use RuntimeException;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -28,14 +29,14 @@ final class UnavailableLinterExceptionTest extends TestCase
     {
         $exception = new UnavailableLinterException();
 
-        static::assertInstanceOf(\RuntimeException::class, $exception);
+        static::assertInstanceOf(RuntimeException::class, $exception);
     }
 
     public function testConstructorSetsValues()
     {
         $message = 'Never heard of that one, sorry!';
         $code = 9001;
-        $previous = new \RuntimeException();
+        $previous = new RuntimeException();
 
         $exception = new UnavailableLinterException(
             $message,

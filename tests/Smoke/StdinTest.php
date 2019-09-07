@@ -13,6 +13,7 @@
 namespace PhpCsFixer\Tests\Smoke;
 
 use Keradus\CliExecutor\CommandExecutor;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -44,7 +45,7 @@ final class StdinTest extends AbstractSmokeTest
                     $fileResult->getError()
                 ),
                 'output' => str_ireplace(
-                    str_replace('/', \DIRECTORY_SEPARATOR, basename(realpath($cwd)).'/'.$inputFile),
+                    str_replace('/', DIRECTORY_SEPARATOR, basename(realpath($cwd)).'/'.$inputFile),
                     'php://stdin',
                     $this->unifyFooter($fileResult->getOutput())
                 ),

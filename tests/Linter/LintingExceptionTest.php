@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\Linter;
 
 use PhpCsFixer\Linter\LintingException;
 use PhpCsFixer\Tests\TestCase;
+use RuntimeException;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -28,14 +29,14 @@ final class LintingExceptionTest extends TestCase
     {
         $exception = new LintingException();
 
-        static::assertInstanceOf(\RuntimeException::class, $exception);
+        static::assertInstanceOf(RuntimeException::class, $exception);
     }
 
     public function testConstructorSetsValues()
     {
         $message = 'Cannot lint this, sorry!';
         $code = 9001;
-        $previous = new \RuntimeException();
+        $previous = new RuntimeException();
 
         $exception = new LintingException(
             $message,

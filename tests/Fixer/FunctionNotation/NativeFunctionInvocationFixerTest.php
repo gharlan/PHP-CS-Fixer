@@ -14,6 +14,10 @@ namespace PhpCsFixer\Tests\Fixer\FunctionNotation;
 
 use PhpCsFixer\ConfigurationException\InvalidFixerConfigurationException;
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
+use stdClass;
+use function get_class;
+use function gettype;
+use function is_object;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -50,7 +54,7 @@ final class NativeFunctionInvocationFixerTest extends AbstractFixerTestCase
         $this->expectException(\PhpCsFixer\ConfigurationException\InvalidConfigurationException::class);
         $this->expectExceptionMessage(sprintf(
             'Each element must be a non-empty, trimmed string, got "%s" instead.',
-            \is_object($element) ? \get_class($element) : \gettype($element)
+            is_object($element) ? get_class($element) : gettype($element)
         ));
 
         $this->fixer->configure([
@@ -72,7 +76,7 @@ final class NativeFunctionInvocationFixerTest extends AbstractFixerTestCase
             'int' => [1],
             'array' => [[]],
             'float' => [0.1],
-            'object' => [new \stdClass()],
+            'object' => [new stdClass()],
             'not-trimmed' => ['  json_encode  '],
         ];
     }

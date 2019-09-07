@@ -12,10 +12,12 @@
 
 namespace PhpCsFixer\Tokenizer\Analyzer;
 
+use InvalidArgumentException;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use function count;
 
 /**
  * @author Kuba Werłos <werlos@gmail.com>
@@ -38,7 +40,7 @@ final class CommentsAnalyzer
     public function isHeaderComment(Tokens $tokens, $index)
     {
         if (!$tokens[$index]->isGivenKind([T_COMMENT, T_DOC_COMMENT])) {
-            throw new \InvalidArgumentException('Given index must point to a comment.');
+            throw new InvalidArgumentException('Given index must point to a comment.');
         }
 
         $prevIndex = $tokens->getPrevMeaningfulToken($index);
@@ -61,7 +63,7 @@ final class CommentsAnalyzer
         $token = $tokens[$index];
 
         if (!$token->isGivenKind([T_COMMENT, T_DOC_COMMENT])) {
-            throw new \InvalidArgumentException('Given index must point to a comment.');
+            throw new InvalidArgumentException('Given index must point to a comment.');
         }
 
         $nextIndex = $index;
@@ -105,7 +107,7 @@ final class CommentsAnalyzer
     public function getCommentBlockIndices(Tokens $tokens, $index)
     {
         if (!$tokens[$index]->isGivenKind(T_COMMENT)) {
-            throw new \InvalidArgumentException('Given index must point to a comment.');
+            throw new InvalidArgumentException('Given index must point to a comment.');
         }
 
         $commentType = $this->getCommentType($tokens[$index]->getContent());
@@ -115,7 +117,7 @@ final class CommentsAnalyzer
             return $indices;
         }
 
-        $count = \count($tokens);
+        $count = count($tokens);
         ++$index;
 
         for (; $index < $count; ++$index) {

@@ -12,7 +12,17 @@
 
 namespace PhpCsFixer\Tokenizer;
 
+use InvalidArgumentException;
 use PhpCsFixer\Utils;
+use function constant;
+use function defined;
+use function get_class;
+use function gettype;
+use function in_array;
+use function is_array;
+use function is_int;
+use function is_object;
+use function is_string;
 
 /**
  * Representation of single token.
@@ -55,23 +65,23 @@ class Token
      */
     public function __construct($token)
     {
-        if (\is_array($token)) {
-            if (!\is_int($token[0])) {
-                throw new \InvalidArgumentException(sprintf(
+        if (is_array($token)) {
+            if (!is_int($token[0])) {
+                throw new InvalidArgumentException(sprintf(
                     'Id must be an int, got "%s".',
-                    \is_object($token[0]) ? \get_class($token[0]) : \gettype($token[0])
+                    is_object($token[0]) ? get_class($token[0]) : gettype($token[0])
                 ));
             }
 
-            if (!\is_string($token[1])) {
-                throw new \InvalidArgumentException(sprintf(
+            if (!is_string($token[1])) {
+                throw new InvalidArgumentException(sprintf(
                     'Content must be a string, got "%s".',
-                    \is_object($token[1]) ? \get_class($token[1]) : \gettype($token[1])
+                    is_object($token[1]) ? get_class($token[1]) : gettype($token[1])
                 ));
             }
 
             if ('' === $token[1]) {
-                throw new \InvalidArgumentException('Cannot set empty content for id-based Token.');
+                throw new InvalidArgumentException('Cannot set empty content for id-based Token.');
             }
 
             $this->isArray = true;
@@ -79,15 +89,15 @@ class Token
             $this->content = $token[1];
 
             if ($token[0] && '' === $token[1]) {
-                throw new \InvalidArgumentException('Cannot set empty content for id-based Token.');
+                throw new InvalidArgumentException('Cannot set empty content for id-based Token.');
             }
-        } elseif (\is_string($token)) {
+        } elseif (is_string($token)) {
             $this->isArray = false;
             $this->content = $token;
         } else {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Cannot recognize input value as valid Token prototype, got "%s".',
-                \is_object($token) ? \get_class($token) : \gettype($token)
+                is_object($token) ? get_class($token) : gettype($token)
             ));
         }
     }
@@ -172,7 +182,7 @@ class Token
             $otherPrototype = $other;
         }
 
-        if ($this->isArray !== \is_array($otherPrototype)) {
+        if ($this->isArray !== is_array($otherPrototype)) {
             return false;
         }
 
@@ -231,7 +241,7 @@ class Token
      */
     public static function isKeyCaseSensitive($caseSensitive, $key)
     {
-        if (\is_array($caseSensitive)) {
+        if (is_array($caseSensitive)) {
             return isset($caseSensitive[$key]) ? $caseSensitive[$key] : true;
         }
 
@@ -444,7 +454,7 @@ class Token
      */
     public function isGivenKind($possibleKind)
     {
-        return $this->isArray && (\is_array($possibleKind) ? \in_array($this->id, $possibleKind, true) : $this->id === $possibleKind);
+        return $this->isArray && (is_array($possibleKind) ? in_array($this->id, $possibleKind, true) : $this->id === $possibleKind);
     }
 
     /**
@@ -468,7 +478,7 @@ class Token
     {
         static $nativeConstantStrings = ['true', 'false', 'null'];
 
-        return $this->isArray && \in_array(strtolower($this->content), $nativeConstantStrings, true);
+        return $this->isArray && in_array(strtolower($this->content), $nativeConstantStrings, true);
     }
 
     /**
@@ -527,7 +537,7 @@ class Token
 
         $this->changed = true;
 
-        if (\is_array($prototype)) {
+        if (is_array($prototype)) {
             $this->isArray = true;
             $this->id = $prototype[0];
             $this->content = $prototype[1];
@@ -607,8 +617,8 @@ class Token
     {
         $keywords = [];
         foreach ($tokenNames as $keywordName) {
-            if (\defined($keywordName)) {
-                $keyword = \constant($keywordName);
+            if (defined($keywordName)) {
+                $keyword = constant($keywordName);
                 $keywords[$keyword] = $keyword;
             }
         }

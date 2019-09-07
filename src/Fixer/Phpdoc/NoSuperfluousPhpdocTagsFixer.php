@@ -27,6 +27,7 @@ use PhpCsFixer\Tokenizer\Analyzer\NamespaceUsesAnalyzer;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 final class NoSuperfluousPhpdocTagsFixer extends AbstractFixer implements ConfigurationDefinitionFixerInterface
 {
@@ -91,7 +92,7 @@ class Foo {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $namespaceUseAnalyzer = new NamespaceUsesAnalyzer();
 

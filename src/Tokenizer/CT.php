@@ -12,6 +12,9 @@
 
 namespace PhpCsFixer\Tokenizer;
 
+use InvalidArgumentException;
+use ReflectionClass;
+
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  */
@@ -59,7 +62,7 @@ final class CT
     public static function getName($value)
     {
         if (!self::has($value)) {
-            throw new \InvalidArgumentException(sprintf('No custom token was found for "%s".', $value));
+            throw new InvalidArgumentException(sprintf('No custom token was found for "%s".', $value));
         }
 
         $tokens = self::getMapById();
@@ -86,7 +89,7 @@ final class CT
         static $constants;
 
         if (null === $constants) {
-            $reflection = new \ReflectionClass(__CLASS__);
+            $reflection = new ReflectionClass(__CLASS__);
             $constants = array_flip($reflection->getConstants());
         }
 

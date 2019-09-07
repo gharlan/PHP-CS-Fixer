@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\Cache;
 
 use PhpCsFixer\Cache\Signature;
 use PhpCsFixer\Tests\TestCase;
+use ReflectionClass;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -26,14 +27,14 @@ final class SignatureTest extends TestCase
 {
     public function testIsFinal()
     {
-        $reflection = new \ReflectionClass(\PhpCsFixer\Cache\Signature::class);
+        $reflection = new ReflectionClass(\PhpCsFixer\Cache\Signature::class);
 
         static::assertTrue($reflection->isFinal());
     }
 
     public function testImplementsSignatureInterface()
     {
-        $reflection = new \ReflectionClass(\PhpCsFixer\Cache\Signature::class);
+        $reflection = new ReflectionClass(\PhpCsFixer\Cache\Signature::class);
 
         static::assertTrue($reflection->implementsInterface(\PhpCsFixer\Cache\SignatureInterface::class));
     }

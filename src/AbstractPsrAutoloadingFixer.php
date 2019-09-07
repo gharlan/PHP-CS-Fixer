@@ -12,8 +12,10 @@
 
 namespace PhpCsFixer;
 
+use ParseError;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Jordi Boggiano <j.boggiano@seld.be>
@@ -52,7 +54,7 @@ abstract class AbstractPsrAutoloadingFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    public function supports(\SplFileInfo $file)
+    public function supports(SplFileInfo $file)
     {
         if ($file instanceof StdinFileInfo) {
             return false;
@@ -76,7 +78,7 @@ abstract class AbstractPsrAutoloadingFixer extends AbstractFixer
                 // name can not be a class name - detected by PHP 5.x
                 return false;
             }
-        } catch (\ParseError $e) {
+        } catch (ParseError $e) {
             // name can not be a class name - detected by PHP 7.x
             return false;
         }

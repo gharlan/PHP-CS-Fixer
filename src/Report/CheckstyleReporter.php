@@ -12,7 +12,11 @@
 
 namespace PhpCsFixer\Report;
 
+use DOMDocument;
+use DOMElement;
+use RuntimeException;
 use Symfony\Component\Console\Formatter\OutputFormatter;
+use function extension_loaded;
 
 /**
  * @author Kévin Gomez <contact@kevingomez.fr>
@@ -34,15 +38,15 @@ final class CheckstyleReporter implements ReporterInterface
      */
     public function generate(ReportSummary $reportSummary)
     {
-        if (!\extension_loaded('dom')) {
-            throw new \RuntimeException('Cannot generate report! `ext-dom` is not available!');
+        if (!extension_loaded('dom')) {
+            throw new RuntimeException('Cannot generate report! `ext-dom` is not available!');
         }
 
-        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom = new DOMDocument('1.0', 'UTF-8');
         $checkstyles = $dom->appendChild($dom->createElement('checkstyle'));
 
         foreach ($reportSummary->getChanged() as $filePath => $fixResult) {
-            /** @var \DOMElement $file */
+            /** @var DOMElement $file */
             $file = $checkstyles->appendChild($dom->createElement('file'));
             $file->setAttribute('name', $filePath);
 
@@ -58,12 +62,12 @@ final class CheckstyleReporter implements ReporterInterface
     }
 
     /**
-     * @param \DOMDocument $dom
-     * @param string       $appliedFixer
+     * @param DOMDocument $dom
+     * @param string      $appliedFixer
      *
-     * @return \DOMElement
+     * @return DOMElement
      */
-    private function createError(\DOMDocument $dom, $appliedFixer)
+    private function createError(DOMDocument $dom, $appliedFixer)
     {
         $error = $dom->createElement('error');
         $error->setAttribute('severity', 'warning');

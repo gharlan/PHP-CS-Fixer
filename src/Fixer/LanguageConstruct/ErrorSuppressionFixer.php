@@ -21,6 +21,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function in_array;
 
 /**
  * @author Jules Pietri <jules@heahprod.com>
@@ -98,7 +100,7 @@ final class ErrorSuppressionFixer extends AbstractFixer implements Configuration
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $functionsAnalyzer = new FunctionsAnalyzer();
         $excludedFunctions = array_map(function ($function) {
@@ -146,7 +148,7 @@ final class ErrorSuppressionFixer extends AbstractFixer implements Configuration
                 continue;
             }
 
-            if ($this->configuration[self::OPTION_NOISE_REMAINING_USAGES] && !\in_array($tokens[$functionIndex]->getContent(), $excludedFunctions, true)) {
+            if ($this->configuration[self::OPTION_NOISE_REMAINING_USAGES] && !in_array($tokens[$functionIndex]->getContent(), $excludedFunctions, true)) {
                 $tokens->clearAt($index);
             }
         }

@@ -21,6 +21,8 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Graham Campbell <graham@alt-three.com>
@@ -71,9 +73,9 @@ function foo() {}
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        if (!\count($this->configuration['annotations'])) {
+        if (!count($this->configuration['annotations'])) {
             return;
         }
 

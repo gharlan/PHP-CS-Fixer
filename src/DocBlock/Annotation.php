@@ -13,6 +13,9 @@
 namespace PhpCsFixer\DocBlock;
 
 use PhpCsFixer\Preg;
+use RuntimeException;
+use function in_array;
+use function strlen;
 
 /**
  * This represents an entire annotation from a docblock.
@@ -205,7 +208,7 @@ class Annotation
                 );
 
                 $this->types[] = $matches['type'];
-                $content = substr($content, \strlen($matches['type']) + 1);
+                $content = substr($content, strlen($matches['type']) + 1);
             }
         }
 
@@ -266,7 +269,7 @@ class Annotation
 
     public function supportTypes()
     {
-        return \in_array($this->getTag()->getName(), self::$tags, true);
+        return in_array($this->getTag()->getName(), self::$tags, true);
     }
 
     /**
@@ -282,7 +285,7 @@ class Annotation
             $name = $this->getTag()->getName();
 
             if (!$this->supportTypes()) {
-                throw new \RuntimeException('This tag does not support types.');
+                throw new RuntimeException('This tag does not support types.');
             }
 
             $matchingResult = Preg::match(

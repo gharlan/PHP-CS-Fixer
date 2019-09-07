@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\Test\Assert;
 
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use function is_string;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -38,7 +39,7 @@ trait AssertTokensTrait
                 sprintf(
                     'The token kind %s (%s) must be found in tokens collection.',
                     $expectedTokenKind,
-                    \is_string($expectedTokenKind) ? $expectedTokenKind : Token::getNameForId($expectedTokenKind)
+                    is_string($expectedTokenKind) ? $expectedTokenKind : Token::getNameForId($expectedTokenKind)
                 )
             );
         }

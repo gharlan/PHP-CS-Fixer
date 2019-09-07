@@ -17,6 +17,7 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Mark Scherer
@@ -63,7 +64,7 @@ function example($foo = "two words", $bar) {}
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($i = 0, $l = $tokens->count(); $i < $l; ++$i) {
             if (!$tokens[$i]->isGivenKind(T_FUNCTION)) {

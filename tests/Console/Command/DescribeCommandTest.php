@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\Console\Command;
 
+use InvalidArgumentException;
 use PhpCsFixer\Console\Application;
 use PhpCsFixer\Console\Command\DescribeCommand;
 use PhpCsFixer\FixerConfiguration\AliasedFixerOptionBuilder;
@@ -24,8 +25,11 @@ use PhpCsFixer\FixerFactory;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Token;
 use Prophecy\Argument;
+use RuntimeException;
+use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
+use function get_class;
 
 /**
  * @internal
@@ -128,7 +132,7 @@ Fixing examples:
 
         $commandTester = new CommandTester($command);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('#^Rule "Foo/bar" not found\.$#');
         $commandTester->execute([
             'command' => $command->getName(),
@@ -145,7 +149,7 @@ Fixing examples:
 
         $commandTester = new CommandTester($command);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('#^Set "@NoSuchSet" not found\.$#');
         $commandTester->execute([
             'command' => $command->getName(),
@@ -162,7 +166,7 @@ Fixing examples:
 
         $commandTester = new CommandTester($command);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessageRegExp('/^Not enough arguments( \(missing: "name"\))?\.$/');
         $commandTester->execute([
             'command' => $command->getName(),
@@ -171,7 +175,7 @@ Fixing examples:
 
     public function testGetAlternativeSuggestion()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('#^Rule "Foo2/bar" not found\. Did you mean "Foo/bar"\?$#');
         $this->execute('Foo2/bar', false);
     }
@@ -205,7 +209,7 @@ Fixing examples:
             ]
         );
 
-        static::assertContains(\get_class($mock), $commandTester->getDisplay(true));
+        static::assertContains(get_class($mock), $commandTester->getDisplay(true));
     }
 
     /**
@@ -265,7 +269,7 @@ Fixing examples:
         });
 
         $fixer->fix(
-            Argument::type(\SplFileInfo::class),
+            Argument::type(SplFileInfo::class),
             Argument::type(\PhpCsFixer\Tokenizer\Tokens::class)
         )->will(function (array $arguments) use (&$things) {
             $arguments[1][3] = new Token([

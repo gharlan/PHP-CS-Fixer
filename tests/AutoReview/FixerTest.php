@@ -24,6 +24,11 @@ use PhpCsFixer\FixerFactory;
 use PhpCsFixer\StdinFileInfo;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Tokens;
+use ReflectionClass;
+use function array_slice;
+use function in_array;
+use function is_string;
+use const PHP_VERSION_ID;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -94,7 +99,7 @@ final class FixerTest extends TestCase
                 $configSamplesProvided['default'] = true;
             }
 
-            if ($sample instanceof VersionSpecificCodeSampleInterface && !$sample->isSuitableFor(\PHP_VERSION_ID)) {
+            if ($sample instanceof VersionSpecificCodeSampleInterface && !$sample->isSuitableFor(PHP_VERSION_ID)) {
                 continue;
             }
 
@@ -114,7 +119,7 @@ final class FixerTest extends TestCase
 
             $duplicatedCodeSample = array_search(
                 $sample,
-                \array_slice($samples, 0, $sampleCounter),
+                array_slice($samples, 0, $sampleCounter),
                 false
             );
 
@@ -136,7 +141,7 @@ final class FixerTest extends TestCase
 
             foreach ($options as $option) {
                 // @TODO 2.12 adjust fixers to use new casing and deprecate old one
-                if (\in_array($fixerName, [
+                if (in_array($fixerName, [
                     'final_internal_class',
                     'ordered_class_elements',
                 ], true)) {
@@ -178,7 +183,7 @@ final class FixerTest extends TestCase
      */
     public function testFixersAreFinal(FixerInterface $fixer)
     {
-        $reflection = new \ReflectionClass($fixer);
+        $reflection = new ReflectionClass($fixer);
 
         static::assertTrue(
             $reflection->isFinal(),
@@ -199,7 +204,7 @@ final class FixerTest extends TestCase
      */
     public function testDeprecatedFixersHaveCorrectSummary(FixerInterface $fixer)
     {
-        $reflection = new \ReflectionClass($fixer);
+        $reflection = new ReflectionClass($fixer);
         $comment = $reflection->getDocComment();
 
         static::assertNotContains(
@@ -210,7 +215,7 @@ final class FixerTest extends TestCase
 
         if ($fixer instanceof DeprecatedFixerInterface) {
             static::assertContains('@deprecated', $comment);
-        } elseif (\is_string($comment)) {
+        } elseif (is_string($comment)) {
             static::assertNotContains('@deprecated', $comment);
         }
     }

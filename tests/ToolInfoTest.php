@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests;
 
+use LogicException;
 use PhpCsFixer\ToolInfo;
 
 /**
@@ -45,7 +46,7 @@ final class ToolInfoTest extends TestCase
     {
         $toolInfo = new ToolInfo();
 
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
 
         $toolInfo->getComposerVersion();
     }

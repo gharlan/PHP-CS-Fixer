@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * Fixer for part of rule defined in PSR5 ¶7.22.
@@ -57,7 +59,7 @@ final class PhpdocSingleLineVarSpacingFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         /** @var Token $token */
         foreach ($tokens as $index => $token) {
@@ -90,7 +92,7 @@ final class PhpdocSingleLineVarSpacingFixer extends AbstractFixer
             '#^/\*\*[ \t]*@var[ \t]+(\S+)[ \t]*(\$\S+)?[ \t]*([^\n]*)\*/$#',
             static function (array $matches) {
                 $content = '/** @var';
-                for ($i = 1, $m = \count($matches); $i < $m; ++$i) {
+                for ($i = 1, $m = count($matches); $i < $m; ++$i) {
                     if ('' !== $matches[$i]) {
                         $content .= ' '.$matches[$i];
                     }

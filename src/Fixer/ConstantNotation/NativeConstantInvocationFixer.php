@@ -24,7 +24,14 @@ use PhpCsFixer\Tokenizer\Analyzer\NamespaceUsesAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
+use function count;
+use function get_class;
+use function gettype;
+use function in_array;
+use function is_object;
+use function is_string;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -145,7 +152,7 @@ namespace {
         $caseInsensitiveConstantsToEscape = [];
         foreach ($constantsToEscape as $constantIndex => $constant) {
             $loweredConstant = strtolower($constant);
-            if (\in_array($loweredConstant, $caseInsensitiveConstants, true)) {
+            if (in_array($loweredConstant, $caseInsensitiveConstants, true)) {
                 $caseInsensitiveConstantsToEscape[] = $loweredConstant;
                 unset($constantsToEscape[$constantIndex]);
             }
@@ -167,10 +174,10 @@ namespace {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         if ('all' === $this->configuration['scope']) {
-            $this->fixConstantInvocations($tokens, 0, \count($tokens) - 1);
+            $this->fixConstantInvocations($tokens, 0, count($tokens) - 1);
 
             return;
         }
@@ -195,10 +202,10 @@ namespace {
     {
         $constantChecker = static function ($value) {
             foreach ($value as $constantName) {
-                if (!\is_string($constantName) || '' === trim($constantName) || trim($constantName) !== $constantName) {
+                if (!is_string($constantName) || '' === trim($constantName) || trim($constantName) !== $constantName) {
                     throw new InvalidOptionsException(sprintf(
                         'Each element must be a non-empty, trimmed string, got "%s" instead.',
-                        \is_object($constantName) ? \get_class($constantName) : \gettype($constantName)
+                        is_object($constantName) ? get_class($constantName) : gettype($constantName)
                     ));
                 }
             }

@@ -13,6 +13,7 @@
 namespace PhpCsFixer\Tests;
 
 use PhpCsFixer\PregException;
+use RuntimeException;
 
 /**
  * @author Kuba Werłos <werlos@gmail.com>
@@ -27,6 +28,6 @@ final class PregExceptionTest extends TestCase
     {
         $exception = new PregException();
 
-        static::assertInstanceOf(\RuntimeException::class, $exception);
+        static::assertInstanceOf(RuntimeException::class, $exception);
     }
 }

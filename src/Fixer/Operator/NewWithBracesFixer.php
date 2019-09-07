@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function defined;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -46,7 +48,7 @@ final class NewWithBracesFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         static $nextTokenKinds = null;
 
@@ -95,7 +97,7 @@ final class NewWithBracesFixer extends AbstractFixer
                 [CT::T_BRACE_CLASS_INSTANTIATION_CLOSE],
             ];
 
-            if (\defined('T_SPACESHIP')) {
+            if (defined('T_SPACESHIP')) {
                 $nextTokenKinds[] = [T_SPACESHIP];
             }
         }

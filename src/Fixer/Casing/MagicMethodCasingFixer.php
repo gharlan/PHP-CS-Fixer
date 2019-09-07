@@ -17,6 +17,8 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author SpacePossum
@@ -81,10 +83,10 @@ $foo->__INVOKE(1);
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $inClass = 0;
-        $tokenCount = \count($tokens);
+        $tokenCount = count($tokens);
 
         for ($index = 1; $index < $tokenCount - 2; ++$index) {
             if (0 === $inClass && $tokens[$index]->isClassy()) {

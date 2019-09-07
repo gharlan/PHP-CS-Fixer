@@ -19,6 +19,7 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -67,7 +68,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = $tokens->count() - 1; $index > 0; --$index) {
             if (!$tokens[$index]->isGivenKind(T_DOC_COMMENT) || 0 === Preg::match('/@covers\s.+@covers\s/s', $tokens[$index]->getContent())) {

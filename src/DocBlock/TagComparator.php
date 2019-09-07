@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\DocBlock;
 
+use function in_array;
+
 /**
  * This class is responsible for comparing tags to see if they should be kept
  * together, or kept apart.
@@ -50,7 +52,7 @@ class TagComparator
         }
 
         foreach (self::$groups as $group) {
-            if (\in_array($firstName, $group, true) && \in_array($secondName, $group, true)) {
+            if (in_array($firstName, $group, true) && in_array($secondName, $group, true)) {
                 return true;
             }
         }

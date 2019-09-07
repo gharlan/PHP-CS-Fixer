@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function in_array;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -83,7 +85,7 @@ $a = substr_count($a, $b);
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $argumentsAnalyzer = new ArgumentsAnalyzer();
         foreach (self::$functionsMap as $functionIdentity => $functionReplacement) {
@@ -98,7 +100,7 @@ $a = substr_count($a, $b);
 
                 list($functionName, $openParenthesis, $closeParenthesis) = $boundaries;
                 $count = $argumentsAnalyzer->countArguments($tokens, $openParenthesis, $closeParenthesis);
-                if (!\in_array($count, $functionReplacement['argumentCount'], true)) {
+                if (!in_array($count, $functionReplacement['argumentCount'], true)) {
                     continue 2;
                 }
 

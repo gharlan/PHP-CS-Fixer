@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\Fixer\Import;
 
 use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Tests\Test\AbstractFixerWithAliasedOptionsTestCase;
+use stdClass;
 
 /**
  * @internal
@@ -1044,10 +1045,10 @@ use A\A1;
             ],
             [
                 [
-                    'sortAlgorithm' => new \stdClass(),
+                    'sortAlgorithm' => new stdClass(),
                     'importsOrder' => null,
                 ],
-                \stdClass::class,
+                stdClass::class,
             ],
         ];
     }

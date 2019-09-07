@@ -23,6 +23,7 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -268,7 +269,7 @@ if (true) {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $lineEnding = $this->whitespacesConfig->getLineEnding();
         $tokenKinds = array_values($this->fixTokenMap);

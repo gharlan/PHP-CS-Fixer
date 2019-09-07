@@ -12,12 +12,15 @@
 
 namespace PhpCsFixer\Tests\Cache;
 
+use InvalidArgumentException;
 use PhpCsFixer\Cache\Cache;
 use PhpCsFixer\Cache\Signature;
 use PhpCsFixer\Cache\SignatureInterface;
 use PhpCsFixer\Config;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\ToolInfo;
+use ReflectionClass;
+use UnexpectedValueException;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -30,14 +33,14 @@ final class CacheTest extends TestCase
 {
     public function testIsFinal()
     {
-        $reflection = new \ReflectionClass(\PhpCsFixer\Cache\Cache::class);
+        $reflection = new ReflectionClass(\PhpCsFixer\Cache\Cache::class);
 
         static::assertTrue($reflection->isFinal());
     }
 
     public function testImplementsCacheInterface()
     {
-        $reflection = new \ReflectionClass(\PhpCsFixer\Cache\Cache::class);
+        $reflection = new ReflectionClass(\PhpCsFixer\Cache\Cache::class);
 
         static::assertTrue($reflection->implementsInterface(\PhpCsFixer\Cache\CacheInterface::class));
     }
@@ -65,7 +68,7 @@ final class CacheTest extends TestCase
 
     public function testSetThrowsInvalidArgumentExceptionIfValueIsNotAnInteger()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $signature = $this->getSignatureDouble();
 
@@ -108,7 +111,7 @@ final class CacheTest extends TestCase
 
     public function testFromJsonThrowsInvalidArgumentExceptionIfJsonIsInvalid()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $json = '{"foo';
 
@@ -122,7 +125,7 @@ final class CacheTest extends TestCase
      */
     public function testFromJsonThrowsInvalidArgumentExceptionIfJsonIsMissingKey(array $data)
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $json = json_encode($data);
 
@@ -216,7 +219,7 @@ final class CacheTest extends TestCase
         $cache = new Cache($signature->reveal());
 
         $this->expectException(
-            \UnexpectedValueException::class
+            UnexpectedValueException::class
         );
         $this->expectExceptionMessage(
             'Can not encode cache signature to JSON, error: "Malformed UTF-8 characters, possibly incorrectly encoded". If you have non-UTF8 chars in your signature, like in license for `header_comment`, consider enabling `ext-mbstring` or install `symfony/polyfill-mbstring`.'

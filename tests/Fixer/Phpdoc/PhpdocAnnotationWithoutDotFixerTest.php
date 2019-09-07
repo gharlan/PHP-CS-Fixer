@@ -13,6 +13,7 @@
 namespace PhpCsFixer\Tests\Fixer\Phpdoc;
 
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
+use function chr;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -95,13 +96,13 @@ final class PhpdocAnnotationWithoutDotFixerTest extends AbstractFixerTestCase
                 // invalid char inside line won't crash the fixer
                 '<?php
     /**
-     * @var string this: '.\chr(174).' is an odd character
-     * @var string This: '.\chr(174).' is an odd character 2nd time。
+     * @var string this: '.chr(174).' is an odd character
+     * @var string This: '.chr(174).' is an odd character 2nd time。
      */',
                 '<?php
     /**
-     * @var string This: '.\chr(174).' is an odd character.
-     * @var string This: '.\chr(174).' is an odd character 2nd time。
+     * @var string This: '.chr(174).' is an odd character.
+     * @var string This: '.chr(174).' is an odd character 2nd time。
      */',
             ],
             [

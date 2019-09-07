@@ -15,7 +15,9 @@ namespace PhpCsFixer\Tests\Smoke;
 use Keradus\CliExecutor\CommandExecutor;
 use PhpCsFixer\Console\Application;
 use PhpCsFixer\Utils;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
+use function extension_loaded;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -45,19 +47,19 @@ final class InstallViaComposerTest extends AbstractSmokeTest
 
         try {
             CommandExecutor::create('php --version', __DIR__)->getResult();
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             static::markTestSkippedOrFail('Missing `php` env script. Details:'."\n".$e->getMessage());
         }
 
         try {
             CommandExecutor::create('composer --version', __DIR__)->getResult();
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             static::markTestSkippedOrFail('Missing `composer` env script. Details:'."\n".$e->getMessage());
         }
 
         try {
             CommandExecutor::create('composer check', __DIR__.'/../..')->getResult();
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             static::markTestSkippedOrFail('Composer check failed. Details:'."\n".$e->getMessage());
         }
     }
@@ -96,7 +98,7 @@ final class InstallViaComposerTest extends AbstractSmokeTest
     public function testInstallationViaArtifactIsPossible()
     {
         // Composer Artifact Repository requires `zip` extension
-        if (!\extension_loaded('zip')) {
+        if (!extension_loaded('zip')) {
             static::markTestSkippedOrFail('No zip extension available.');
         }
 

@@ -16,6 +16,7 @@ use PhpCsFixer\Tokenizer\AbstractTransformer;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use const PHP_VERSION_ID;
 
 /**
  * Transform discriminate overloaded curly braces tokens.
@@ -72,7 +73,7 @@ final class CurlyBraceTransformer extends AbstractTransformer
         $this->transformIntoDynamicVarBraces($tokens, $token, $index);
         $this->transformIntoCurlyIndexBraces($tokens, $token, $index);
 
-        if (\PHP_VERSION_ID >= 70000) {
+        if (PHP_VERSION_ID >= 70000) {
             $this->transformIntoGroupUseBraces($tokens, $token, $index);
         }
     }

@@ -15,6 +15,7 @@ namespace PhpCsFixer\Tests\Fixer\Whitespace;
 use PhpCsFixer\ConfigurationException\InvalidFixerConfigurationException;
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 use PhpCsFixer\WhitespacesFixerConfig;
+use stdClass;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -53,7 +54,7 @@ final class BlankLineBeforeStatementFixerTest extends AbstractFixerTestCase
             'int' => [0],
             'float' => [3.14],
             'array' => [[]],
-            'object' => [new \stdClass()],
+            'object' => [new stdClass()],
             'unknown' => ['foo'],
         ];
     }

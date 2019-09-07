@@ -12,8 +12,11 @@
 
 namespace PhpCsFixer\Tests\Tokenizer;
 
+use InvalidArgumentException;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\CT;
+use ReflectionClass;
+use function constant;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -59,7 +62,7 @@ final class CTTest extends TestCase
 
     public function testGetNameNotExists()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No custom token was found for "123".');
 
         CT::getName(123);
@@ -74,7 +77,7 @@ final class CTTest extends TestCase
     public function testConstants($name, $value)
     {
         static::assertGreaterThan(10000, $value);
-        static::assertNull(@\constant($name), 'The CT name must not use native T_* name.');
+        static::assertNull(@constant($name), 'The CT name must not use native T_* name.');
     }
 
     public function provideConstantsCases()
@@ -93,7 +96,7 @@ final class CTTest extends TestCase
         static $constants;
 
         if (null === $constants) {
-            $reflection = new \ReflectionClass(\PhpCsFixer\Tokenizer\CT::class);
+            $reflection = new ReflectionClass(\PhpCsFixer\Tokenizer\CT::class);
             $constants = $reflection->getConstants();
         }
 

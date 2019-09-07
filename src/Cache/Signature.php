@@ -12,6 +12,9 @@
 
 namespace PhpCsFixer\Cache;
 
+use function function_exists;
+use function is_string;
+
 /**
  * @author Andreas Möller <am@localheinz.com>
  *
@@ -96,12 +99,12 @@ final class Signature implements SignatureInterface
 
     private static function utf8Encode(array $data)
     {
-        if (!\function_exists('mb_detect_encoding')) {
+        if (!function_exists('mb_detect_encoding')) {
             return $data;
         }
 
         array_walk_recursive($data, static function (&$item) {
-            if (\is_string($item) && !mb_detect_encoding($item, 'utf-8', true)) {
+            if (is_string($item) && !mb_detect_encoding($item, 'utf-8', true)) {
                 $item = utf8_encode($item);
             }
         });

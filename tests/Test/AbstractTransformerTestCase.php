@@ -15,6 +15,9 @@ namespace PhpCsFixer\Tests\Test;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Tokens;
+use function count;
+use function is_int;
+use function is_string;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -46,12 +49,12 @@ abstract class AbstractTransformerTestCase extends TestCase
         $tokens = Tokens::fromCode($source);
 
         static::assertSame(
-            \count($expectedTokens),
+            count($expectedTokens),
             $this->countTokenPrototypes(
                 $tokens,
                 array_map(
                     static function ($kindOrPrototype) {
-                        return \is_int($kindOrPrototype) ? [$kindOrPrototype] : $kindOrPrototype;
+                        return is_int($kindOrPrototype) ? [$kindOrPrototype] : $kindOrPrototype;
                     },
                     array_unique(array_merge($observedKindsOrPrototypes, $expectedTokens))
                 )
@@ -60,7 +63,7 @@ abstract class AbstractTransformerTestCase extends TestCase
         );
 
         foreach ($expectedTokens as $index => $tokenIdOrContent) {
-            if (\is_string($tokenIdOrContent)) {
+            if (is_string($tokenIdOrContent)) {
                 static::assertTrue($tokens[$index]->equals($tokenIdOrContent));
 
                 continue;

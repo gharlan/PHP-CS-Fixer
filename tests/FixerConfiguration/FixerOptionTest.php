@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\Tests\FixerConfiguration;
 
+use Closure;
+use LogicException;
 use PhpCsFixer\FixerConfiguration\FixerOption;
 use PhpCsFixer\Tests\TestCase;
 
@@ -53,7 +55,7 @@ final class FixerOptionTest extends TestCase
     {
         $option = new FixerOption('foo', 'Bar.');
 
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('No default value defined.');
         $option->getDefault();
     }
@@ -86,7 +88,7 @@ final class FixerOptionTest extends TestCase
         static::assertInternalType('array', $allowedTypes);
         static::assertCount(1, $allowedTypes);
         static::assertArrayHasKey(0, $allowedTypes);
-        static::assertInstanceOf(\Closure::class, $allowedTypes[0]);
+        static::assertInstanceOf(Closure::class, $allowedTypes[0]);
     }
 
     public function testGetNormalizers()
@@ -95,12 +97,12 @@ final class FixerOptionTest extends TestCase
         static::assertNull($option->getNormalizer());
 
         $option = new FixerOption('foo', 'Bar.', true, null, null, null, static function () {});
-        static::assertInstanceOf(\Closure::class, $option->getNormalizer());
+        static::assertInstanceOf(Closure::class, $option->getNormalizer());
     }
 
     public function testRequiredWithDefaultValue()
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('Required options cannot have a default value.');
 
         new FixerOption('foo', 'Bar.', true, false);

@@ -19,6 +19,7 @@ use PhpCsFixer\Indicator\PhpUnitTestCaseIndicator;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Roland Franssen <franssen.roland@gmail.com>
@@ -71,7 +72,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $phpUnitTestCaseIndicator = new PhpUnitTestCaseIndicator();
         foreach ($phpUnitTestCaseIndicator->findPhpUnitClasses($tokens) as $indexes) {

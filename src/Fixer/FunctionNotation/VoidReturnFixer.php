@@ -22,6 +22,8 @@ use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
+use const PHP_VERSION_ID;
 
 /**
  * @author Mark Nielsen
@@ -60,7 +62,7 @@ final class VoidReturnFixer extends AbstractFixer
      */
     public function isCandidate(Tokens $tokens)
     {
-        return \PHP_VERSION_ID >= 70100 && $tokens->isTokenKindFound(T_FUNCTION);
+        return PHP_VERSION_ID >= 70100 && $tokens->isTokenKindFound(T_FUNCTION);
     }
 
     /**
@@ -74,7 +76,7 @@ final class VoidReturnFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         // These cause syntax errors.
         static $blacklistFuncNames = [

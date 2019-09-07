@@ -15,6 +15,7 @@ namespace PhpCsFixer\Tests\Fixer\ClassNotation;
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\WhitespacesFixerConfig;
+use ReflectionMethod;
 
 /**
  * @internal
@@ -34,7 +35,7 @@ final class ClassAttributesSeparationFixerTest extends AbstractFixerTestCase
     {
         Tokens::clearCache();
         $tokens = Tokens::fromCode($code);
-        $method = new \ReflectionMethod($this->fixer, 'findCommentBlockStart');
+        $method = new ReflectionMethod($this->fixer, 'findCommentBlockStart');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->fixer, $tokens, $index);

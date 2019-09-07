@@ -12,8 +12,16 @@
 
 namespace PhpCsFixer\Tests\Test;
 
+use InvalidArgumentException;
 use PhpCsFixer\RuleSet;
 use Symfony\Component\Finder\SplFileInfo;
+use function get_class;
+use function gettype;
+use function is_bool;
+use function is_int;
+use function is_object;
+use function is_string;
+use const PHP_VERSION_ID;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -43,7 +51,7 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
                 $file->getContents(),
                 $match
             )) {
-                throw new \InvalidArgumentException('File format is invalid.');
+                throw new InvalidArgumentException('File format is invalid.');
             }
 
             $match = array_merge(
@@ -67,8 +75,8 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
                 $this->determineExpectedCode($file, $match['expect']),
                 $this->determineInputCode($file, $match['input'])
             );
-        } catch (\InvalidArgumentException $e) {
-            throw new \InvalidArgumentException(
+        } catch (InvalidArgumentException $e) {
+            throw new InvalidArgumentException(
                 sprintf('%s Test file: "%s".', $e->getMessage(), $file->getRelativePathname()),
                 $e->getCode(),
                 $e
@@ -91,17 +99,17 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
             'lineEnding' => "\n",
         ]);
 
-        if (!\is_string($parsed['indent'])) {
-            throw new \InvalidArgumentException(sprintf(
+        if (!is_string($parsed['indent'])) {
+            throw new InvalidArgumentException(sprintf(
                 'Expected string value for "indent", got "%s".',
-                \is_object($parsed['indent']) ? \get_class($parsed['indent']) : \gettype($parsed['indent']).'#'.$parsed['indent']
+                is_object($parsed['indent']) ? get_class($parsed['indent']) : gettype($parsed['indent']).'#'.$parsed['indent']
             ));
         }
 
-        if (!\is_string($parsed['lineEnding'])) {
-            throw new \InvalidArgumentException(sprintf(
+        if (!is_string($parsed['lineEnding'])) {
+            throw new InvalidArgumentException(sprintf(
                 'Expected string value for "lineEnding", got "%s".',
-                \is_object($parsed['lineEnding']) ? \get_class($parsed['lineEnding']) : \gettype($parsed['lineEnding']).'#'.$parsed['lineEnding']
+                is_object($parsed['lineEnding']) ? get_class($parsed['lineEnding']) : gettype($parsed['lineEnding']).'#'.$parsed['lineEnding']
             ));
         }
 
@@ -119,13 +127,13 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
     protected function determineRequirements(SplFileInfo $file, $config)
     {
         $parsed = $this->parseJson($config, [
-            'php' => \PHP_VERSION_ID,
+            'php' => PHP_VERSION_ID,
         ]);
 
-        if (!\is_int($parsed['php'])) {
-            throw new \InvalidArgumentException(sprintf(
+        if (!is_int($parsed['php'])) {
+            throw new InvalidArgumentException(sprintf(
                 'Expected int value like 50509 for "php", got "%s".',
-                \is_object($parsed['php']) ? \get_class($parsed['php']) : \gettype($parsed['php']).'#'.$parsed['php']
+                is_object($parsed['php']) ? get_class($parsed['php']) : gettype($parsed['php']).'#'.$parsed['php']
             ));
         }
 
@@ -172,10 +180,10 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
             'checkPriority' => true,
         ]);
 
-        if (!\is_bool($parsed['checkPriority'])) {
-            throw new \InvalidArgumentException(sprintf(
+        if (!is_bool($parsed['checkPriority'])) {
+            throw new InvalidArgumentException(sprintf(
                 'Expected bool value for "checkPriority", got "%s".',
-                \is_object($parsed['checkPriority']) ? \get_class($parsed['checkPriority']) : \gettype($parsed['checkPriority']).'#'.$parsed['checkPriority']
+                is_object($parsed['checkPriority']) ? get_class($parsed['checkPriority']) : gettype($parsed['checkPriority']).'#'.$parsed['checkPriority']
             ));
         }
 
@@ -193,7 +201,7 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
         $code = $this->determineCode($file, $code, '-out.php');
 
         if (null === $code) {
-            throw new \InvalidArgumentException('Missing expected code.');
+            throw new InvalidArgumentException('Missing expected code.');
         }
 
         return $code;
@@ -244,7 +252,7 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
             $decoded = json_decode($encoded, true);
 
             if (JSON_ERROR_NONE !== json_last_error()) {
-                throw new \InvalidArgumentException(sprintf('Malformed JSON: "%s", error: "%s".', $encoded, json_last_error_msg()));
+                throw new InvalidArgumentException(sprintf('Malformed JSON: "%s", error: "%s".', $encoded, json_last_error_msg()));
             }
         }
 

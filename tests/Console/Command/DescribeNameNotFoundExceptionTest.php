@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\Console\Command;
 
+use InvalidArgumentException;
 use PhpCsFixer\Console\Command\DescribeNameNotFoundException;
 use PhpCsFixer\Tests\TestCase;
 
@@ -31,7 +32,7 @@ final class DescribeNameNotFoundExceptionTest extends TestCase
             'weird'
         );
 
-        static::assertInstanceOf(\InvalidArgumentException::class, $exception);
+        static::assertInstanceOf(InvalidArgumentException::class, $exception);
     }
 
     public function testConstructorSetsValues()

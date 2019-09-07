@@ -14,6 +14,7 @@ namespace PhpCsFixer\Console;
 
 use PhpCsFixer\ToolInfo;
 use PhpCsFixer\ToolInfoInterface;
+use function count;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -62,7 +63,7 @@ final class WarningsDetector
      */
     public function getWarnings()
     {
-        if (!\count($this->warnings)) {
+        if (!count($this->warnings)) {
             return [];
         }
 

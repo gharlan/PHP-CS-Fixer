@@ -21,6 +21,8 @@ use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
+use function array_key_exists;
+use function count;
 
 /**
  * Fixes spaces around commas and assignment operators in Doctrine annotations.
@@ -52,7 +54,7 @@ final class DoctrineAnnotationSpacesFixer extends AbstractDoctrineAnnotationFixe
                 'before_argument_assignments',
                 'after_argument_assignments',
             ] as $newOption) {
-                if (!\array_key_exists($newOption, $configuration)) {
+                if (!array_key_exists($newOption, $configuration)) {
                     $this->configuration[$newOption] = null;
                 }
             }
@@ -65,7 +67,7 @@ final class DoctrineAnnotationSpacesFixer extends AbstractDoctrineAnnotationFixe
                 'before_array_assignments_colon',
                 'after_array_assignments_colon',
             ] as $newOption) {
-                if (!\array_key_exists($newOption, $configuration)) {
+                if (!array_key_exists($newOption, $configuration)) {
                     $this->configuration[$newOption] = null;
                 }
             }
@@ -239,7 +241,7 @@ final class DoctrineAnnotationSpacesFixer extends AbstractDoctrineAnnotationFixe
                 $token->clear();
             }
 
-            if ($index < \count($tokens) - 1 && !Preg::match('/^\s/', $tokens[$index + 1]->getContent())) {
+            if ($index < count($tokens) - 1 && !Preg::match('/^\s/', $tokens[$index + 1]->getContent())) {
                 $tokens->insertAt($index + 1, new Token(DocLexer::T_NONE, ' '));
             }
         }

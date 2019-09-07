@@ -15,6 +15,7 @@ namespace PhpCsFixer\Console\SelfUpdate;
 use Composer\Semver\Comparator;
 use Composer\Semver\Semver;
 use Composer\Semver\VersionParser;
+use UnexpectedValueException;
 
 /**
  * @internal
@@ -107,7 +108,7 @@ final class NewVersionChecker implements NewVersionCheckerInterface
                 if ('stable' === VersionParser::parseStability($version)) {
                     $this->availableVersions[] = $version;
                 }
-            } catch (\UnexpectedValueException $exception) {
+            } catch (UnexpectedValueException $exception) {
                 // not a valid version tag
             }
         }

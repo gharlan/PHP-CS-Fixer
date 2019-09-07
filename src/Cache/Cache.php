@@ -12,6 +12,15 @@
 
 namespace PhpCsFixer\Cache;
 
+use InvalidArgumentException;
+use UnexpectedValueException;
+use function array_key_exists;
+use function count;
+use function get_class;
+use function gettype;
+use function is_int;
+use function is_object;
+
 /**
  * @author Andreas Möller <am@localheinz.com>
  *
@@ -41,7 +50,7 @@ final class Cache implements CacheInterface
 
     public function has($file)
     {
-        return \array_key_exists($file, $this->hashes);
+        return array_key_exists($file, $this->hashes);
     }
 
     public function get($file)
@@ -55,10 +64,10 @@ final class Cache implements CacheInterface
 
     public function set($file, $hash)
     {
-        if (!\is_int($hash)) {
-            throw new \InvalidArgumentException(sprintf(
+        if (!is_int($hash)) {
+            throw new InvalidArgumentException(sprintf(
                 'Value needs to be an integer, got "%s".',
-                \is_object($hash) ? \get_class($hash) : \gettype($hash)
+                is_object($hash) ? get_class($hash) : gettype($hash)
             ));
         }
 
@@ -82,7 +91,7 @@ final class Cache implements CacheInterface
         ]);
 
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \UnexpectedValueException(sprintf(
+            throw new UnexpectedValueException(sprintf(
                 'Can not encode cache signature to JSON, error: "%s". If you have non-UTF8 chars in your signature, like in license for `header_comment`, consider enabling `ext-mbstring` or install `symfony/polyfill-mbstring`.',
                 json_last_error_msg()
             ));
@@ -94,7 +103,7 @@ final class Cache implements CacheInterface
     /**
      * @param string $json
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return Cache
      */
@@ -103,9 +112,9 @@ final class Cache implements CacheInterface
         $data = json_decode($json, true);
 
         if (null === $data && JSON_ERROR_NONE !== json_last_error()) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Value needs to be a valid JSON string, got "%s", error: "%s".',
-                \is_object($json) ? \get_class($json) : \gettype($json),
+                is_object($json) ? get_class($json) : gettype($json),
                 json_last_error_msg()
             ));
         }
@@ -121,8 +130,8 @@ final class Cache implements CacheInterface
 
         $missingKeys = array_diff_key(array_flip($requiredKeys), $data);
 
-        if (\count($missingKeys)) {
-            throw new \InvalidArgumentException(sprintf(
+        if (count($missingKeys)) {
+            throw new InvalidArgumentException(sprintf(
                 'JSON data is missing keys "%s"',
                 implode('", "', $missingKeys)
             ));

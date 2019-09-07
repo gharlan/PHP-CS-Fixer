@@ -12,6 +12,9 @@
 
 namespace PhpCsFixer\FixerDefinition;
 
+use InvalidArgumentException;
+use function is_int;
+
 /**
  * @author Andreas Möller <am@localheinz.com>
  */
@@ -31,25 +34,25 @@ final class VersionSpecification implements VersionSpecificationInterface
      * @param null|int $minimum
      * @param null|int $maximum
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct($minimum = null, $maximum = null)
     {
         if (null === $minimum && null === $maximum) {
-            throw new \InvalidArgumentException('Minimum or maximum need to be specified.');
+            throw new InvalidArgumentException('Minimum or maximum need to be specified.');
         }
 
-        if (null !== $minimum && (!\is_int($minimum) || 1 > $minimum)) {
-            throw new \InvalidArgumentException('Minimum needs to be either null or an integer greater than 0.');
+        if (null !== $minimum && (!is_int($minimum) || 1 > $minimum)) {
+            throw new InvalidArgumentException('Minimum needs to be either null or an integer greater than 0.');
         }
 
         if (null !== $maximum) {
-            if (!\is_int($maximum) || 1 > $maximum) {
-                throw new \InvalidArgumentException('Maximum needs to be either null or an integer greater than 0.');
+            if (!is_int($maximum) || 1 > $maximum) {
+                throw new InvalidArgumentException('Maximum needs to be either null or an integer greater than 0.');
             }
 
             if (null !== $minimum && $maximum < $minimum) {
-                throw new \InvalidArgumentException('Maximum should not be lower than the minimum.');
+                throw new InvalidArgumentException('Maximum should not be lower than the minimum.');
             }
         }
 

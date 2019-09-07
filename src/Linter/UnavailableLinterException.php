@@ -12,11 +12,13 @@
 
 namespace PhpCsFixer\Linter;
 
+use RuntimeException;
+
 /**
  * Exception that is thrown when the chosen linter is not available on the environment.
  *
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  */
-class UnavailableLinterException extends \RuntimeException
+class UnavailableLinterException extends RuntimeException
 {
 }

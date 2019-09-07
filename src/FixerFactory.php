@@ -18,6 +18,11 @@ use PhpCsFixer\Fixer\FixerInterface;
 use PhpCsFixer\Fixer\WhitespacesAwareFixerInterface;
 use Symfony\Component\Finder\Finder as SymfonyFinder;
 use Symfony\Component\Finder\SplFileInfo;
+use UnexpectedValueException;
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Class provides a way to create a group of fixers.
@@ -137,11 +142,11 @@ final class FixerFactory
         $name = $fixer->getName();
 
         if (isset($this->fixersByName[$name])) {
-            throw new \UnexpectedValueException(sprintf('Fixer named "%s" is already registered.', $name));
+            throw new UnexpectedValueException(sprintf('Fixer named "%s" is already registered.', $name));
         }
 
         if (!$this->nameValidator->isValid($name, $isCustom)) {
-            throw new \UnexpectedValueException(sprintf('Fixer named "%s" has invalid name.', $name));
+            throw new UnexpectedValueException(sprintf('Fixer named "%s" has invalid name.', $name));
         }
 
         $this->fixers[] = $fixer;
@@ -165,8 +170,8 @@ final class FixerFactory
 
         $fixerNames = array_keys($ruleSet->getRules());
         foreach ($fixerNames as $name) {
-            if (!\array_key_exists($name, $this->fixersByName)) {
-                throw new \UnexpectedValueException(sprintf('Rule "%s" does not exist.', $name));
+            if (!array_key_exists($name, $this->fixersByName)) {
+                throw new UnexpectedValueException(sprintf('Rule "%s" does not exist.', $name));
             }
 
             $fixer = $this->fixersByName[$name];
@@ -174,7 +179,7 @@ final class FixerFactory
             $config = $ruleSet->getRuleConfiguration($name);
             if (null !== $config) {
                 if ($fixer instanceof ConfigurableFixerInterface) {
-                    if (!\is_array($config) || !\count($config)) {
+                    if (!is_array($config) || !count($config)) {
                         throw new InvalidFixerConfigurationException($fixer->getName(), 'Configuration must be an array and may not be empty.');
                     }
 
@@ -188,13 +193,13 @@ final class FixerFactory
             $fixersByName[$name] = $fixer;
 
             $conflicts = array_intersect($this->getFixersConflicts($fixer), $fixerNames);
-            if (\count($conflicts) > 0) {
+            if (count($conflicts) > 0) {
                 $fixerConflicts[$name] = $conflicts;
             }
         }
 
-        if (\count($fixerConflicts) > 0) {
-            throw new \UnexpectedValueException($this->generateConflictMessage($fixerConflicts));
+        if (count($fixerConflicts) > 0) {
+            throw new UnexpectedValueException($this->generateConflictMessage($fixerConflicts));
         }
 
         $this->fixers = $fixers;
@@ -228,7 +233,7 @@ final class FixerFactory
 
         $fixerName = $fixer->getName();
 
-        return \array_key_exists($fixerName, $conflictMap) ? $conflictMap[$fixerName] : [];
+        return array_key_exists($fixerName, $conflictMap) ? $conflictMap[$fixerName] : [];
     }
 
     /**
@@ -245,11 +250,11 @@ final class FixerFactory
             $report[$fixer] = array_filter(
                 $fixers,
                 static function ($candidate) use ($report, $fixer) {
-                    return !\array_key_exists($candidate, $report) || !\in_array($fixer, $report[$candidate], true);
+                    return !array_key_exists($candidate, $report) || !in_array($fixer, $report[$candidate], true);
                 }
             );
 
-            if (\count($report[$fixer]) > 0) {
+            if (count($report[$fixer]) > 0) {
                 $message .= sprintf("\n- \"%s\" with \"%s\"", $fixer, implode('", "', $report[$fixer]));
             }
         }

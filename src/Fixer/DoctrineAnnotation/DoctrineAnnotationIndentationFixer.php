@@ -20,6 +20,7 @@ use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
+use function count;
 
 final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotationFixer
 {
@@ -62,7 +63,7 @@ final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotatio
     protected function fixAnnotations(Tokens $tokens)
     {
         $annotationPositions = [];
-        for ($index = 0, $max = \count($tokens); $index < $max; ++$index) {
+        for ($index = 0, $max = count($tokens); $index < $max; ++$index) {
             if (!$tokens[$index]->isType(DocLexer::T_AT)) {
                 continue;
             }
@@ -187,7 +188,7 @@ final class DoctrineAnnotationIndentationFixer extends AbstractDoctrineAnnotatio
             }
         }
 
-        for ($index = $newLineTokenIndex + 1, $max = \count($tokens); $index < $max; ++$index) {
+        for ($index = $newLineTokenIndex + 1, $max = count($tokens); $index < $max; ++$index) {
             $token = $tokens[$index];
 
             if (false !== strpos($token->getContent(), "\n")) {

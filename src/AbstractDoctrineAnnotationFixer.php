@@ -19,6 +19,8 @@ use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\Tokenizer\Token as PhpToken;
 use PhpCsFixer\Tokenizer\Tokens as PhpTokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
+use function is_string;
 
 /**
  * @internal
@@ -41,7 +43,7 @@ abstract class AbstractDoctrineAnnotationFixer extends AbstractFixer implements 
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, PhpTokens $phpTokens)
+    protected function applyFix(SplFileInfo $file, PhpTokens $phpTokens)
     {
         // fetch indexes one time, this is safe as we never add or remove a token during fixing
         $analyzer = new TokensAnalyzer($phpTokens);
@@ -79,7 +81,7 @@ abstract class AbstractDoctrineAnnotationFixer extends AbstractFixer implements 
                 ->setAllowedTypes(['array'])
                 ->setAllowedValues([static function ($values) {
                     foreach ($values as $value) {
-                        if (!\is_string($value)) {
+                        if (!is_string($value)) {
                             return false;
                         }
                     }

@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests;
 
+use InvalidArgumentException;
 use PhpCsFixer\Fixer\FixerInterface;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Utils;
@@ -117,7 +118,7 @@ final class UtilsTest extends TestCase
 
     public function testCalculateTrailingWhitespaceIndentFail()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The given token must be whitespace, got "T_STRING".');
 
         $token = new Token([T_STRING, 'foo']);
@@ -192,7 +193,7 @@ final class UtilsTest extends TestCase
 
     public function testNaturalLanguageJoinWithBackticksThrowsInvalidArgumentExceptionForEmptyArray()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         Utils::naturalLanguageJoinWithBackticks([]);
     }

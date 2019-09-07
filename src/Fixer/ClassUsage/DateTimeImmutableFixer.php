@@ -12,11 +12,13 @@
 
 namespace PhpCsFixer\Fixer\ClassUsage;
 
+use DateTimeImmutable;
 use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Kuba Werłos <werlos@gmail.com>
@@ -55,7 +57,7 @@ final class DateTimeImmutableFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $isInNamespace = false;
         $isImported = false; // e.g. use DateTime;
@@ -134,7 +136,7 @@ final class DateTimeImmutableFixer extends AbstractFixer
         }
 
         if ($isUsedWithLeadingBackslash || $isUsedAlone && ($isInNamespace && $isImported || !$isInNamespace)) {
-            $tokens[$index] = new Token([T_STRING, \DateTimeImmutable::class]);
+            $tokens[$index] = new Token([T_STRING, DateTimeImmutable::class]);
             if ($isInNamespace && $isUsedAlone) {
                 $tokens->insertAt($index, new Token([T_NS_SEPARATOR, '\\']));
             }

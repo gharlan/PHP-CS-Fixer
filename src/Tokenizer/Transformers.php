@@ -12,9 +12,11 @@
 
 namespace PhpCsFixer\Tokenizer;
 
+use Generator;
 use PhpCsFixer\Utils;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use const PHP_VERSION_ID;
 
 /**
  * Collection of Transformer classes.
@@ -77,7 +79,7 @@ final class Transformers
      */
     private function registerTransformer(TransformerInterface $transformer)
     {
-        if (\PHP_VERSION_ID >= $transformer->getRequiredPhpVersionId()) {
+        if (PHP_VERSION_ID >= $transformer->getRequiredPhpVersionId()) {
             $this->items[] = $transformer;
         }
     }
@@ -98,7 +100,7 @@ final class Transformers
     }
 
     /**
-     * @return \Generator|TransformerInterface[]
+     * @return Generator|TransformerInterface[]
      */
     private function findBuiltInTransformers()
     {

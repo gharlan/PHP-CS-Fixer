@@ -23,7 +23,10 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Options;
+use function count;
+use function is_string;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -43,7 +46,7 @@ final class FinalInternalClassFixer extends AbstractFixer implements Configurati
             $this->configuration['annotation-black-list']
         );
 
-        if (\count($intersect)) {
+        if (count($intersect)) {
             throw new InvalidFixerConfigurationException($this->getName(), sprintf('Annotation cannot be used in both the white- and black list, got duplicates: "%s".', implode('", "', array_keys($intersect))));
         }
     }
@@ -88,7 +91,7 @@ final class FinalInternalClassFixer extends AbstractFixer implements Configurati
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = $tokens->count() - 1; 0 <= $index; --$index) {
             if (!$tokens[$index]->isGivenKind(T_CLASS) || !$this->isClassCandidate($tokens, $index)) {
@@ -113,7 +116,7 @@ final class FinalInternalClassFixer extends AbstractFixer implements Configurati
     {
         $annotationsAsserts = [static function (array $values) {
             foreach ($values as $value) {
-                if (!\is_string($value) || '' === $value) {
+                if (!is_string($value) || '' === $value) {
                     return false;
                 }
             }

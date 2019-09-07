@@ -20,8 +20,14 @@ use PhpCsFixer\DocBlock\DocBlock;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use function count;
+use function in_array;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -70,7 +76,7 @@ final class ProjectCodeTest extends TestCase
     {
         $testClassName = str_replace('PhpCsFixer', 'PhpCsFixer\\Tests', $className).'Test';
 
-        if (\in_array($className, self::$classesWithoutTests, true)) {
+        if (in_array($className, self::$classesWithoutTests, true)) {
             static::assertFalse(class_exists($testClassName), sprintf('Class "%s" already has tests, so it should be removed from "%s::$classesWithoutTests".', $className, __CLASS__));
             static::markTestIncomplete(sprintf('Class "%s" has no tests yet, please help and add it.', $className));
         }
@@ -86,16 +92,16 @@ final class ProjectCodeTest extends TestCase
      */
     public function testThatSrcClassesNotAbuseInterfaces($className)
     {
-        $rc = new \ReflectionClass($className);
+        $rc = new ReflectionClass($className);
 
         $allowedMethods = array_map(
-            function (\ReflectionClass $interface) {
+            function (ReflectionClass $interface) {
                 return $this->getPublicMethodNames($interface);
             },
             $rc->getInterfaces()
         );
 
-        if (\count($allowedMethods)) {
+        if (count($allowedMethods)) {
             $allowedMethods = array_unique(array_merge(...array_values($allowedMethods)));
         }
 
@@ -146,7 +152,7 @@ final class ProjectCodeTest extends TestCase
      */
     public function testThatSrcClassesNotExposeProperties($className)
     {
-        $rc = new \ReflectionClass($className);
+        $rc = new ReflectionClass($className);
 
         if (\PhpCsFixer\Fixer\Alias\NoMixedEchoPrintFixer::class === $className) {
             static::markTestIncomplete(sprintf(
@@ -156,7 +162,7 @@ final class ProjectCodeTest extends TestCase
         }
 
         static::assertEmpty(
-            $rc->getProperties(\ReflectionProperty::IS_PUBLIC),
+            $rc->getProperties(ReflectionProperty::IS_PUBLIC),
             sprintf('Class \'%s\' should not have public properties.', $className)
         );
 
@@ -165,16 +171,16 @@ final class ProjectCodeTest extends TestCase
         }
 
         $allowedProps = [];
-        $definedProps = $rc->getProperties(\ReflectionProperty::IS_PROTECTED);
+        $definedProps = $rc->getProperties(ReflectionProperty::IS_PROTECTED);
 
         if (false !== $rc->getParentClass()) {
-            $allowedProps = $rc->getParentClass()->getProperties(\ReflectionProperty::IS_PROTECTED);
+            $allowedProps = $rc->getParentClass()->getProperties(ReflectionProperty::IS_PROTECTED);
         }
 
-        $allowedProps = array_map(static function (\ReflectionProperty $item) {
+        $allowedProps = array_map(static function (ReflectionProperty $item) {
             return $item->getName();
         }, $allowedProps);
-        $definedProps = array_map(static function (\ReflectionProperty $item) {
+        $definedProps = array_map(static function (ReflectionProperty $item) {
             return $item->getName();
         }, $definedProps);
 
@@ -214,7 +220,7 @@ final class ProjectCodeTest extends TestCase
      */
     public function testThatTestClassesAreTraitOrAbstractOrFinal($testClassName)
     {
-        $rc = new \ReflectionClass($testClassName);
+        $rc = new ReflectionClass($testClassName);
 
         static::assertTrue(
             $rc->isTrait() || $rc->isAbstract() || $rc->isFinal(),
@@ -229,7 +235,7 @@ final class ProjectCodeTest extends TestCase
      */
     public function testThatTestClassesAreInternal($testClassName)
     {
-        $rc = new \ReflectionClass($testClassName);
+        $rc = new ReflectionClass($testClassName);
         $doc = new DocBlock($rc->getDocComment());
 
         static::assertNotEmpty(
@@ -245,11 +251,11 @@ final class ProjectCodeTest extends TestCase
      */
     public function testThatPublicMethodsAreCorrectlyNamed($testClassName)
     {
-        $reflectionClass = new \ReflectionClass($testClassName);
+        $reflectionClass = new ReflectionClass($testClassName);
 
         $publicMethods = array_filter(
-            $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC),
-            static function (\ReflectionMethod $reflectionMethod) use ($reflectionClass) {
+            $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC),
+            static function (ReflectionMethod $reflectionMethod) use ($reflectionClass) {
                 return $reflectionMethod->getDeclaringClass()->getName() === $reflectionClass->getName();
             }
         );
@@ -296,7 +302,7 @@ final class ProjectCodeTest extends TestCase
      */
     public function testThereIsNoPregFunctionUsedDirectly($className)
     {
-        $rc = new \ReflectionClass($className);
+        $rc = new ReflectionClass($className);
         $tokens = Tokens::fromCode(file_get_contents($rc->getFileName()));
         $stringTokens = array_filter(
             $tokens->toArray(),
@@ -338,7 +344,7 @@ final class ProjectCodeTest extends TestCase
                 return [$item];
             },
             array_filter($this->getSrcClasses(), static function ($className) {
-                $rc = new \ReflectionClass($className);
+                $rc = new ReflectionClass($className);
 
                 $doc = false !== $rc->getDocComment()
                     ? new DocBlock($rc->getDocComment())
@@ -346,9 +352,9 @@ final class ProjectCodeTest extends TestCase
 
                 if (
                     $rc->isInterface()
-                    || ($doc && \count($doc->getAnnotationsOfType('internal')))
-                    || 0 === \count($rc->getInterfaces())
-                    || \in_array($className, [
+                    || ($doc && count($doc->getAnnotationsOfType('internal')))
+                    || 0 === count($rc->getInterfaces())
+                    || in_array($className, [
                         \PhpCsFixer\Finder::class,
                         \PhpCsFixer\Test\AbstractFixerTestCase::class,
                         \PhpCsFixer\Test\AbstractIntegrationTestCase::class,
@@ -372,7 +378,7 @@ final class ProjectCodeTest extends TestCase
             array_filter(
                 $this->getSrcClasses(),
                 static function ($className) {
-                    $rc = new \ReflectionClass($className);
+                    $rc = new ReflectionClass($className);
 
                     return !$rc->isAbstract() && !$rc->isInterface();
                 }
@@ -409,7 +415,7 @@ final class ProjectCodeTest extends TestCase
     {
         $dataProviderMethodNames = [];
         $tokens = Tokens::fromCode(file_get_contents(
-            str_replace('\\', \DIRECTORY_SEPARATOR, preg_replace('#^PhpCsFixer\\\Tests#', 'tests', $testClassName)).'.php'
+            str_replace('\\', DIRECTORY_SEPARATOR, preg_replace('#^PhpCsFixer\\\Tests#', 'tests', $testClassName)).'.php'
         ));
 
         foreach ($tokens as $token) {
@@ -450,7 +456,7 @@ final class ProjectCodeTest extends TestCase
                 return sprintf(
                     '%s\\%s%s%s',
                     'PhpCsFixer',
-                    strtr($file->getRelativePath(), \DIRECTORY_SEPARATOR, '\\'),
+                    strtr($file->getRelativePath(), DIRECTORY_SEPARATOR, '\\'),
                     $file->getRelativePath() ? '\\' : '',
                     $file->getBasename('.'.$file->getExtension())
                 );
@@ -484,7 +490,7 @@ final class ProjectCodeTest extends TestCase
             static function (SplFileInfo $file) {
                 return sprintf(
                     'PhpCsFixer\\Tests\\%s%s%s',
-                    strtr($file->getRelativePath(), \DIRECTORY_SEPARATOR, '\\'),
+                    strtr($file->getRelativePath(), DIRECTORY_SEPARATOR, '\\'),
                     $file->getRelativePath() ? '\\' : '',
                     $file->getBasename('.'.$file->getExtension())
                 );
@@ -502,17 +508,17 @@ final class ProjectCodeTest extends TestCase
     }
 
     /**
-     * @param \ReflectionClass $rc
+     * @param ReflectionClass $rc
      *
      * @return string[]
      */
-    private function getPublicMethodNames(\ReflectionClass $rc)
+    private function getPublicMethodNames(ReflectionClass $rc)
     {
         return array_map(
-            static function (\ReflectionMethod $rm) {
+            static function (ReflectionMethod $rm) {
                 return $rm->getName();
             },
-            $rc->getMethods(\ReflectionMethod::IS_PUBLIC)
+            $rc->getMethods(ReflectionMethod::IS_PUBLIC)
         );
     }
 }

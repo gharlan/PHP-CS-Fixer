@@ -26,7 +26,9 @@ use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Options;
+use const PHP_VERSION_ID;
 
 /**
  * Fixer for rules defined in PSR2 ¶4.4, ¶4.6.
@@ -138,7 +140,7 @@ SAMPLE
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = $tokens->count() - 1; $index > 0; --$index) {
             $token = $tokens[$index];
@@ -196,7 +198,7 @@ SAMPLE
                 ->setAllowedTypes(['bool'])
                 ->setDefault(false)
                 ->setNormalizer(static function (Options $options, $value) {
-                    if (\PHP_VERSION_ID < 70300 && $value) {
+                    if (PHP_VERSION_ID < 70300 && $value) {
                         throw new InvalidOptionsForEnvException('"after_heredoc" option can only be enabled with PHP 7.3+.');
                     }
 

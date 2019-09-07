@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\ConfigurationException;
 
+use Exception;
+use InvalidArgumentException;
 use PhpCsFixer\Console\Command\FixCommandExitStatusCalculator;
 
 /**
@@ -22,14 +24,14 @@ use PhpCsFixer\Console\Command\FixCommandExitStatusCalculator;
  * @internal
  * @final Only internal extending this class is supported
  */
-class InvalidConfigurationException extends \InvalidArgumentException
+class InvalidConfigurationException extends InvalidArgumentException
 {
     /**
-     * @param string          $message
-     * @param null|int        $code
-     * @param null|\Exception $previous
+     * @param string         $message
+     * @param null|int       $code
+     * @param null|Exception $previous
      */
-    public function __construct($message, $code = null, \Exception $previous = null)
+    public function __construct($message, $code = null, Exception $previous = null)
     {
         parent::__construct(
             $message,

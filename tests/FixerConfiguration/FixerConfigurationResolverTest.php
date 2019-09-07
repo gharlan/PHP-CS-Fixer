@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\FixerConfiguration;
 
+use LogicException;
 use PhpCsFixer\FixerConfiguration\AliasedFixerOption;
 use PhpCsFixer\FixerConfiguration\AllowedValueSubset;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
@@ -29,7 +30,7 @@ final class FixerConfigurationResolverTest extends TestCase
 {
     public function testWithoutOptions()
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('Options cannot be empty.');
 
         new FixerConfigurationResolver([]);
@@ -37,7 +38,7 @@ final class FixerConfigurationResolverTest extends TestCase
 
     public function testWithDuplicatesOptions()
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('The "foo" option is defined multiple times.');
 
         new FixerConfigurationResolver([
@@ -48,7 +49,7 @@ final class FixerConfigurationResolverTest extends TestCase
 
     public function testWithDuplicateAliasOptions()
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('The "foo" option is defined multiple times.');
 
         new FixerConfigurationResolver([

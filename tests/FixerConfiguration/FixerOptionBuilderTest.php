@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\FixerConfiguration;
 
+use Closure;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\Tests\TestCase;
 
@@ -63,6 +64,6 @@ final class FixerOptionBuilderTest extends TestCase
         static::assertSame('baz', $option->getDefault());
         static::assertSame(['bool'], $option->getAllowedTypes());
         static::assertSame([true, false], $option->getAllowedValues());
-        static::assertInstanceOf(\Closure::class, $option->getNormalizer());
+        static::assertInstanceOf(Closure::class, $option->getNormalizer());
     }
 }

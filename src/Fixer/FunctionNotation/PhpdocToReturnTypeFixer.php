@@ -25,6 +25,9 @@ use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use const PHP_VERSION_ID;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -119,7 +122,7 @@ function my_foo()
      */
     public function isCandidate(Tokens $tokens)
     {
-        return \PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(T_FUNCTION);
+        return PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(T_FUNCTION);
     }
 
     /**
@@ -156,7 +159,7 @@ function my_foo()
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = $tokens->count() - 1; 0 < $index; --$index) {
             if (!$tokens[$index]->isGivenKind(T_FUNCTION)) {
@@ -169,12 +172,12 @@ function my_foo()
             }
 
             $returnTypeAnnotation = $this->findReturnAnnotations($tokens, $index);
-            if (1 !== \count($returnTypeAnnotation)) {
+            if (1 !== count($returnTypeAnnotation)) {
                 continue;
             }
             $returnTypeAnnotation = current($returnTypeAnnotation);
             $types = array_values($returnTypeAnnotation->getTypes());
-            $typesCount = \count($types);
+            $typesCount = count($types);
             if (1 > $typesCount || 2 < $typesCount) {
                 continue;
             }
@@ -195,7 +198,7 @@ function my_foo()
 
                 $isNullable = true;
 
-                if (\PHP_VERSION_ID < 70100) {
+                if (PHP_VERSION_ID < 70100) {
                     continue;
                 }
 
@@ -212,7 +215,7 @@ function my_foo()
                 continue;
             }
 
-            if (isset($this->versionSpecificTypes[$returnType]) && \PHP_VERSION_ID < $this->versionSpecificTypes[$returnType]) {
+            if (isset($this->versionSpecificTypes[$returnType]) && PHP_VERSION_ID < $this->versionSpecificTypes[$returnType]) {
                 continue;
             }
 

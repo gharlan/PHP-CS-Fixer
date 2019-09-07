@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\Console\Output;
 
+use Closure;
 use PhpCsFixer\Console\Output\ProcessOutput;
 use PhpCsFixer\FixerFileProcessedEvent;
 use PhpCsFixer\Tests\TestCase;
@@ -328,7 +329,7 @@ final class ProcessOutputTest extends TestCase
         ];
     }
 
-    private function foreachStatus(array $statuses, \Closure $action)
+    private function foreachStatus(array $statuses, Closure $action)
     {
         foreach ($statuses as $status) {
             $multiplier = isset($status[1]) ? $status[1] : 1;

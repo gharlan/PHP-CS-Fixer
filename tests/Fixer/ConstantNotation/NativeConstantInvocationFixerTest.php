@@ -13,6 +13,11 @@
 namespace PhpCsFixer\Tests\Fixer\ConstantNotation;
 
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
+use stdClass;
+use function define;
+use function get_class;
+use function gettype;
+use function is_object;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -45,7 +50,7 @@ final class NativeConstantInvocationFixerTest extends AbstractFixerTestCase
         $this->expectException(\PhpCsFixer\ConfigurationException\InvalidConfigurationException::class);
         $this->expectExceptionMessage(sprintf(
             'Each element must be a non-empty, trimmed string, got "%s" instead.',
-            \is_object($element) ? \get_class($element) : \gettype($element)
+            is_object($element) ? get_class($element) : gettype($element)
         ));
 
         $this->fixer->configure([
@@ -65,7 +70,7 @@ final class NativeConstantInvocationFixerTest extends AbstractFixerTestCase
         $this->expectException(\PhpCsFixer\ConfigurationException\InvalidConfigurationException::class);
         $this->expectExceptionMessage(sprintf(
             'Each element must be a non-empty, trimmed string, got "%s" instead.',
-            \is_object($element) ? \get_class($element) : \gettype($element)
+            is_object($element) ? get_class($element) : gettype($element)
         ));
 
         $this->fixer->configure([
@@ -87,7 +92,7 @@ final class NativeConstantInvocationFixerTest extends AbstractFixerTestCase
             'int' => [1],
             'array' => [[]],
             'float' => [0.1],
-            'object' => [new \stdClass()],
+            'object' => [new stdClass()],
             'not-trimmed' => ['  M_PI  '],
         ];
     }
@@ -420,8 +425,8 @@ EOT;
         $dontFixMe = 'DONTFIXME_'.$uniqueConstantName;
         $fixMe = 'FIXME_'.$uniqueConstantName;
 
-        \define($dontFixMe, 1);
-        \define($fixMe, 1);
+        define($dontFixMe, 1);
+        define($fixMe, 1);
 
         $this->fixer->configure([
             'fix_built_in' => true,

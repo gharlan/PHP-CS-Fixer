@@ -16,6 +16,7 @@ use PhpCsFixer\AbstractLinesBeforeNamespaceFixer;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Graham Campbell <graham@alt-three.com>
@@ -48,7 +49,7 @@ final class NoBlankLinesBeforeNamespaceFixer extends AbstractLinesBeforeNamespac
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = 0, $limit = $tokens->count(); $index < $limit; ++$index) {
             $token = $tokens[$index];

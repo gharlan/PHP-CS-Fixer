@@ -19,6 +19,8 @@ use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Kuba Werłos <werlos@gmail.com>
@@ -70,7 +72,7 @@ final class ImplodeCallFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $functionsAnalyzer = new FunctionsAnalyzer();
 
@@ -85,7 +87,7 @@ final class ImplodeCallFixer extends AbstractFixer
 
             $argumentsIndices = $this->getArgumentIndices($tokens, $index);
 
-            if (1 === \count($argumentsIndices)) {
+            if (1 === count($argumentsIndices)) {
                 $firstArgumentIndex = key($argumentsIndices);
                 $tokens->insertAt($firstArgumentIndex, [
                     new Token([T_CONSTANT_ENCAPSED_STRING, "''"]),
@@ -96,7 +98,7 @@ final class ImplodeCallFixer extends AbstractFixer
                 continue;
             }
 
-            if (2 === \count($argumentsIndices)) {
+            if (2 === count($argumentsIndices)) {
                 list($firstArgumentIndex, $secondArgumentIndex) = array_keys($argumentsIndices);
 
                 // If the first argument is string we have nothing to do

@@ -22,6 +22,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Graham Campbell <graham@alt-three.com>
@@ -95,7 +97,7 @@ function foo () {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         if (self::STRATEGY_NEW_LINE_FOR_CHAINED_CALLS === $this->configuration['strategy']) {
             $this->applyChainedCallsFix($tokens);
@@ -134,7 +136,7 @@ function foo () {
 
     private function applyChainedCallsFix(Tokens $tokens)
     {
-        for ($index = \count($tokens) - 1; $index >= 0; --$index) {
+        for ($index = count($tokens) - 1; $index >= 0; --$index) {
             // continue if token is not a semicolon
             if (!$tokens[$index]->equals(';')) {
                 continue;
@@ -175,7 +177,7 @@ function foo () {
     {
         $lineEnding = $this->whitespacesConfig->getLineEnding();
 
-        for ($index, $count = \count($tokens); $index < $count; ++$index) {
+        for ($index, $count = count($tokens); $index < $count; ++$index) {
             if (false !== strstr($tokens[$index]->getContent(), $lineEnding)) {
                 return $index;
             }

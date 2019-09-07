@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -66,9 +68,9 @@ final class Sample
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        $end = \count($tokens) - 3; // min. number of tokens to form a class candidate to fix
+        $end = count($tokens) - 3; // min. number of tokens to form a class candidate to fix
         for ($index = 0; $index < $end; ++$index) {
             if (!$tokens[$index]->isGivenKind(T_CLASS)) {
                 continue;

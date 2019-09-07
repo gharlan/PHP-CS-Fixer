@@ -18,6 +18,7 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use function strlen;
 
 /**
  * @author SpacePossum
@@ -75,7 +76,7 @@ final class FopenFlagOrderFixer extends AbstractFopenFlagFixer
             $mode = substr($content, 1, -1);
         }
 
-        $modeLength = \strlen($mode);
+        $modeLength = strlen($mode);
         if ($modeLength < 2) {
             return; // nothing to sort
         }

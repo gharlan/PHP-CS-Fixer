@@ -25,6 +25,10 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Indicator\PhpUnitTestCaseIndicator;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function array_slice;
+use function count;
+use function in_array;
 
 /**
  * @author Gert de Pagter <BackEndTea@gmail.com>
@@ -75,7 +79,7 @@ final class PhpUnitInternalClassFixer extends AbstractFixer implements Whitespac
         ]);
     }
 
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $phpUnitTestCaseIndicator = new PhpUnitTestCaseIndicator();
 
@@ -117,14 +121,14 @@ final class PhpUnitInternalClassFixer extends AbstractFixer implements Whitespac
     {
         $typeIndex = $tokens->getPrevMeaningfulToken($i);
         if ($tokens[$typeIndex]->isGivenKind(T_FINAL)) {
-            return \in_array('final', $this->configuration['types'], true);
+            return in_array('final', $this->configuration['types'], true);
         }
 
         if ($tokens[$typeIndex]->isGivenKind(T_ABSTRACT)) {
-            return \in_array('abstract', $this->configuration['types'], true);
+            return in_array('abstract', $this->configuration['types'], true);
         }
 
-        return \in_array('normal', $this->configuration['types'], true);
+        return in_array('normal', $this->configuration['types'], true);
     }
 
     private function createDocBlock(Tokens $tokens, $docBlockIndex)
@@ -224,7 +228,7 @@ final class PhpUnitInternalClassFixer extends AbstractFixer implements Whitespac
     private function makeDocBlockMultiLineIfNeeded(DocBlock $doc, Tokens $tokens, $docBlockIndex)
     {
         $lines = $doc->getLines();
-        if (1 === \count($lines) && empty($doc->getAnnotationsOfType('internal'))) {
+        if (1 === count($lines) && empty($doc->getAnnotationsOfType('internal'))) {
             $lines = $this->splitUpDocBlock($lines, $tokens, $docBlockIndex);
 
             return new DocBlock(implode('', $lines));
@@ -266,14 +270,14 @@ final class PhpUnitInternalClassFixer extends AbstractFixer implements Whitespac
         $line = str_replace('*/', '', $line);
         $line = trim($line);
         $line = str_split($line);
-        $i = \count($line);
+        $i = count($line);
         do {
             --$i;
         } while ('*' !== $line[$i] && '*' !== $line[$i - 1] && '/' !== $line[$i - 2]);
         if (' ' === $line[$i]) {
             ++$i;
         }
-        $line = \array_slice($line, $i);
+        $line = array_slice($line, $i);
 
         return implode('', $line);
     }

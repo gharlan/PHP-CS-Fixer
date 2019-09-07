@@ -14,6 +14,9 @@ namespace PhpCsFixer;
 
 use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use function strlen;
 
 /**
  * @internal
@@ -33,7 +36,7 @@ abstract class AbstractFopenFlagFixer extends AbstractFunctionReferenceFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $argumentsAnalyzer = new ArgumentsAnalyzer();
 
@@ -55,7 +58,7 @@ abstract class AbstractFopenFlagFixer extends AbstractFunctionReferenceFixer
                 $candidate[2]
             );
 
-            $argumentsCount = \count($arguments); // argument count sanity check
+            $argumentsCount = count($arguments); // argument count sanity check
 
             if ($argumentsCount < 2 || $argumentsCount > 4) {
                 continue;
@@ -80,7 +83,7 @@ abstract class AbstractFopenFlagFixer extends AbstractFunctionReferenceFixer
      */
     protected function isValidModeString($mode)
     {
-        $modeLength = \strlen($mode);
+        $modeLength = strlen($mode);
         if ($modeLength < 1 || $modeLength > 13) { // 13 === length 'r+w+a+x+c+etb'
             return false;
         }

@@ -25,6 +25,8 @@ use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -104,7 +106,7 @@ function f9(string $foo, $bar, $baz) {}
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $argumentsAnalyzer = new ArgumentsAnalyzer();
 
@@ -162,7 +164,7 @@ function f9(string $foo, $bar, $baz) {}
                 }
             }
 
-            if (!\count($arguments)) {
+            if (!count($arguments)) {
                 continue;
             }
 
@@ -179,12 +181,12 @@ function f9(string $foo, $bar, $baz) {}
                 $lastParamLine = max($lastParamLine, $annotation->getEnd());
             }
 
-            if (!\count($arguments)) {
+            if (!count($arguments)) {
                 continue;
             }
 
             $lines = $doc->getLines();
-            $linesCount = \count($lines);
+            $linesCount = count($lines);
 
             Preg::match('/^(\s*).*$/', $lines[$linesCount - 1]->getContent(), $matches);
             $indent = $matches[1];

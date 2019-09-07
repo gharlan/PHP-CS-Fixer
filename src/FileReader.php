@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer;
 
+use RuntimeException;
+
 /**
  * File reader that unify access to regular file and stdin-alike file.
  *
@@ -75,7 +77,7 @@ final class FileReader
         if (false === $content) {
             $error = error_get_last();
 
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Failed to read content from "%s".%s',
                 $realPath,
                 $error ? ' '.$error['message'] : ''

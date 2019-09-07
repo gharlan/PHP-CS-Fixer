@@ -12,12 +12,15 @@
 
 namespace PhpCsFixer\Tests\Console\Output;
 
+use InvalidArgumentException;
 use PhpCsFixer\Console\Output\ErrorOutput;
 use PhpCsFixer\Error\Error;
 use PhpCsFixer\Linter\LintingException;
 use PhpCsFixer\Tests\TestCase;
+use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
+use function get_class;
 
 /**
  * @author SpacePossum
@@ -65,7 +68,7 @@ Files that were not fixed due to errors reported during %s:
         %s (%d)    '.'
                             '.'
 ',
-                \get_class($source),
+                get_class($source),
                 $source->getMessage(),
                 $source->getCode()
             );
@@ -176,10 +179,10 @@ EOT;
     private function getErrorAndLineNumber()
     {
         $lineNumber = __LINE__;
-        $exception = new \RuntimeException(// note: keep exception constructor and __LINE__ separated with one line break
+        $exception = new RuntimeException(// note: keep exception constructor and __LINE__ separated with one line break
             'PHPUnit RT',
             888,
-            new \InvalidArgumentException('PHPUnit IAE')
+            new InvalidArgumentException('PHPUnit IAE')
         );
 
         return [$lineNumber + 1, new Error(Error::TYPE_EXCEPTION, __FILE__, $exception)];

@@ -13,6 +13,7 @@
 namespace PhpCsFixer\Fixer;
 
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -47,10 +48,10 @@ interface FixerInterface
     /**
      * Fixes a file.
      *
-     * @param \SplFileInfo $file   A \SplFileInfo instance
-     * @param Tokens       $tokens Tokens collection
+     * @param SplFileInfo $file   A \SplFileInfo instance
+     * @param Tokens      $tokens Tokens collection
      */
-    public function fix(\SplFileInfo $file, Tokens $tokens);
+    public function fix(SplFileInfo $file, Tokens $tokens);
 
     /**
      * Returns the name of the fixer.
@@ -73,9 +74,9 @@ interface FixerInterface
     /**
      * Returns true if the file is supported by this fixer.
      *
-     * @param \SplFileInfo $file
+     * @param SplFileInfo $file
      *
      * @return bool true if the file is supported by this fixer, false otherwise
      */
-    public function supports(\SplFileInfo $file);
+    public function supports(SplFileInfo $file);
 }

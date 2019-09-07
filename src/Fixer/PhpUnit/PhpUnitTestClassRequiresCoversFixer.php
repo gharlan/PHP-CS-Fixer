@@ -22,6 +22,8 @@ use PhpCsFixer\Indicator\PhpUnitTestCaseIndicator;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -62,7 +64,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $phpUnitTestCaseIndicator = new PhpUnitTestCaseIndicator();
 
@@ -136,7 +138,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
         $lines = $doc->getLines();
         array_splice(
             $lines,
-            \count($lines) - 1,
+            count($lines) - 1,
             0,
             [
                 new Line(sprintf(

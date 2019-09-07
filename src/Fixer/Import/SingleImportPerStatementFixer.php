@@ -20,6 +20,8 @@ use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
+use function count;
 
 /**
  * Fixer for rules defined in PSR2 ¶3.
@@ -57,7 +59,7 @@ final class SingleImportPerStatementFixer extends AbstractFixer implements White
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $tokensAnalyzer = new TokensAnalyzer($tokens);
         $uses = array_reverse($tokensAnalyzer->getImportUseIndexes());
@@ -201,7 +203,7 @@ final class SingleImportPerStatementFixer extends AbstractFixer implements White
         list($groupPrefix, $groupOpenIndex, $groupCloseIndex, $comment) = $this->getGroupDeclaration($tokens, $index);
         $statements = $this->getGroupStatements($tokens, $groupPrefix, $groupOpenIndex, $groupCloseIndex, $comment);
 
-        if (\count($statements) < 2) {
+        if (count($statements) < 2) {
             return;
         }
 

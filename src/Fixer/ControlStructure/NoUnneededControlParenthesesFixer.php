@@ -21,6 +21,9 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function array_key_exists;
+use function defined;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
@@ -47,7 +50,7 @@ final class NoUnneededControlParenthesesFixer extends AbstractFixer implements C
         parent::__construct();
 
         // To be moved back to compile time property declaration when PHP support of PHP CS Fixer will be 7.0+
-        if (\defined('T_COALESCE')) {
+        if (defined('T_COALESCE')) {
             self::$loops['clone']['forbiddenContents'][] = [T_COALESCE, '??'];
         }
     }
@@ -117,7 +120,7 @@ yield(2);
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         // Checks if specific statements are set and uses them in this case.
         $loops = array_intersect_key(self::$loops, array_flip($this->configuration['statements']));
@@ -146,7 +149,7 @@ yield(2);
                     continue;
                 }
 
-                if (\array_key_exists('forbiddenContents', $loop)) {
+                if (array_key_exists('forbiddenContents', $loop)) {
                     $forbiddenTokenIndex = $tokens->getNextTokenOfKind($blockStartIndex, $loop['forbiddenContents']);
                     // A forbidden token is found and is inside the parenthesis.
                     if (null !== $forbiddenTokenIndex && $forbiddenTokenIndex < $blockEndIndex) {

@@ -12,7 +12,9 @@
 
 namespace PhpCsFixer;
 
+use LogicException;
 use PhpCsFixer\Console\Application;
+use function in_array;
 
 /**
  * Obtain information about using version of tool.
@@ -40,14 +42,14 @@ final class ToolInfo implements ToolInfoInterface
     public function getComposerInstallationDetails()
     {
         if (!$this->isInstalledByComposer()) {
-            throw new \LogicException('Cannot get composer version for tool not installed by composer.');
+            throw new LogicException('Cannot get composer version for tool not installed by composer.');
         }
 
         if (null === $this->composerInstallationDetails) {
             $composerInstalled = json_decode(file_get_contents($this->getComposerInstalledFile()), true);
 
             foreach ($composerInstalled as $package) {
-                if (\in_array($package['name'], [self::COMPOSER_PACKAGE_NAME, self::COMPOSER_LEGACY_PACKAGE_NAME], true)) {
+                if (in_array($package['name'], [self::COMPOSER_PACKAGE_NAME, self::COMPOSER_LEGACY_PACKAGE_NAME], true)) {
                     $this->composerInstallationDetails = $package;
 
                     break;

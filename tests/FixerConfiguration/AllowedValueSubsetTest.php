@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\FixerConfiguration;
 
 use PhpCsFixer\FixerConfiguration\AllowedValueSubset;
 use PhpCsFixer\Tests\TestCase;
+use stdClass;
 
 /**
  * @internal
@@ -84,7 +85,7 @@ final class AllowedValueSubsetTest extends TestCase
                 false,
             ],
             [
-                new \stdClass(),
+                new stdClass(),
                 false,
             ],
             [

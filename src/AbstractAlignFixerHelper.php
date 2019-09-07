@@ -13,6 +13,7 @@
 namespace PhpCsFixer;
 
 use PhpCsFixer\Tokenizer\Tokens;
+use function count;
 
 /**
  * @author Carlos Cirello <carlos.cirello.nl@gmail.com>
@@ -47,7 +48,7 @@ abstract class AbstractAlignFixerHelper
         // To handle that unwanted behavior we work on clone of Tokens collection and then override original collection with fixed collection.
         $tokensClone = clone $tokens;
 
-        $this->injectAlignmentPlaceholders($tokensClone, 0, \count($tokens));
+        $this->injectAlignmentPlaceholders($tokensClone, 0, count($tokens));
         $content = $this->replacePlaceholder($tokensClone);
 
         $tokens->setCode($content);
@@ -96,7 +97,7 @@ abstract class AbstractAlignFixerHelper
             }
 
             foreach ($linesWithPlaceholder as $group) {
-                if (\count($group) < 1) {
+                if (count($group) < 1) {
                     continue;
                 }
 

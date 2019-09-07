@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests;
 
+use BadMethodCallException;
 use PhpCsFixer\StdinFileInfo;
 
 /**
@@ -69,7 +70,7 @@ final class StdinFileInfoTest extends TestCase
     {
         $fileInfo = new StdinFileInfo();
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage('Method "PhpCsFixer\StdinFileInfo::getFileInfo" is not implemented.');
 
         $fileInfo->getFileInfo();
@@ -128,7 +129,7 @@ final class StdinFileInfoTest extends TestCase
     {
         $fileInfo = new StdinFileInfo();
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage('Method "PhpCsFixer\StdinFileInfo::getPathInfo" is not implemented.');
 
         $fileInfo->getPathInfo();
@@ -208,7 +209,7 @@ final class StdinFileInfoTest extends TestCase
     {
         $fileInfo = new StdinFileInfo();
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage('Method "PhpCsFixer\StdinFileInfo::openFile" is not implemented.');
 
         $fileInfo->openFile();

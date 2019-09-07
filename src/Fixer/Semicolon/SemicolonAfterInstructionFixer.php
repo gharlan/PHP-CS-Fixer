@@ -17,6 +17,8 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author SpacePossum
@@ -45,9 +47,9 @@ final class SemicolonAfterInstructionFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        for ($index = \count($tokens) - 1; $index > 1; --$index) {
+        for ($index = count($tokens) - 1; $index > 1; --$index) {
             if (!$tokens[$index]->isGivenKind(T_CLOSE_TAG)) {
                 continue;
             }

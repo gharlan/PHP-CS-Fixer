@@ -16,6 +16,7 @@ use PhpCsFixer\Cache\CacheInterface;
 use PhpCsFixer\Cache\FileCacheManager;
 use PhpCsFixer\Tests\TestCase;
 use Prophecy\Argument;
+use ReflectionClass;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -28,14 +29,14 @@ final class FileCacheManagerTest extends TestCase
 {
     public function testIsFinal()
     {
-        $reflection = new \ReflectionClass(\PhpCsFixer\Cache\FileCacheManager::class);
+        $reflection = new ReflectionClass(\PhpCsFixer\Cache\FileCacheManager::class);
 
         static::assertTrue($reflection->isFinal());
     }
 
     public function testImplementsCacheManagerInterface()
     {
-        $reflection = new \ReflectionClass(\PhpCsFixer\Cache\FileCacheManager::class);
+        $reflection = new ReflectionClass(\PhpCsFixer\Cache\FileCacheManager::class);
 
         static::assertTrue($reflection->implementsInterface(\PhpCsFixer\Cache\CacheManagerInterface::class));
     }

@@ -15,6 +15,7 @@ namespace PhpCsFixer\Tests\ConfigurationException;
 use PhpCsFixer\ConfigurationException\RequiredFixerConfigurationException;
 use PhpCsFixer\Console\Command\FixCommandExitStatusCalculator;
 use PhpCsFixer\Tests\TestCase;
+use RuntimeException;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -54,7 +55,7 @@ final class RequiredFixerConfigurationExceptionTest extends TestCase
     {
         $fixerName = 'hal';
         $message = 'I cannot do that, Dave.';
-        $previous = new \RuntimeException();
+        $previous = new RuntimeException();
 
         $exception = new RequiredFixerConfigurationException(
             $fixerName,

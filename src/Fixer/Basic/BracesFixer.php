@@ -24,6 +24,9 @@ use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use RuntimeException;
+use SplFileInfo;
+use function count;
 
 /**
  * Fixer for rules defined in PSR2 ¶4.1, ¶4.4, ¶5.
@@ -141,7 +144,7 @@ class Foo
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $this->fixCommentBeforeBrace($tokens);
         $this->fixMissingControlBraces($tokens);
@@ -235,7 +238,7 @@ class Foo
     {
         $controlContinuationTokens = $this->getControlContinuationTokens();
 
-        for ($index = \count($tokens) - 1; 0 <= $index; --$index) {
+        for ($index = count($tokens) - 1; 0 <= $index; --$index) {
             $token = $tokens[$index];
 
             if (!$token->isGivenKind($controlContinuationTokens)) {
@@ -261,7 +264,7 @@ class Foo
 
     private function fixDoWhile(Tokens $tokens)
     {
-        for ($index = \count($tokens) - 1; 0 <= $index; --$index) {
+        for ($index = count($tokens) - 1; 0 <= $index; --$index) {
             $token = $tokens[$index];
 
             if (!$token->isGivenKind(T_DO)) {
@@ -295,7 +298,7 @@ class Foo
         );
         $tokensAnalyzer = new TokensAnalyzer($tokens);
 
-        for ($index = 0, $limit = \count($tokens); $index < $limit; ++$index) {
+        for ($index = 0, $limit = count($tokens); $index < $limit; ++$index) {
             $token = $tokens[$index];
 
             // if token is not a structure element - continue
@@ -595,7 +598,7 @@ class Foo
             }
 
             // reset loop limit due to collection change
-            $limit = \count($tokens);
+            $limit = count($tokens);
         }
     }
 
@@ -797,7 +800,7 @@ class Foo
             }
         }
 
-        throw new \RuntimeException('Statement end not found.');
+        throw new RuntimeException('Statement end not found.');
     }
 
     private function getControlTokens()

@@ -24,7 +24,9 @@ use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Options;
+use const PHP_VERSION_ID;
 
 /**
  * Removes Zero-width space (ZWSP), Non-breaking space (NBSP) and other invisible unicode symbols.
@@ -106,7 +108,7 @@ final class NonPrintableCharacterFixer extends AbstractFixer implements Configur
                 ->setAllowedTypes(['bool'])
                 ->setDefault(false) // @TODO 3.0 change to true
                 ->setNormalizer(static function (Options $options, $value) {
-                    if (\PHP_VERSION_ID < 70000 && $value) {
+                    if (PHP_VERSION_ID < 70000 && $value) {
                         throw new InvalidOptionsForEnvException('Escape sequences require PHP 7.0+.');
                     }
 
@@ -119,7 +121,7 @@ final class NonPrintableCharacterFixer extends AbstractFixer implements Configur
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $replacements = [];
         $escapeSequences = [];

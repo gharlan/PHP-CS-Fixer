@@ -12,6 +12,9 @@
 
 namespace PhpCsFixer\FixerConfiguration;
 
+use Closure;
+use LogicException;
+
 interface FixerOptionInterface
 {
     /**
@@ -30,7 +33,7 @@ interface FixerOptionInterface
     public function hasDefault();
 
     /**
-     * @throws \LogicException when no default value is defined
+     * @throws LogicException when no default value is defined
      *
      * @return mixed
      */
@@ -47,7 +50,7 @@ interface FixerOptionInterface
     public function getAllowedValues();
 
     /**
-     * @return null|\Closure
+     * @return null|Closure
      */
     public function getNormalizer();
 }

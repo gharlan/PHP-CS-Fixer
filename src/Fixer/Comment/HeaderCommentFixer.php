@@ -24,7 +24,9 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Options;
+use function count;
 
 /**
  * @author Antonio J. García Lagar <aj@garcialagar.es>
@@ -126,7 +128,7 @@ echo 1;
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         // figure out where the comment should be placed
         $headerNewIndex = $this->findHeaderCommentInsertionIndex($tokens);
@@ -292,11 +294,11 @@ echo 1;
 
         // fix lines after header comment
         $expectedLineCount = 'both' === $this->configuration['separate'] || 'bottom' === $this->configuration['separate'] ? 2 : 1;
-        if ($headerIndex === \count($tokens) - 1) {
+        if ($headerIndex === count($tokens) - 1) {
             $tokens->insertAt($headerIndex + 1, new Token([T_WHITESPACE, str_repeat($lineEnding, $expectedLineCount)]));
         } else {
             $afterCommentIndex = $tokens->getNextNonWhitespace($headerIndex);
-            $lineBreakCount = $this->getLineBreakCount($tokens, $headerIndex + 1, null === $afterCommentIndex ? \count($tokens) : $afterCommentIndex);
+            $lineBreakCount = $this->getLineBreakCount($tokens, $headerIndex + 1, null === $afterCommentIndex ? count($tokens) : $afterCommentIndex);
             if ($lineBreakCount < $expectedLineCount) {
                 $missing = str_repeat($lineEnding, $expectedLineCount - $lineBreakCount);
                 if ($tokens[$headerIndex + 1]->isWhitespace()) {

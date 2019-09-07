@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests;
 
+use InvalidArgumentException;
 use PhpCsFixer\AccessibleObject\AccessibleObject;
 use PhpCsFixer\ConfigurationException\InvalidForEnvFixerConfigurationException;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
@@ -21,6 +22,11 @@ use PhpCsFixer\Fixer\PhpUnit\PhpUnitTargetVersion;
 use PhpCsFixer\FixerConfiguration\DeprecatedFixerOptionInterface;
 use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet;
+use ReflectionMethod;
+use UnexpectedValueException;
+use function in_array;
+use function is_array;
+use function is_int;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -158,7 +164,7 @@ final class RuleSetTest extends TestCase
 
     public function testResolveRulesWithInvalidSet()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Set "@foo" does not exist.');
 
         RuleSet::create([
@@ -168,7 +174,7 @@ final class RuleSetTest extends TestCase
 
     public function testResolveRulesWithMissingRuleValue()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Missing value for "braces" rule/set.');
 
         RuleSet::create([
@@ -285,7 +291,7 @@ final class RuleSetTest extends TestCase
     {
         $ruleSet = RuleSet::create();
 
-        $method = new \ReflectionMethod(
+        $method = new ReflectionMethod(
             \PhpCsFixer\RuleSet::class,
             'getSetDefinition'
         );
@@ -381,7 +387,7 @@ final class RuleSetTest extends TestCase
 
     public function testInvalidConfigNestedSets()
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessageRegExp('#^Nested rule set "@PSR1" configuration must be a boolean\.$#');
 
         new RuleSet(
@@ -545,7 +551,7 @@ final class RuleSetTest extends TestCase
     {
         $ruleSet = new RuleSet();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('#^Rule "_not_exists" is not in the set\.$#');
 
         $ruleSet->getRuleConfiguration('_not_exists');
@@ -609,7 +615,7 @@ final class RuleSetTest extends TestCase
         }
 
         foreach ($data as $key => $value) {
-            if (\is_array($value)) {
+            if (is_array($value)) {
                 $this->sort($data[$key]);
             }
         }
@@ -623,7 +629,7 @@ final class RuleSetTest extends TestCase
     private function allInteger(array $values)
     {
         foreach ($values as $value) {
-            if (!\is_int($value)) {
+            if (!is_int($value)) {
                 return false;
             }
         }
@@ -729,7 +735,7 @@ final class RuleSetTest extends TestCase
             }
         );
 
-        static::assertTrue(\in_array($actualTargetVersion, $allowedVersionsForRuleset, true), sprintf(
+        static::assertTrue(in_array($actualTargetVersion, $allowedVersionsForRuleset, true), sprintf(
             'Rule "%s" (in rule set "%s") has target "%s", but the rule set is not allowing it (allowed are only "%s")',
             $fixer->getName(),
             $setName,

@@ -12,9 +12,11 @@
 
 namespace PhpCsFixer\Tests\ConfigurationException;
 
+use InvalidArgumentException;
 use PhpCsFixer\ConfigurationException\InvalidConfigurationException;
 use PhpCsFixer\Console\Command\FixCommandExitStatusCalculator;
 use PhpCsFixer\Tests\TestCase;
+use RuntimeException;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -29,7 +31,7 @@ final class InvalidConfigurationExceptionTest extends TestCase
     {
         $exception = new InvalidConfigurationException('I cannot do that, Dave.');
 
-        static::assertInstanceOf(\InvalidArgumentException::class, $exception);
+        static::assertInstanceOf(InvalidArgumentException::class, $exception);
     }
 
     public function testDefaults()
@@ -47,7 +49,7 @@ final class InvalidConfigurationExceptionTest extends TestCase
     {
         $message = 'I cannot do that, Dave.';
         $code = 9000;
-        $previous = new \RuntimeException();
+        $previous = new RuntimeException();
 
         $exception = new InvalidConfigurationException(
             $message,

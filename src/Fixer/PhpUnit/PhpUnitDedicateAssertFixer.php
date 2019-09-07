@@ -21,6 +21,9 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function in_array;
+use function is_array;
 
 /**
  * @author SpacePossum
@@ -175,7 +178,7 @@ $this->assertTrue(is_readable($a));
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($this->getPreviousAssertCall($tokens) as $assertCall) {
             // test and fix for assertTrue/False to dedicated asserts
@@ -285,11 +288,11 @@ $this->assertTrue(is_readable($a));
         $isPositive = 'asserttrue' === $assertCall['loweredName'];
 
         $content = strtolower($tokens[$testIndex]->getContent());
-        if (!\in_array($content, $this->functions, true)) {
+        if (!in_array($content, $this->functions, true)) {
             return;
         }
 
-        if (\is_array(self::$fixMap[$content])) {
+        if (is_array(self::$fixMap[$content])) {
             if (false !== self::$fixMap[$content][$isPositive]) {
                 $tokens[$assertCall['index']] = new Token([T_STRING, self::$fixMap[$content][$isPositive]]);
                 $this->removeFunctionCall($tokens, $testDefaultNamespaceTokenIndex, $testIndex, $testOpenIndex, $testCloseIndex);

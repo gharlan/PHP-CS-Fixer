@@ -17,6 +17,7 @@ use PhpCsFixer\FileRemoval;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
+use const PHP_SAPI;
 
 /**
  * Handle PHP code linting using separated process of `php -l _file_`.
@@ -57,7 +58,7 @@ final class ProcessLinter implements LinterInterface
                 throw new UnavailableLinterException('Cannot find PHP executable.');
             }
 
-            if ('phpdbg' === \PHP_SAPI) {
+            if ('phpdbg' === PHP_SAPI) {
                 if (false === strpos($executable, 'phpdbg')) {
                     throw new UnavailableLinterException('Automatically found PHP executable is non-standard phpdbg. Could not find proper PHP executable.');
                 }

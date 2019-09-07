@@ -24,6 +24,9 @@ use PhpCsFixer\Tokenizer\Analyzer\CommentsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Utils;
+use SplFileInfo;
+use function count;
+use function in_array;
 
 /**
  * @author Kuba Werłos <werlos@gmail.com>
@@ -104,11 +107,11 @@ final class CommentToPhpdocFixer extends AbstractFixer implements ConfigurationD
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $commentsAnalyzer = new CommentsAnalyzer();
 
-        for ($index = 0, $limit = \count($tokens); $index < $limit; ++$index) {
+        for ($index = 0, $limit = count($tokens); $index < $limit; ++$index) {
             $token = $tokens[$index];
 
             if (!$token->isGivenKind(T_COMMENT)) {
@@ -151,7 +154,7 @@ final class CommentToPhpdocFixer extends AbstractFixer implements ConfigurationD
                     return false;
                 }
 
-                return !\in_array(strtolower($matches[1]), $this->ignoredTags, true);
+                return !in_array(strtolower($matches[1]), $this->ignoredTags, true);
             },
             false
         );
@@ -163,7 +166,7 @@ final class CommentToPhpdocFixer extends AbstractFixer implements ConfigurationD
      */
     private function fixComment(Tokens $tokens, $indices)
     {
-        if (1 === \count($indices)) {
+        if (1 === count($indices)) {
             $this->fixCommentSingleLine($tokens, reset($indices));
         } else {
             $this->fixCommentMultiLine($tokens, $indices);

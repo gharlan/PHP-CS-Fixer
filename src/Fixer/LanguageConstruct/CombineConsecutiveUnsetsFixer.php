@@ -17,6 +17,8 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function is_int;
 
 /**
  * @author SpacePossum
@@ -54,7 +56,7 @@ final class CombineConsecutiveUnsetsFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = $tokens->count() - 1; $index >= 0; --$index) {
             if (!$tokens[$index]->isGivenKind(T_UNSET)) {
@@ -62,7 +64,7 @@ final class CombineConsecutiveUnsetsFixer extends AbstractFixer
             }
 
             $previousUnsetCall = $this->getPreviousUnsetCall($tokens, $index);
-            if (\is_int($previousUnsetCall)) {
+            if (is_int($previousUnsetCall)) {
                 $index = $previousUnsetCall;
 
                 continue;

@@ -12,12 +12,15 @@
 
 namespace PhpCsFixer;
 
+use BadMethodCallException;
+use SplFileInfo;
+
 /**
  * @author Davi Koscianski Vidal <davividal@gmail.com>
  *
  * @internal
  */
-final class StdinFileInfo extends \SplFileInfo
+final class StdinFileInfo extends SplFileInfo
 {
     public function __construct()
     {
@@ -57,7 +60,7 @@ final class StdinFileInfo extends \SplFileInfo
 
     public function getFileInfo($className = null)
     {
-        throw new \BadMethodCallException(sprintf('Method "%s" is not implemented.', __METHOD__));
+        throw new BadMethodCallException(sprintf('Method "%s" is not implemented.', __METHOD__));
     }
 
     public function getFilename()
@@ -104,7 +107,7 @@ final class StdinFileInfo extends \SplFileInfo
 
     public function getPathInfo($className = null)
     {
-        throw new \BadMethodCallException(sprintf('Method "%s" is not implemented.', __METHOD__));
+        throw new BadMethodCallException(sprintf('Method "%s" is not implemented.', __METHOD__));
     }
 
     public function getPathname()
@@ -159,7 +162,7 @@ final class StdinFileInfo extends \SplFileInfo
 
     public function openFile($openMode = 'r', $useIncludePath = false, $context = null)
     {
-        throw new \BadMethodCallException(sprintf('Method "%s" is not implemented.', __METHOD__));
+        throw new BadMethodCallException(sprintf('Method "%s" is not implemented.', __METHOD__));
     }
 
     public function setFileClass($className = null)

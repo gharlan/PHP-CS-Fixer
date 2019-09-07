@@ -19,6 +19,7 @@ use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use function in_array;
 
 /**
  * @author Graham Campbell <graham@alt-three.com>
@@ -122,7 +123,7 @@ final class PhpdocTypesFixer extends AbstractPhpdocTypesFixer implements Configu
     {
         $lower = strtolower($type);
 
-        if (\in_array($lower, $this->typesToFix, true)) {
+        if (in_array($lower, $this->typesToFix, true)) {
             return $lower;
         }
 

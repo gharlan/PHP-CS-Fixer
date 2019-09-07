@@ -19,6 +19,7 @@ use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
+use function in_array;
 
 /**
  * @author Graham Campbell <graham@alt-three.com>
@@ -94,7 +95,7 @@ function sample($a, $b, $c)
      */
     protected function normalize($type)
     {
-        if (\in_array($type, $this->configuration['types'], true)) {
+        if (in_array($type, $this->configuration['types'], true)) {
             return self::$types[$type];
         }
 

@@ -12,6 +12,11 @@
 
 namespace PhpCsFixer\Tokenizer;
 
+use InvalidArgumentException;
+use LogicException;
+use function count;
+use function defined;
+
 /**
  * Analyzer of Tokens collection.
  *
@@ -47,7 +52,7 @@ final class TokensAnalyzer
         $this->tokens->rewind();
         $elements = [];
 
-        for ($index = 1, $count = \count($this->tokens) - 2; $index < $count; ++$index) {
+        for ($index = 1, $count = count($this->tokens) - 2; $index < $count; ++$index) {
             if ($this->tokens[$index]->isClassy()) {
                 list($index, $newElements) = $this->findClassyElements($index);
                 $elements += $newElements;
@@ -129,7 +134,7 @@ final class TokensAnalyzer
     public function isArrayMultiLine($index)
     {
         if (!$this->isArray($index)) {
-            throw new \InvalidArgumentException(sprintf('Not an array at given index %d.', $index));
+            throw new InvalidArgumentException(sprintf('Not an array at given index %d.', $index));
         }
 
         $tokens = $this->tokens;
@@ -186,7 +191,7 @@ final class TokensAnalyzer
         $token = $tokens[$index];
 
         if (!$token->isGivenKind(T_FUNCTION)) {
-            throw new \LogicException(sprintf('No T_FUNCTION at given index %d, got %s.', $index, $token->getName()));
+            throw new LogicException(sprintf('No T_FUNCTION at given index %d, got %s.', $index, $token->getName()));
         }
 
         $attributes = [
@@ -261,7 +266,7 @@ final class TokensAnalyzer
         $token = $tokens[$index];
 
         if (!$token->isClassy()) {
-            throw new \LogicException(sprintf('No classy token at given index %d.', $index));
+            throw new LogicException(sprintf('No classy token at given index %d.', $index));
         }
 
         if (!$token->isGivenKind(T_CLASS)) {
@@ -281,7 +286,7 @@ final class TokensAnalyzer
     public function isLambda($index)
     {
         if (!$this->tokens[$index]->isGivenKind(T_FUNCTION)) {
-            throw new \LogicException(sprintf('No T_FUNCTION at given index %d, got %s.', $index, $this->tokens[$index]->getName()));
+            throw new LogicException(sprintf('No T_FUNCTION at given index %d, got %s.', $index, $this->tokens[$index]->getName()));
         }
 
         $startParenthesisIndex = $this->tokens->getNextMeaningfulToken($index);
@@ -306,7 +311,7 @@ final class TokensAnalyzer
     public function isConstantInvocation($index)
     {
         if (!$this->tokens[$index]->isGivenKind(T_STRING)) {
-            throw new \LogicException(sprintf('No T_STRING at given index %d, got %s.', $index, $this->tokens[$index]->getName()));
+            throw new LogicException(sprintf('No T_STRING at given index %d, got %s.', $index, $this->tokens[$index]->getName()));
         }
 
         $nextIndex = $this->tokens->getNextMeaningfulToken($index);
@@ -546,11 +551,11 @@ final class TokensAnalyzer
                 CT::T_TYPE_ALTERNATION => true, // |
             ];
 
-            if (\defined('T_SPACESHIP')) {
+            if (defined('T_SPACESHIP')) {
                 $arrayOperators[T_SPACESHIP] = true; // <=>
             }
 
-            if (\defined('T_COALESCE')) {
+            if (defined('T_COALESCE')) {
                 $arrayOperators[T_COALESCE] = true;  // ??
             }
         }
@@ -587,7 +592,7 @@ final class TokensAnalyzer
         $token = $tokens[$index];
 
         if (!$token->isGivenKind(T_WHILE)) {
-            throw new \LogicException(sprintf('No T_WHILE at given index %d, got %s.', $index, $token->getName()));
+            throw new LogicException(sprintf('No T_WHILE at given index %d, got %s.', $index, $token->getName()));
         }
 
         $endIndex = $tokens->getPrevMeaningfulToken($index);
@@ -619,7 +624,7 @@ final class TokensAnalyzer
         $classIndex = $index;
         ++$index; // skip the classy index itself
 
-        for ($count = \count($this->tokens); $index < $count; ++$index) {
+        for ($count = count($this->tokens); $index < $count; ++$index) {
             $token = $this->tokens[$index];
 
             if ($token->isGivenKind(T_ENCAPSED_AND_WHITESPACE)) {

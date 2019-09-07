@@ -14,6 +14,8 @@ namespace PhpCsFixer\Tests\Fixer\ControlStructure;
 
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 use PhpCsFixer\Tokenizer\Tokens;
+use ReflectionMethod;
+use ReflectionObject;
 
 /**
  * @author SpacePossum
@@ -636,7 +638,7 @@ else?><?php echo 5;',
         Tokens::clearCache();
         $tokens = Tokens::fromCode($source);
 
-        $method = new \ReflectionMethod($this->fixer, 'getPreviousBlock');
+        $method = new ReflectionMethod($this->fixer, 'getPreviousBlock');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->fixer, $tokens, $index);
@@ -783,7 +785,7 @@ else?><?php echo 5;',
      */
     public function testIsInConditionWithoutBraces($indexes, $input)
     {
-        $reflection = new \ReflectionObject($this->fixer);
+        $reflection = new ReflectionObject($this->fixer);
         $method = $reflection->getMethod('isInConditionWithoutBraces');
         $method->setAccessible(true);
 

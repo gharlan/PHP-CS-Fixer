@@ -21,6 +21,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function in_array;
 
 /**
  * @author Vladimir Reznichenko <kalessil@gmail.com>
@@ -70,7 +72,7 @@ final class IsNullFixer extends AbstractFixer implements ConfigurationDefinition
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         static $sequenceNeeded = [[T_STRING, 'is_null'], '('];
         $functionsAnalyzer = new FunctionsAnalyzer();
@@ -123,7 +125,7 @@ final class IsNullFixer extends AbstractFixer implements ConfigurationDefinition
             $referenceEnd = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_PARENTHESIS_BRACE, $matches[1]);
             $isContainingDangerousConstructs = false;
             for ($paramTokenIndex = $matches[1]; $paramTokenIndex <= $referenceEnd; ++$paramTokenIndex) {
-                if (\in_array($tokens[$paramTokenIndex]->getContent(), ['?', '?:', '=', '??'], true)) {
+                if (in_array($tokens[$paramTokenIndex]->getContent(), ['?', '?:', '=', '??'], true)) {
                     $isContainingDangerousConstructs = true;
 
                     break;

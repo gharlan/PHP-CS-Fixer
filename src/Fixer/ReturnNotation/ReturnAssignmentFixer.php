@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author SpacePossum
@@ -56,9 +58,9 @@ final class ReturnAssignmentFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        $tokenCount = \count($tokens);
+        $tokenCount = count($tokens);
 
         for ($index = 1; $index < $tokenCount; ++$index) {
             if (!$tokens[$index]->isGivenKind(T_FUNCTION)) {
@@ -195,7 +197,7 @@ final class ReturnAssignmentFixer extends AbstractFixer
         }
 
         // fix the candidates in reverse order when applicable
-        for ($i = \count($candidates) - 1; $i >= 0; --$i) {
+        for ($i = count($candidates) - 1; $i >= 0; --$i) {
             $index = $candidates[$i];
 
             // Check if returning only a variable (i.e. not the result of an expression, function call etc.)

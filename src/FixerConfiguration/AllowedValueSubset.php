@@ -12,6 +12,9 @@
 
 namespace PhpCsFixer\FixerConfiguration;
 
+use function in_array;
+use function is_array;
+
 /**
  * @internal
  */
@@ -33,12 +36,12 @@ final class AllowedValueSubset
      */
     public function __invoke($values)
     {
-        if (!\is_array($values)) {
+        if (!is_array($values)) {
             return false;
         }
 
         foreach ($values as $value) {
-            if (!\in_array($value, $this->allowedValues, true)) {
+            if (!in_array($value, $this->allowedValues, true)) {
                 return false;
             }
         }

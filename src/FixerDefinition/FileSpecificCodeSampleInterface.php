@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\FixerDefinition;
 
+use SplFileInfo;
+
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  *
@@ -20,7 +22,7 @@ namespace PhpCsFixer\FixerDefinition;
 interface FileSpecificCodeSampleInterface extends CodeSampleInterface
 {
     /**
-     * @return \SplFileInfo
+     * @return SplFileInfo
      */
     public function getSplFileInfo();
 }

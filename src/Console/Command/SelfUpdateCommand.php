@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Console\Command;
 
+use Exception;
 use PhpCsFixer\Console\SelfUpdate\NewVersionCheckerInterface;
 use PhpCsFixer\PharCheckerInterface;
 use PhpCsFixer\Preg;
@@ -20,6 +21,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function dirname;
 
 /**
  * @author Igor Wiedler <igor@wiedler.ch>
@@ -105,7 +107,7 @@ EOT
         try {
             $latestVersion = $this->versionChecker->getLatestVersion();
             $latestVersionOfCurrentMajor = $this->versionChecker->getLatestVersionOfMajor($currentMajor);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $output->writeln(sprintf(
                 '<error>Unable to determine newest version: %s</error>',
                 $exception->getMessage()
@@ -148,7 +150,7 @@ EOT
             return 1;
         }
 
-        $tempFilename = \dirname($localFilename).'/'.basename($localFilename, '.phar').'-tmp.phar';
+        $tempFilename = dirname($localFilename).'/'.basename($localFilename, '.phar').'-tmp.phar';
         $remoteFilename = $this->toolInfo->getPharDownloadUri($remoteTag);
 
         if (false === @copy($remoteFilename, $tempFilename)) {

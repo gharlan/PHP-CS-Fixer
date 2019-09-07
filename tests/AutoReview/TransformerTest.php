@@ -15,6 +15,9 @@ namespace PhpCsFixer\Tests\AutoReview;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\TransformerInterface;
 use PhpCsFixer\Tokenizer\Transformers;
+use ReflectionClass;
+use ReflectionObject;
+use function get_class;
 
 /**
  * @author SpacePossum
@@ -35,7 +38,7 @@ final class TransformerTest extends TestCase
      */
     public function testTransformersAreFinal(TransformerInterface $transformer)
     {
-        $transformerRef = new \ReflectionClass($transformer);
+        $transformerRef = new ReflectionClass($transformer);
 
         static::assertTrue(
             $transformerRef->isFinal(),
@@ -52,7 +55,7 @@ final class TransformerTest extends TestCase
 
         if (null === $transformersArray) {
             $transformers = Transformers::create();
-            $reflection = new \ReflectionObject($transformers);
+            $reflection = new ReflectionObject($transformers);
             $builtInTransformers = $reflection->getMethod('findBuiltInTransformers');
             $builtInTransformers->setAccessible(true);
             $transformersArray = [];
@@ -72,7 +75,7 @@ final class TransformerTest extends TestCase
         static::assertLessThan(
             $first->getPriority(),
             $second->getPriority(),
-            sprintf('"%s" should have less priority than "%s"', \get_class($second), \get_class($first))
+            sprintf('"%s" should have less priority than "%s"', get_class($second), get_class($first))
         );
     }
 

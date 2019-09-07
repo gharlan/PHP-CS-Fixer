@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer;
 
+use function is_array;
+
 /**
  * This class replaces preg_* functions to better handling UTF8 strings,
  * ensuring no matter "u" modifier is present or absent subject will be handled correctly.
@@ -158,7 +160,7 @@ final class Preg
      */
     private static function addUtf8Modifier($pattern)
     {
-        if (\is_array($pattern)) {
+        if (is_array($pattern)) {
             return array_map(__METHOD__, $pattern);
         }
 
@@ -172,7 +174,7 @@ final class Preg
      */
     private static function removeUtf8Modifier($pattern)
     {
-        if (\is_array($pattern)) {
+        if (is_array($pattern)) {
             return array_map(__METHOD__, $pattern);
         }
 

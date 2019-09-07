@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\Tests;
 
+use ArrayIterator;
+use InvalidArgumentException;
 use PhpCsFixer\Config;
 use PhpCsFixer\Console\Application;
 use PhpCsFixer\Console\Command\FixCommand;
@@ -187,7 +189,7 @@ final class ConfigTest extends TestCase
 
     public function testRegisterCustomFixersWithInvalidArgument()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('/^Argument must be an array or a Traversable, got "\w+"\.$/');
 
         $config = new Config();
@@ -220,7 +222,7 @@ final class ConfigTest extends TestCase
 
         return [
             [$fixers, $fixers],
-            [$fixers, new \ArrayIterator($fixers)],
+            [$fixers, new ArrayIterator($fixers)],
         ];
     }
 }

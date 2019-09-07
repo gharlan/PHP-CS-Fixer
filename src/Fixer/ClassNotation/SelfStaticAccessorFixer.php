@@ -20,6 +20,7 @@ use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
 
 final class SelfStaticAccessorFixer extends AbstractFixer
 {
@@ -108,7 +109,7 @@ $a = new class() {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $this->tokensAnalyzer = $tokensAnalyzer = new TokensAnalyzer($tokens);
 

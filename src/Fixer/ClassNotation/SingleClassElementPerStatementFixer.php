@@ -25,6 +25,8 @@ use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
+use function in_array;
 
 /**
  * Fixer for rules defined in PSR2 ¶4.2.
@@ -77,13 +79,13 @@ final class Example
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $analyzer = new TokensAnalyzer($tokens);
         $elements = array_reverse($analyzer->getClassyElements(), true);
 
         foreach ($elements as $index => $element) {
-            if (!\in_array($element['type'], $this->configuration['elements'], true)) {
+            if (!in_array($element['type'], $this->configuration['elements'], true)) {
                 continue; // not in configuration
             }
 

@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Console\Command;
 
+use InvalidArgumentException;
 use PhpCsFixer\Differ\DiffConsoleFormatter;
 use PhpCsFixer\Differ\FullDiffer;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
@@ -39,6 +40,11 @@ use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use function count;
+use function get_class;
+use function in_array;
+use function is_string;
+use const PHP_VERSION_ID;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -119,7 +125,7 @@ final class DescribeCommand extends Command
 
             $this->describeList($output, $e->getType());
 
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 '%s "%s" not found.%s',
                 ucfirst($e->getType()),
                 $name,
@@ -160,7 +166,7 @@ final class DescribeCommand extends Command
 
         $output->writeln(sprintf('<info>Description of</info> %s <info>rule</info>.', $name));
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
-            $output->writeln(sprintf('Fixer class: <comment>%s</comment>.', \get_class($fixer)));
+            $output->writeln(sprintf('Fixer class: <comment>%s</comment>.', get_class($fixer)));
         }
 
         $output->writeln($description);
@@ -183,7 +189,7 @@ final class DescribeCommand extends Command
             $configurationDefinition = $fixer->getConfigurationDefinition();
             $options = $configurationDefinition->getOptions();
 
-            $output->writeln(sprintf('Fixer is configurable using following option%s:', 1 === \count($options) ? '' : 's'));
+            $output->writeln(sprintf('Fixer is configurable using following option%s:', 1 === count($options) ? '' : 's'));
 
             foreach ($options as $option) {
                 $line = '* <info>'.OutputFormatter::escape($option->getName()).'</info>';
@@ -253,13 +259,13 @@ final class DescribeCommand extends Command
         /** @var CodeSampleInterface[] $codeSamples */
         $codeSamples = array_filter($definition->getCodeSamples(), static function (CodeSampleInterface $codeSample) {
             if ($codeSample instanceof VersionSpecificCodeSampleInterface) {
-                return $codeSample->isSuitableFor(\PHP_VERSION_ID);
+                return $codeSample->isSuitableFor(PHP_VERSION_ID);
             }
 
             return true;
         });
 
-        if (!\count($codeSamples)) {
+        if (!count($codeSamples)) {
             $output->writeln([
                 'Fixing examples can not be demonstrated on the current PHP version.',
                 '',
@@ -313,7 +319,7 @@ final class DescribeCommand extends Command
      */
     private function describeSet(OutputInterface $output, $name)
     {
-        if (!\in_array($name, $this->getSetNames(), true)) {
+        if (!in_array($name, $this->getSetNames(), true)) {
             throw new DescribeNameNotFoundException($name, 'set');
         }
 
@@ -400,7 +406,7 @@ final class DescribeCommand extends Command
         foreach ($describe as $list => $items) {
             $output->writeln(sprintf('<comment>Defined %s:</comment>', $list));
             foreach ($items as $name => $item) {
-                $output->writeln(sprintf('* <info>%s</info>', \is_string($name) ? $name : $item));
+                $output->writeln(sprintf('* <info>%s</info>', is_string($name) ? $name : $item));
             }
         }
     }

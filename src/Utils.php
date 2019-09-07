@@ -12,8 +12,11 @@
 
 namespace PhpCsFixer;
 
+use InvalidArgumentException;
 use PhpCsFixer\Fixer\FixerInterface;
 use PhpCsFixer\Tokenizer\Token;
+use function constant;
+use function defined;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -36,8 +39,8 @@ final class Utils
         $bitmask = 0;
 
         foreach ($options as $optionName) {
-            if (\defined($optionName)) {
-                $bitmask |= \constant($optionName);
+            if (defined($optionName)) {
+                $bitmask |= constant($optionName);
             }
         }
 
@@ -94,7 +97,7 @@ final class Utils
     public static function calculateTrailingWhitespaceIndent(Token $token)
     {
         if (!$token->isWhitespace()) {
-            throw new \InvalidArgumentException(sprintf('The given token must be whitespace, got "%s".', $token->getName()));
+            throw new InvalidArgumentException(sprintf('The given token must be whitespace, got "%s".', $token->getName()));
         }
 
         $str = strrchr(
@@ -168,14 +171,14 @@ final class Utils
      *
      * @param string[] $names
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return string
      */
     public static function naturalLanguageJoinWithBackticks(array $names)
     {
         if (empty($names)) {
-            throw new \InvalidArgumentException('Array of names cannot be empty');
+            throw new InvalidArgumentException('Array of names cannot be empty');
         }
 
         $names = array_map(static function ($name) {

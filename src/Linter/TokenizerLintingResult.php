@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\Linter;
 
+use ParseError;
+
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  *
@@ -20,14 +22,14 @@ namespace PhpCsFixer\Linter;
 final class TokenizerLintingResult implements LintingResultInterface
 {
     /**
-     * @var null|\ParseError
+     * @var null|ParseError
      */
     private $error;
 
     /**
-     * @param null|\ParseError $error
+     * @param null|ParseError $error
      */
-    public function __construct(\ParseError $error = null)
+    public function __construct(ParseError $error = null)
     {
         $this->error = $error;
     }

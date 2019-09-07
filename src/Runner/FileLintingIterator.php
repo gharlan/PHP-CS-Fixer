@@ -12,15 +12,18 @@
 
 namespace PhpCsFixer\Runner;
 
+use Iterator;
+use IteratorIterator;
 use PhpCsFixer\Linter\LinterInterface;
 use PhpCsFixer\Linter\LintingResultInterface;
+use SplFileInfo;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  *
  * @internal
  */
-final class FileLintingIterator extends \IteratorIterator
+final class FileLintingIterator extends IteratorIterator
 {
     /**
      * @var LintingResultInterface
@@ -32,7 +35,7 @@ final class FileLintingIterator extends \IteratorIterator
      */
     private $linter;
 
-    public function __construct(\Iterator $iterator, LinterInterface $linter)
+    public function __construct(Iterator $iterator, LinterInterface $linter)
     {
         parent::__construct($iterator);
 
@@ -61,7 +64,7 @@ final class FileLintingIterator extends \IteratorIterator
         $this->currentResult = $this->valid() ? $this->handleItem($this->current()) : null;
     }
 
-    private function handleItem(\SplFileInfo $file)
+    private function handleItem(SplFileInfo $file)
     {
         return $this->linter->lintFile($file->getRealPath());
     }

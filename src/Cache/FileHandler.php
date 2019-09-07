@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Cache;
 
+use InvalidArgumentException;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
@@ -49,7 +50,7 @@ final class FileHandler implements FileHandlerInterface
 
         try {
             $cache = Cache::fromJson($content);
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             return null;
         }
 

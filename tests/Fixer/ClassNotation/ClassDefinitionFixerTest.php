@@ -16,6 +16,7 @@ use PhpCsFixer\Fixer\ClassNotation\ClassDefinitionFixer;
 use PhpCsFixer\Tests\Test\AbstractFixerWithAliasedOptionsTestCase;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\WhitespacesFixerConfig;
+use ReflectionMethod;
 
 /**
  * @author SpacePossum
@@ -412,7 +413,7 @@ TestInterface3, /**/     TestInterface4   ,
         Tokens::clearCache();
         $tokens = Tokens::fromCode($source);
 
-        $method = new \ReflectionMethod($this->fixer, 'getClassyDefinitionInfo');
+        $method = new ReflectionMethod($this->fixer, 'getClassyDefinitionInfo');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->fixer, $tokens, $expected['classy']);
@@ -675,7 +676,7 @@ $a = new class implements
         Tokens::clearCache();
         $tokens = Tokens::fromCode($source);
         static::assertTrue($tokens[$expected['start']]->isGivenKind([T_IMPLEMENTS, T_EXTENDS]), sprintf('Token must be "implements" or "extends", got "%s".', $tokens[$expected['start']]->getContent()));
-        $method = new \ReflectionMethod($this->fixer, 'getClassyInheritanceInfo');
+        $method = new ReflectionMethod($this->fixer, 'getClassyInheritanceInfo');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->fixer, $tokens, $expected['start'], $label);

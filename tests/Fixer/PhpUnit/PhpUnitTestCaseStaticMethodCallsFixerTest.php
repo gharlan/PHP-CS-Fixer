@@ -15,6 +15,8 @@ namespace PhpCsFixer\Tests\Fixer\PhpUnit;
 use PhpCsFixer\Fixer\PhpUnit\PhpUnitTestCaseStaticMethodCallsFixer;
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionMethod;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -27,10 +29,10 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
 {
     public function testFixerContainsAllPhpunitStaticMethodsInItsList()
     {
-        $assertionRefClass = new \ReflectionClass(TestCase::class);
-        $updatedStaticMethodsList = $assertionRefClass->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $assertionRefClass = new ReflectionClass(TestCase::class);
+        $updatedStaticMethodsList = $assertionRefClass->getMethods(ReflectionMethod::IS_PUBLIC);
 
-        $fixerRefClass = new \ReflectionClass(PhpUnitTestCaseStaticMethodCallsFixer::class);
+        $fixerRefClass = new ReflectionClass(PhpUnitTestCaseStaticMethodCallsFixer::class);
         $defaultProperties = $fixerRefClass->getDefaultProperties();
         $staticMethods = $defaultProperties['staticMethods'];
 

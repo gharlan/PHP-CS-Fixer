@@ -22,6 +22,8 @@ use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use const PHP_VERSION_ID;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -62,13 +64,13 @@ final class ReturnTypeDeclarationFixer extends AbstractFixer implements Configur
      */
     public function isCandidate(Tokens $tokens)
     {
-        return \PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(CT::T_TYPE_COLON);
+        return PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(CT::T_TYPE_COLON);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $oneSpaceBefore = 'one' === $this->configuration['space_before'];
 

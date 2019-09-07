@@ -14,6 +14,10 @@ namespace PhpCsFixer\Tests\Fixer\Phpdoc;
 
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 use PhpCsFixer\WhitespacesFixerConfig;
+use stdClass;
+use function get_class;
+use function gettype;
+use function is_object;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -49,7 +53,7 @@ final class PhpdocAddMissingParamAnnotationFixerTest extends AbstractFixerTestCa
         $this->expectException(\PhpCsFixer\ConfigurationException\InvalidConfigurationException::class);
         $this->expectExceptionMessage(sprintf(
             'expected to be of type "bool", but is of type "%s".',
-            \is_object($value) ? \get_class($value) : \gettype($value)
+            is_object($value) ? get_class($value) : gettype($value)
         ));
 
         $this->fixer->configure([
@@ -67,7 +71,7 @@ final class PhpdocAddMissingParamAnnotationFixerTest extends AbstractFixerTestCa
             'int' => [1],
             'array' => [[]],
             'float' => [0.1],
-            'object' => [new \stdClass()],
+            'object' => [new stdClass()],
         ];
     }
 

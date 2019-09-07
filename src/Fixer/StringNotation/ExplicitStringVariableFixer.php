@@ -18,6 +18,9 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use const SORT_NUMERIC;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -60,10 +63,10 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $backtickStarted = false;
-        for ($index = \count($tokens) - 1; $index > 0; --$index) {
+        for ($index = count($tokens) - 1; $index > 0; --$index) {
             $token = $tokens[$index];
             if ($token->equals('`')) {
                 $backtickStarted = !$backtickStarted;
@@ -110,10 +113,10 @@ EOT
 
                 ++$nextIndex;
             }
-            krsort($variableTokens, \SORT_NUMERIC);
+            krsort($variableTokens, SORT_NUMERIC);
 
             foreach ($variableTokens as $distinctVariableSet) {
-                if (1 === \count($distinctVariableSet['tokens'])) {
+                if (1 === count($distinctVariableSet['tokens'])) {
                     $singleVariableIndex = key($distinctVariableSet['tokens']);
                     $singleVariableToken = current($distinctVariableSet['tokens']);
                     $tokens->overrideRange($singleVariableIndex, $singleVariableIndex, [

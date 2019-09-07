@@ -18,6 +18,7 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 final class NoSuperfluousElseifFixer extends AbstractNoUselessElseFixer
 {
@@ -45,7 +46,7 @@ final class NoSuperfluousElseifFixer extends AbstractNoUselessElseFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($tokens as $index => $token) {
             if ($this->isElseif($tokens, $index) && $this->isSuperfluousElse($tokens, $index)) {

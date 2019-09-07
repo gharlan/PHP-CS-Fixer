@@ -21,7 +21,14 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
+use function array_key_exists;
+use function get_class;
+use function gettype;
+use function in_array;
+use function is_object;
+use function is_string;
 
 /**
  * @author Vladimir Reznichenko <kalessil@gmail.com>
@@ -83,7 +90,7 @@ final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer imple
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $argumentsAnalyzer = new ArgumentsAnalyzer();
 
@@ -103,7 +110,7 @@ final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer imple
 
                 list($functionName, $openParenthesis, $closeParenthesis) = $boundaries;
                 $count = $argumentsAnalyzer->countArguments($tokens, $openParenthesis, $closeParenthesis);
-                if (!\in_array($count, $functionReplacement['argumentCount'], true)) {
+                if (!in_array($count, $functionReplacement['argumentCount'], true)) {
                     continue 2;
                 }
 
@@ -138,18 +145,18 @@ final class RandomApiMigrationFixer extends AbstractFunctionReferenceFixer imple
                 ->setAllowedTypes(['array'])
                 ->setAllowedValues([static function ($value) {
                     foreach ($value as $functionName => $replacement) {
-                        if (!\array_key_exists($functionName, self::$argumentCounts)) {
+                        if (!array_key_exists($functionName, self::$argumentCounts)) {
                             throw new InvalidOptionsException(sprintf(
                                 'Function "%s" is not handled by the fixer.',
                                 $functionName
                             ));
                         }
 
-                        if (!\is_string($replacement)) {
+                        if (!is_string($replacement)) {
                             throw new InvalidOptionsException(sprintf(
                                 'Replacement for function "%s" must be a string, "%s" given.',
                                 $functionName,
-                                \is_object($replacement) ? \get_class($replacement) : \gettype($replacement)
+                                is_object($replacement) ? get_class($replacement) : gettype($replacement)
                             ));
                         }
                     }

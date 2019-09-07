@@ -26,6 +26,9 @@ use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
 use PhpCsFixer\Utils;
+use SplFileInfo;
+use function count;
+use function strlen;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -82,7 +85,7 @@ class MyTest extends \\PhpUnit\\FrameWork\\TestCase
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $phpUnitTestCaseIndicator = new PhpUnitTestCaseIndicator();
         foreach ($phpUnitTestCaseIndicator->findPhpUnitClasses($tokens) as $indexes) {
@@ -204,7 +207,7 @@ class MyTest extends \\PhpUnit\\FrameWork\\TestCase
      */
     private function startsWith($needle, $haystack)
     {
-        return substr($haystack, 0, \strlen($needle)) === $needle;
+        return substr($haystack, 0, strlen($needle)) === $needle;
     }
 
     /**
@@ -245,7 +248,7 @@ class MyTest extends \\PhpUnit\\FrameWork\\TestCase
         $lines = $doc->getLines();
 
         $docBlockNeesUpdate = false;
-        for ($inc = 0; $inc < \count($lines); ++$inc) {
+        for ($inc = 0; $inc < count($lines); ++$inc) {
             $lineContent = $lines[$inc]->getContent();
             if (false === strpos($lineContent, '@depends')) {
                 continue;

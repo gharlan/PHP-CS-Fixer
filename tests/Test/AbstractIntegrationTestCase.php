@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\Tests\Test;
 
+use ArrayIterator;
+use BadMethodCallException;
 use PhpCsFixer\Cache\NullCacheManager;
 use PhpCsFixer\Differ\SebastianBergmannDiffer;
 use PhpCsFixer\Error\Error;
@@ -27,10 +29,15 @@ use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\WhitespacesFixerConfig;
 use Prophecy\Argument;
+use RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use UnexpectedValueException;
+use function count;
+use function dirname;
+use const PHP_VERSION_ID;
 
 /**
  * Integration test base class.
@@ -81,7 +88,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
         self::$fileRemoval->observe($tmpFile);
 
         if (!is_file($tmpFile)) {
-            $dir = \dirname($tmpFile);
+            $dir = dirname($tmpFile);
 
             if (!is_dir($dir)) {
                 $fs = new Filesystem();
@@ -143,7 +150,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
     {
         $fixturesDir = realpath(static::getFixturesDir());
         if (!is_dir($fixturesDir)) {
-            throw new \UnexpectedValueException(sprintf('Given fixture dir "%s" is not a directory.', $fixturesDir));
+            throw new UnexpectedValueException(sprintf('Given fixture dir "%s" is not a directory.', $fixturesDir));
         }
 
         $factory = static::createIntegrationCaseFactory();
@@ -178,7 +185,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
      */
     protected static function getFixturesDir()
     {
-        throw new \BadMethodCallException('Method "getFixturesDir" must be overridden by the extending class.');
+        throw new BadMethodCallException('Method "getFixturesDir" must be overridden by the extending class.');
     }
 
     /**
@@ -188,7 +195,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
      */
     protected static function getTempFile()
     {
-        throw new \BadMethodCallException('Method "getTempFile" must be overridden by the extending class.');
+        throw new BadMethodCallException('Method "getTempFile" must be overridden by the extending class.');
     }
 
     /**
@@ -202,8 +209,8 @@ abstract class AbstractIntegrationTestCase extends TestCase
      */
     protected function doTest(IntegrationCase $case)
     {
-        if (\PHP_VERSION_ID < $case->getRequirement('php')) {
-            static::markTestSkipped(sprintf('PHP %d (or later) is required for "%s", current "%d".', $case->getRequirement('php'), $case->getFileName(), \PHP_VERSION_ID));
+        if (PHP_VERSION_ID < $case->getRequirement('php')) {
+            static::markTestSkipped(sprintf('PHP %d (or later) is required for "%s", current "%d".', $case->getRequirement('php'), $case->getFileName(), PHP_VERSION_ID));
         }
 
         $input = $case->getInputCode();
@@ -220,7 +227,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
         $errorsManager = new ErrorsManager();
         $fixers = static::createFixers($case);
         $runner = new Runner(
-            new \ArrayIterator([new \SplFileInfo($tmpFile)]),
+            new ArrayIterator([new \SplFileInfo($tmpFile)]),
             $fixers,
             new SebastianBergmannDiffer(),
             null,
@@ -273,14 +280,14 @@ abstract class AbstractIntegrationTestCase extends TestCase
             )
         );
 
-        if (1 < \count($fixers)) {
+        if (1 < count($fixers)) {
             $tmpFile = static::getTempFile();
             if (false === @file_put_contents($tmpFile, $input)) {
                 throw new IOException(sprintf('Failed to write to tmp. file "%s".', $tmpFile));
             }
 
             $runner = new Runner(
-                new \ArrayIterator([new \SplFileInfo($tmpFile)]),
+                new ArrayIterator([new \SplFileInfo($tmpFile)]),
                 array_reverse($fixers),
                 new SebastianBergmannDiffer(),
                 null,
@@ -324,7 +331,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
         if ($fixedInputCode !== $fixedInputCodeWithReversedFixers) {
             static::assertGreaterThan(
                 1,
-                \count(array_unique(array_map(
+                count(array_unique(array_map(
                     static function (FixerInterface $fixer) {
                         return $fixer->getPriority();
                     },
@@ -421,7 +428,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
         ], function ($className) { return class_exists($className); });
 
         if (empty($candidates)) {
-            throw new \RuntimeException('PHPUnit not installed?!');
+            throw new RuntimeException('PHPUnit not installed?!');
         }
 
         $candidate = array_shift($candidates);

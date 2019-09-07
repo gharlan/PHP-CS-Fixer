@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author SpacePossum
@@ -52,12 +54,12 @@ final class Example
         return $tokens->isTokenKindFound(CT::T_USE_TRAIT);
     }
 
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        for ($index = \count($tokens) - 1; 1 < $index; --$index) {
+        for ($index = count($tokens) - 1; 1 < $index; --$index) {
             if ($tokens[$index]->isGivenKind(CT::T_USE_TRAIT)) {
                 $candidates = $this->getCandidates($tokens, $index);
-                if (\count($candidates) > 0) {
+                if (count($candidates) > 0) {
                     $this->fixTraitUse($tokens, array_reverse($candidates));
                 }
             }

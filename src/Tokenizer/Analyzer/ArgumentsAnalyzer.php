@@ -15,6 +15,7 @@ namespace PhpCsFixer\Tokenizer\Analyzer;
 use PhpCsFixer\Tokenizer\Analyzer\Analysis\ArgumentAnalysis;
 use PhpCsFixer\Tokenizer\Analyzer\Analysis\TypeAnalysis;
 use PhpCsFixer\Tokenizer\Tokens;
+use function count;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -35,7 +36,7 @@ final class ArgumentsAnalyzer
      */
     public function countArguments(Tokens $tokens, $openParenthesis, $closeParenthesis)
     {
-        return \count($this->getArguments($tokens, $openParenthesis, $closeParenthesis));
+        return count($this->getArguments($tokens, $openParenthesis, $closeParenthesis));
     }
 
     /**

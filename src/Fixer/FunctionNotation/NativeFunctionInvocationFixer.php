@@ -23,7 +23,14 @@ use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\NamespacesAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
+use function count;
+use function get_class;
+use function gettype;
+use function in_array;
+use function is_object;
+use function is_string;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -188,10 +195,10 @@ $c = get_class($d);
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         if ('all' === $this->configuration['scope']) {
-            $this->fixFunctionCalls($tokens, $this->functionFilter, 0, \count($tokens) - 1, false);
+            $this->fixFunctionCalls($tokens, $this->functionFilter, 0, count($tokens) - 1, false);
 
             return;
         }
@@ -215,10 +222,10 @@ $c = get_class($d);
                 ->setAllowedTypes(['array'])
                 ->setAllowedValues([static function (array $value) {
                     foreach ($value as $functionName) {
-                        if (!\is_string($functionName) || '' === trim($functionName) || trim($functionName) !== $functionName) {
+                        if (!is_string($functionName) || '' === trim($functionName) || trim($functionName) !== $functionName) {
                             throw new InvalidOptionsException(sprintf(
                                 'Each element must be a non-empty, trimmed string, got "%s" instead.',
-                                \is_object($functionName) ? \get_class($functionName) : \gettype($functionName)
+                                is_object($functionName) ? get_class($functionName) : gettype($functionName)
                             ));
                         }
                     }
@@ -231,10 +238,10 @@ $c = get_class($d);
                 ->setAllowedTypes(['array'])
                 ->setAllowedValues([static function (array $value) {
                     foreach ($value as $functionName) {
-                        if (!\is_string($functionName) || '' === trim($functionName) || trim($functionName) !== $functionName) {
+                        if (!is_string($functionName) || '' === trim($functionName) || trim($functionName) !== $functionName) {
                             throw new InvalidOptionsException(sprintf(
                                 'Each element must be a non-empty, trimmed string, got "%s" instead.',
-                                \is_object($functionName) ? \get_class($functionName) : \gettype($functionName)
+                                is_object($functionName) ? get_class($functionName) : gettype($functionName)
                             ));
                         }
 
@@ -244,7 +251,7 @@ $c = get_class($d);
                             self::SET_COMPILER_OPTIMIZED,
                         ];
 
-                        if ('@' === $functionName[0] && !\in_array($functionName, $sets, true)) {
+                        if ('@' === $functionName[0] && !in_array($functionName, $sets, true)) {
                             throw new InvalidOptionsException(sprintf('Unknown set "%s", known sets are "%s".', $functionName, implode('", "', $sets)));
                         }
                     }
@@ -313,8 +320,8 @@ $c = get_class($d);
     {
         $exclude = $this->normalizeFunctionNames($this->configuration['exclude']);
 
-        if (\in_array(self::SET_ALL, $this->configuration['include'], true)) {
-            if (\count($exclude) > 0) {
+        if (in_array(self::SET_ALL, $this->configuration['include'], true)) {
+            if (count($exclude) > 0) {
                 return static function ($functionName) use ($exclude) {
                     return !isset($exclude[strtolower($functionName)]);
                 };
@@ -326,9 +333,9 @@ $c = get_class($d);
         }
 
         $include = [];
-        if (\in_array(self::SET_INTERNAL, $this->configuration['include'], true)) {
+        if (in_array(self::SET_INTERNAL, $this->configuration['include'], true)) {
             $include = $this->getAllInternalFunctionsNormalized();
-        } elseif (\in_array(self::SET_COMPILER_OPTIMIZED, $this->configuration['include'], true)) {
+        } elseif (in_array(self::SET_COMPILER_OPTIMIZED, $this->configuration['include'], true)) {
             $include = $this->getAllCompilerOptimizedFunctionsNormalized(); // if `@internal` is set all compiler optimized function are already loaded
         }
 
@@ -338,7 +345,7 @@ $c = get_class($d);
             }
         }
 
-        if (\count($exclude) > 0) {
+        if (count($exclude) > 0) {
             return static function ($functionName) use ($include, $exclude) {
                 return isset($include[strtolower($functionName)]) && !isset($exclude[strtolower($functionName)]);
             };

@@ -12,9 +12,11 @@
 
 namespace PhpCsFixer\Tests\Tokenizer;
 
+use InvalidArgumentException;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use function in_array;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -1181,7 +1183,7 @@ $b;',
         $tokensAnalyzer = new TokensAnalyzer($tokens);
 
         foreach ($tokens as $index => $token) {
-            $expect = \in_array($index, $tokenIndexes, true);
+            $expect = in_array($index, $tokenIndexes, true);
             static::assertSame(
                 $expect,
                 $tokensAnalyzer->isArray($index),
@@ -1256,7 +1258,7 @@ $b;',
      */
     public function testIsMultiLineArrayException($source, $tokenIndex)
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $tokens = Tokens::fromCode($source);
         $tokensAnalyzer = new TokensAnalyzer($tokens);

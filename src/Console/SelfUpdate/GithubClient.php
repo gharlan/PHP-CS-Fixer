@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\Console\SelfUpdate;
 
+use RuntimeException;
+
 /**
  * @internal
  */
@@ -35,12 +37,12 @@ final class GithubClient implements GithubClientInterface
         );
 
         if (false === $result) {
-            throw new \RuntimeException(sprintf('Failed to load tags at "%s".', $url));
+            throw new RuntimeException(sprintf('Failed to load tags at "%s".', $url));
         }
 
         $result = json_decode($result, true);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Failed to read response from "%s" as JSON: %s.',
                 $url,
                 json_last_error_msg()

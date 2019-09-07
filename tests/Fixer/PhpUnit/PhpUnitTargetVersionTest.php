@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\Fixer\PhpUnit;
 
+use LogicException;
 use PhpCsFixer\Fixer\PhpUnit\PhpUnitTargetVersion;
 use PhpCsFixer\Tests\TestCase;
 
@@ -54,7 +55,7 @@ final class PhpUnitTargetVersionTest extends TestCase
             [true, PhpUnitTargetVersion::VERSION_5_2, PhpUnitTargetVersion::VERSION_5_2],
             [false, PhpUnitTargetVersion::VERSION_5_2, PhpUnitTargetVersion::VERSION_5_6],
             [false, PhpUnitTargetVersion::VERSION_5_2, PhpUnitTargetVersion::VERSION_5_6],
-            [false, PhpUnitTargetVersion::VERSION_5_2, PhpUnitTargetVersion::VERSION_NEWEST, \LogicException::class],
+            [false, PhpUnitTargetVersion::VERSION_5_2, PhpUnitTargetVersion::VERSION_NEWEST, LogicException::class],
         ];
     }
 }

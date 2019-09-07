@@ -31,6 +31,9 @@ use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
+use function count;
+use function strlen;
 
 /**
  * @author Gregor Harlan <gharlan@web.de>
@@ -110,9 +113,9 @@ if (count($x)) {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        if (Tokens::isLegacyMode() && $tokens->isTokenKindFound(T_NAMESPACE) && \count((new NamespacesAnalyzer())->getDeclarations($tokens)) > 1) {
+        if (Tokens::isLegacyMode() && $tokens->isTokenKindFound(T_NAMESPACE) && count((new NamespacesAnalyzer())->getDeclarations($tokens)) > 1) {
             return;
         }
 
@@ -728,7 +731,7 @@ if (count($x)) {
                     $newType = $callback($type);
 
                     if (null !== $newType && $type !== $newType) {
-                        $newFullType = substr_replace($newFullType, $newType, $offset, \strlen($type));
+                        $newFullType = substr_replace($newFullType, $newType, $offset, strlen($type));
                     }
                 }
 

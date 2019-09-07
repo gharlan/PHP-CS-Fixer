@@ -12,9 +12,13 @@
 
 namespace PhpCsFixer\Tests\Runner;
 
+use ArrayIterator;
+use Exception;
 use PhpCsFixer\FixerFileProcessedEvent;
 use PhpCsFixer\Runner\FileFilterIterator;
 use PhpCsFixer\Tests\TestCase;
+use RuntimeException;
+use SplFileInfo;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -50,10 +54,10 @@ final class FileFilterIteratorTest extends TestCase
         $cache = $this->prophesize(\PhpCsFixer\Cache\CacheManagerInterface::class);
         $cache->needFixing($file, $content)->willReturn(true);
 
-        $fileInfo = new \SplFileInfo($file);
+        $fileInfo = new SplFileInfo($file);
 
         $filter = new FileFilterIterator(
-            new \ArrayIterator(array_fill(0, $repeat, $fileInfo)),
+            new ArrayIterator(array_fill(0, $repeat, $fileInfo)),
             $eventDispatcher,
             $cache->reveal()
         );
@@ -84,7 +88,7 @@ final class FileFilterIteratorTest extends TestCase
         $cache->needFixing($file, $content)->willReturn(false);
 
         $filter = new FileFilterIterator(
-            new \ArrayIterator([new \SplFileInfo($file)]),
+            new ArrayIterator([new SplFileInfo($file)]),
             $eventDispatcher,
             $cache->reveal()
         );
@@ -117,7 +121,7 @@ final class FileFilterIteratorTest extends TestCase
         $cache->needFixing($file, $content)->willReturn(true);
 
         $filter = new FileFilterIterator(
-            new \ArrayIterator([new \SplFileInfo($file)]),
+            new ArrayIterator([new SplFileInfo($file)]),
             $eventDispatcher,
             $cache->reveal()
         );
@@ -138,14 +142,14 @@ final class FileFilterIteratorTest extends TestCase
         $eventDispatcher->addListener(
             FixerFileProcessedEvent::NAME,
             function () {
-                throw new \Exception('No event expected.');
+                throw new Exception('No event expected.');
             }
         );
 
         $filter = new FileFilterIterator(
-            new \ArrayIterator([
-                new \SplFileInfo(__DIR__),
-                new \SplFileInfo('__INVALID__'),
+            new ArrayIterator([
+                new SplFileInfo(__DIR__),
+                new SplFileInfo('__INVALID__'),
             ]),
             $eventDispatcher,
             $this->prophesize(\PhpCsFixer\Cache\CacheManagerInterface::class)->reveal()
@@ -163,7 +167,7 @@ final class FileFilterIteratorTest extends TestCase
         $cache->needFixing($file, $content)->willReturn(false);
 
         $filter = new FileFilterIterator(
-            new \ArrayIterator([new \SplFileInfo($file)]),
+            new ArrayIterator([new SplFileInfo($file)]),
             null,
             $cache->reveal()
         );
@@ -174,13 +178,13 @@ final class FileFilterIteratorTest extends TestCase
     public function testInvalidIterator()
     {
         $filter = new FileFilterIterator(
-            new \ArrayIterator([__FILE__]),
+            new ArrayIterator([__FILE__]),
             null,
             $this->prophesize(\PhpCsFixer\Cache\CacheManagerInterface::class)->reveal()
         );
 
         $this->expectException(
-            \RuntimeException::class
+            RuntimeException::class
         );
         $this->expectExceptionMessageRegExp(
             '#^Expected instance of "\\\SplFileInfo", got "string"\.$#'
@@ -199,8 +203,8 @@ final class FileFilterIteratorTest extends TestCase
         static::assertTrue(is_link($link), 'Fixture data is no longer correct for this test.');
         static::assertSame(__FILE__, realpath($link), 'Fixture data is no longer correct for this test.');
 
-        $file = new \SplFileInfo(__FILE__);
-        $link = new \SplFileInfo($link);
+        $file = new SplFileInfo(__FILE__);
+        $link = new SplFileInfo($link);
 
         $cache = $this->prophesize(\PhpCsFixer\Cache\CacheManagerInterface::class);
         $cache->needFixing(
@@ -209,7 +213,7 @@ final class FileFilterIteratorTest extends TestCase
         )->willReturn(true);
 
         $filter = new FileFilterIterator(
-            new \ArrayIterator([$link, $file]),
+            new ArrayIterator([$link, $file]),
             null,
             $cache->reveal()
         );

@@ -12,6 +12,9 @@
 
 namespace PhpCsFixer\FixerConfiguration;
 
+use Closure;
+use LogicException;
+
 final class FixerOption implements FixerOptionInterface
 {
     /**
@@ -45,7 +48,7 @@ final class FixerOption implements FixerOptionInterface
     private $allowedValues;
 
     /**
-     * @var null|\Closure
+     * @var null|Closure
      */
     private $normalizer;
 
@@ -56,7 +59,7 @@ final class FixerOption implements FixerOptionInterface
      * @param mixed         $default
      * @param null|string[] $allowedTypes
      * @param null|array    $allowedValues
-     * @param null|\Closure $normalizer
+     * @param null|Closure  $normalizer
      */
     public function __construct(
         $name,
@@ -65,15 +68,15 @@ final class FixerOption implements FixerOptionInterface
         $default = null,
         array $allowedTypes = null,
         array $allowedValues = null,
-        \Closure $normalizer = null
+        Closure $normalizer = null
     ) {
         if ($isRequired && null !== $default) {
-            throw new \LogicException('Required options cannot have a default value.');
+            throw new LogicException('Required options cannot have a default value.');
         }
 
         if (null !== $allowedValues) {
             foreach ($allowedValues as &$allowedValue) {
-                if ($allowedValue instanceof \Closure) {
+                if ($allowedValue instanceof Closure) {
                     $allowedValue = $this->unbind($allowedValue);
                 }
             }
@@ -120,7 +123,7 @@ final class FixerOption implements FixerOptionInterface
     public function getDefault()
     {
         if (!$this->hasDefault()) {
-            throw new \LogicException('No default value defined.');
+            throw new LogicException('No default value defined.');
         }
 
         return $this->default;
@@ -165,11 +168,11 @@ final class FixerOption implements FixerOptionInterface
      *
      * See {@see https://bugs.php.net/bug.php?id=69639 Bug #69639} for details.
      *
-     * @param \Closure $closure
+     * @param Closure $closure
      *
-     * @return \Closure
+     * @return Closure
      */
-    private function unbind(\Closure $closure)
+    private function unbind(Closure $closure)
     {
         return $closure->bindTo(null);
     }

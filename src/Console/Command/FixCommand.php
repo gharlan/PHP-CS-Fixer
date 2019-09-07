@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Console\Command;
 
+use ArrayIterator;
 use PhpCsFixer\Config;
 use PhpCsFixer\ConfigInterface;
 use PhpCsFixer\Console\ConfigurationResolver;
@@ -22,6 +23,7 @@ use PhpCsFixer\Error\ErrorsManager;
 use PhpCsFixer\Report\ReportSummary;
 use PhpCsFixer\Runner\Runner;
 use PhpCsFixer\ToolInfoInterface;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,6 +34,7 @@ use Symfony\Component\Console\Terminal;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
+use function count;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
@@ -158,7 +161,7 @@ final class FixCommand extends Command
         if (null !== $stdErr) {
             if (null !== $passedConfig && null !== $passedRules) {
                 if (getenv('PHP_CS_FIXER_FUTURE_MODE')) {
-                    throw new \RuntimeException('Passing both `config` and `rules` options is not possible. This check was performed as `PHP_CS_FIXER_FUTURE_MODE` env var is set.');
+                    throw new RuntimeException('Passing both `config` and `rules` options is not possible. This check was performed as `PHP_CS_FIXER_FUTURE_MODE` env var is set.');
                 }
 
                 $stdErr->writeln([
@@ -193,12 +196,12 @@ final class FixCommand extends Command
         } elseif ('run-in' === $progressType) {
             $progressOutput = new ProcessOutput($stdErr, $this->eventDispatcher, null, null);
         } else {
-            $finder = new \ArrayIterator(iterator_to_array($finder));
+            $finder = new ArrayIterator(iterator_to_array($finder));
             $progressOutput = new ProcessOutput(
                 $stdErr,
                 $this->eventDispatcher,
                 'estimating' !== $progressType ? (new Terminal())->getWidth() : null,
-                \count($finder)
+                count($finder)
             );
         }
 
@@ -244,15 +247,15 @@ final class FixCommand extends Command
         if (null !== $stdErr) {
             $errorOutput = new ErrorOutput($stdErr);
 
-            if (\count($invalidErrors) > 0) {
+            if (count($invalidErrors) > 0) {
                 $errorOutput->listErrors('linting before fixing', $invalidErrors);
             }
 
-            if (\count($exceptionErrors) > 0) {
+            if (count($exceptionErrors) > 0) {
                 $errorOutput->listErrors('fixing', $exceptionErrors);
             }
 
-            if (\count($lintErrors) > 0) {
+            if (count($lintErrors) > 0) {
                 $errorOutput->listErrors('linting after fixing', $lintErrors);
             }
         }
@@ -261,9 +264,9 @@ final class FixCommand extends Command
 
         return $exitStatusCalculator->calculate(
             $resolver->isDryRun(),
-            \count($changed) > 0,
-            \count($invalidErrors) > 0,
-            \count($exceptionErrors) > 0
+            count($changed) > 0,
+            count($invalidErrors) > 0,
+            count($exceptionErrors) > 0
         );
     }
 }

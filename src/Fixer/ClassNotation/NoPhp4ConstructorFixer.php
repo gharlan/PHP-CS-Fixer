@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Matteo Beccati <matteo@beccati.com>
@@ -74,11 +76,11 @@ class Foo
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $tokensAnalyzer = new TokensAnalyzer($tokens);
         $classes = array_keys($tokens->findGivenKind(T_CLASS));
-        $numClasses = \count($classes);
+        $numClasses = count($classes);
 
         for ($i = 0; $i < $numClasses; ++$i) {
             $index = $classes[$i];
@@ -310,7 +312,7 @@ class Foo
             }
 
             // append a comma if it's not the first variable
-            if (\count($seq) > 5) {
+            if (count($seq) > 5) {
                 $seq[] = ',';
             }
 

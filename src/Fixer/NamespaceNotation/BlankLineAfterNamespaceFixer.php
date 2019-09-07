@@ -19,6 +19,7 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * Fixer for rules defined in PSR2 ¶3.
@@ -61,7 +62,7 @@ final class BlankLineAfterNamespaceFixer extends AbstractFixer implements Whites
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $lastIndex = $tokens->count() - 1;
 

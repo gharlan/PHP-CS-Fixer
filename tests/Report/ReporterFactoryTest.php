@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\Report;
 
 use PhpCsFixer\Report\ReporterFactory;
 use PhpCsFixer\Tests\TestCase;
+use UnexpectedValueException;
 
 /**
  * @author Boris Gorbylev <ekho@ekho.name>
@@ -90,7 +91,7 @@ final class ReporterFactoryTest extends TestCase
 
     public function testRegisterReportWithOccupiedFormat()
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Reporter for format "non_unique_name" is already registered.');
 
         $factory = new ReporterFactory();
@@ -103,7 +104,7 @@ final class ReporterFactoryTest extends TestCase
 
     public function testGetNonRegisteredReport()
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Reporter for format "non_registered_format" is not registered.');
 
         $builder = new ReporterFactory();

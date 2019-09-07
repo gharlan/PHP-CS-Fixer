@@ -12,6 +12,11 @@
 
 namespace PhpCsFixer;
 
+use Exception;
+use Phar;
+use PharException;
+use UnexpectedValueException;
+
 /**
  * @internal
  */
@@ -23,11 +28,11 @@ final class PharChecker implements PharCheckerInterface
     public function checkFileValidity($filename)
     {
         try {
-            $phar = new \Phar($filename);
+            $phar = new Phar($filename);
             // free the variable to unlock the file
             unset($phar);
-        } catch (\Exception $e) {
-            if (!$e instanceof \UnexpectedValueException && !$e instanceof \PharException) {
+        } catch (Exception $e) {
+            if (!$e instanceof UnexpectedValueException && !$e instanceof PharException) {
                 throw $e;
             }
 

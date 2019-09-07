@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Bram Gotink <bram@gotink.me>
@@ -54,9 +56,9 @@ final class NoLeadingNamespaceWhitespaceFixer extends AbstractFixer implements W
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        for ($index = \count($tokens) - 1; 0 <= $index; --$index) {
+        for ($index = count($tokens) - 1; 0 <= $index; --$index) {
             $token = $tokens[$index];
 
             if (!$token->isGivenKind(T_NAMESPACE)) {

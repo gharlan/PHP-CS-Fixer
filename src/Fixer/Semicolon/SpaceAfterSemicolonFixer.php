@@ -21,6 +21,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author SpacePossum
@@ -81,11 +83,11 @@ final class SpaceAfterSemicolonFixer extends AbstractFixer implements Configurat
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $insideForParenthesesUntil = null;
 
-        for ($index = 0, $max = \count($tokens) - 1; $index < $max; ++$index) {
+        for ($index = 0, $max = count($tokens) - 1; $index < $max; ++$index) {
             if ($this->configuration['remove_in_empty_for_expressions']) {
                 if ($tokens[$index]->isGivenKind(T_FOR)) {
                     $index = $tokens->getNextMeaningfulToken($index);

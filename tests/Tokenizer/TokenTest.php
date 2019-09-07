@@ -12,10 +12,12 @@
 
 namespace PhpCsFixer\Tests\Tokenizer;
 
+use InvalidArgumentException;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use stdClass;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -33,7 +35,7 @@ final class TokenTest extends TestCase
      */
     public function testConstructorValidation($input)
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Token($input);
     }
@@ -43,14 +45,14 @@ final class TokenTest extends TestCase
         return [
             [null],
             [123],
-            [new \stdClass()],
+            [new stdClass()],
             [['asd', 'asd']],
             [[null, 'asd']],
-            [[new \stdClass(), 'asd']],
+            [[new stdClass(), 'asd']],
             [[T_WHITESPACE, null]],
             [[T_WHITESPACE, 123]],
             [[T_WHITESPACE, '']],
-            [[T_WHITESPACE, new \stdClass()]],
+            [[T_WHITESPACE, new stdClass()]],
         ];
     }
 
@@ -314,9 +316,9 @@ final class TokenTest extends TestCase
         return [
             [[T_FOREACH, 'foreach'], T_FOREACH, 'foreach', true],
             ['(', null, '(', false],
-            [123, null, null, null, \InvalidArgumentException::class],
-            [false, null, null, null, \InvalidArgumentException::class],
-            [null, null, null, null, \InvalidArgumentException::class],
+            [123, null, null, null, InvalidArgumentException::class],
+            [false, null, null, null, InvalidArgumentException::class],
+            [null, null, null, null, InvalidArgumentException::class],
         ];
     }
 

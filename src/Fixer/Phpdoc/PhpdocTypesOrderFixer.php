@@ -24,6 +24,8 @@ use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Utils;
+use SplFileInfo;
+use function count;
 
 final class PhpdocTypesOrderFixer extends AbstractFixer implements ConfigurationDefinitionFixerInterface
 {
@@ -109,7 +111,7 @@ final class PhpdocTypesOrderFixer extends AbstractFixer implements Configuration
         ]);
     }
 
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($tokens as $index => $token) {
             if (!$token->isGivenKind(T_DOC_COMMENT)) {
@@ -119,7 +121,7 @@ final class PhpdocTypesOrderFixer extends AbstractFixer implements Configuration
             $doc = new DocBlock($token->getContent());
             $annotations = $doc->getAnnotationsOfType(Annotation::getTagsWithTypes());
 
-            if (!\count($annotations)) {
+            if (!count($annotations)) {
                 continue;
             }
 
@@ -181,7 +183,7 @@ final class PhpdocTypesOrderFixer extends AbstractFixer implements Configuration
                 }
             }
 
-            if (\count($nulls)) {
+            if (count($nulls)) {
                 if ('always_last' === $this->configuration['null_adjustment']) {
                     array_push($types, ...$nulls);
                 } else {

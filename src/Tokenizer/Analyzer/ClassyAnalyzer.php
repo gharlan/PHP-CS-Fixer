@@ -12,8 +12,10 @@
 
 namespace PhpCsFixer\Tokenizer\Analyzer;
 
+use LogicException;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Tokens;
+use function in_array;
 
 /**
  * @internal
@@ -31,10 +33,10 @@ final class ClassyAnalyzer
         $token = $tokens[$index];
 
         if (!$token->isGivenKind(T_STRING)) {
-            throw new \LogicException(sprintf('No T_STRING at given index %d, got %s.', $index, $tokens[$index]->getName()));
+            throw new LogicException(sprintf('No T_STRING at given index %d, got %s.', $index, $tokens[$index]->getName()));
         }
 
-        if (\in_array(strtolower($token->getContent()), ['bool', 'float', 'int', 'iterable', 'object', 'parent', 'self', 'string', 'void'], true)) {
+        if (in_array(strtolower($token->getContent()), ['bool', 'float', 'int', 'iterable', 'object', 'parent', 'self', 'string', 'void'], true)) {
             return false;
         }
 

@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function array_key_exists;
 
 /**
  * @author SpacePossum
@@ -46,7 +48,7 @@ final class NativeFunctionCasingFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         static $nativeFunctionNames = null;
 
@@ -82,7 +84,7 @@ final class NativeFunctionCasingFixer extends AbstractFixer
 
             // test if the function call is to a native PHP function
             $lower = strtolower($tokens[$index]->getContent());
-            if (!\array_key_exists($lower, $nativeFunctionNames)) {
+            if (!array_key_exists($lower, $nativeFunctionNames)) {
                 continue;
             }
 

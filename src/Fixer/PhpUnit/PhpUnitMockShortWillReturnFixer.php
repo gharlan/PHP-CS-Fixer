@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Indicator\PhpUnitTestCaseIndicator;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function array_key_exists;
 
 /**
  * @author Michał Adamski <michal.adamski@gmail.com>
@@ -83,7 +85,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $phpUnitTestCaseIndicator = new PhpUnitTestCaseIndicator();
         foreach ($phpUnitTestCaseIndicator->findPhpUnitClasses($tokens) as $indexes) {
@@ -124,7 +126,7 @@ final class MyTest extends \PHPUnit_Framework_TestCase
             }
 
             $functionToRemoveIndex = $tokens->getNextMeaningfulToken($objectOperatorIndex);
-            if (!$tokens[$functionToRemoveIndex]->isGivenKind(T_STRING) || !\array_key_exists(strtolower($tokens[$functionToRemoveIndex]->getContent()), self::RETURN_METHODS_MAP)) {
+            if (!$tokens[$functionToRemoveIndex]->isGivenKind(T_STRING) || !array_key_exists(strtolower($tokens[$functionToRemoveIndex]->getContent()), self::RETURN_METHODS_MAP)) {
                 continue;
             }
 

@@ -12,8 +12,11 @@
 
 namespace PhpCsFixer\Tests\Test;
 
+use LogicException;
 use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
 use PhpCsFixer\FixerConfiguration\AliasedFixerOption;
+use SplFileInfo;
+use function array_key_exists;
 
 /**
  * @author ntzm
@@ -36,7 +39,7 @@ abstract class AbstractFixerWithAliasedOptionsTestCase extends AbstractFixerTest
         $this->fixerWithAliasedConfig = null;
     }
 
-    protected function doTest($expected, $input = null, \SplFileInfo $file = null)
+    protected function doTest($expected, $input = null, SplFileInfo $file = null)
     {
         parent::doTest($expected, $input, $file);
 
@@ -57,7 +60,7 @@ abstract class AbstractFixerWithAliasedOptionsTestCase extends AbstractFixerTest
     protected function configureFixerWithAliasedOptions(array $configuration)
     {
         if (!$this->fixer instanceof ConfigurationDefinitionFixerInterface) {
-            throw new \LogicException('Fixer is not configurable');
+            throw new LogicException('Fixer is not configurable');
         }
 
         $this->fixer->configure($configuration);
@@ -73,14 +76,14 @@ abstract class AbstractFixerWithAliasedOptionsTestCase extends AbstractFixerTest
 
             $alias = $option->getAlias();
 
-            if (\array_key_exists($alias, $configuration)) {
+            if (array_key_exists($alias, $configuration)) {
                 $configuration[$option->getName()] = $configuration[$alias];
                 unset($configuration[$alias]);
             }
         }
 
         if (!$hasAliasedOptions) {
-            throw new \LogicException('Fixer has no aliased options');
+            throw new LogicException('Fixer has no aliased options');
         }
 
         $this->fixerWithAliasedConfig = clone $this->fixer;

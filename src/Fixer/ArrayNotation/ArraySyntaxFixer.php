@@ -23,6 +23,7 @@ use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Gregor Harlan <gharlan@web.de>
@@ -86,7 +87,7 @@ final class ArraySyntaxFixer extends AbstractFixer implements ConfigurationDefin
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $callback = $this->fixCallback;
         for ($index = $tokens->count() - 1; 0 <= $index; --$index) {

@@ -19,6 +19,7 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * Fixes the line endings in multi-line strings.
@@ -63,7 +64,7 @@ final class StringLineEndingFixer extends AbstractFixer implements WhitespacesAw
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $ending = $this->whitespacesConfig->getLineEnding();
 

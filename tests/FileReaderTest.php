@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests;
 
 use org\bovigo\vfs\vfsStream;
 use PhpCsFixer\FileReader;
+use RuntimeException;
 
 /**
  * @author ntzm
@@ -71,7 +72,7 @@ final class FileReaderTest extends TestCase
 
         $reader = new FileReader();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Failed to read content from "'.$nonExistentFilePath.'". file_get_contents('.$nonExistentFilePath.'): failed to open stream: "org\bovigo\vfs\vfsStreamWrapper::stream_open" call failed');
 
         $reader->read($nonExistentFilePath);

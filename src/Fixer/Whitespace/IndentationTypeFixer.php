@@ -19,6 +19,7 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * Fixer for rules defined in PSR2 ¶2.4.
@@ -64,7 +65,7 @@ final class IndentationTypeFixer extends AbstractFixer implements WhitespacesAwa
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $this->indent = $this->whitespacesConfig->getIndent();
 

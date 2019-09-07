@@ -12,10 +12,12 @@
 
 namespace PhpCsFixer\Tests\Runner;
 
+use ArrayIterator;
 use PhpCsFixer\Linter\LinterInterface;
 use PhpCsFixer\Linter\LintingResultInterface;
 use PhpCsFixer\Runner\FileLintingIterator;
 use PhpCsFixer\Tests\TestCase;
+use SplFileInfo;
 
 /**
  * @author SpacePossum
@@ -30,7 +32,7 @@ final class FileLintingIteratorTest extends TestCase
     {
         $fileLintingIteratorProphecy = $this->prophesize(LinterInterface::class);
 
-        $iterator = new \ArrayIterator([]);
+        $iterator = new ArrayIterator([]);
 
         $fileLintingIterator = new FileLintingIterator(
             $iterator,
@@ -45,13 +47,13 @@ final class FileLintingIteratorTest extends TestCase
 
     public function testFileLintingIterator()
     {
-        $file = new \SplFileInfo(__FILE__);
+        $file = new SplFileInfo(__FILE__);
         $fileLintingIteratorProphecy = $this->prophesize(LinterInterface::class);
 
         $lintingResultInterfaceProphecy = $this->prophesize(LintingResultInterface::class)->reveal();
         $fileLintingIteratorProphecy->lintFile($file)->willReturn($lintingResultInterfaceProphecy);
 
-        $iterator = new \ArrayIterator([$file]);
+        $iterator = new ArrayIterator([$file]);
 
         $fileLintingIterator = new FileLintingIterator(
             $iterator,
@@ -75,7 +77,7 @@ final class FileLintingIteratorTest extends TestCase
 
     private function fileLintingIteratorIterationTest(
         FileLintingIterator $fileLintingIterator,
-        \SplFileInfo $file,
+        SplFileInfo $file,
         LintingResultInterface $lintingResultInterface
     ) {
         $iterations = 0;

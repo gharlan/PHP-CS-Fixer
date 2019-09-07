@@ -13,6 +13,7 @@
 namespace PhpCsFixer;
 
 use PhpCsFixer\Fixer\FixerInterface;
+use Traversable;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
@@ -37,7 +38,7 @@ interface ConfigInterface
     /**
      * Returns files to scan.
      *
-     * @return iterable|\Traversable
+     * @return iterable|Traversable
      */
     public function getFinder();
 
@@ -107,7 +108,7 @@ interface ConfigInterface
      *
      * Name of custom fixer should follow `VendorName/rule_name` convention.
      *
-     * @param FixerInterface[]|iterable|\Traversable $fixers
+     * @param FixerInterface[]|iterable|Traversable $fixers
      */
     public function registerCustomFixers($fixers);
 
@@ -121,7 +122,7 @@ interface ConfigInterface
     public function setCacheFile($cacheFile);
 
     /**
-     * @param iterable|string[]|\Traversable $finder
+     * @param iterable|string[]|Traversable $finder
      *
      * @return self
      */

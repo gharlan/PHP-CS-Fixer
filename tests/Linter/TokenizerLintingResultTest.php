@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\Linter;
 
+use ParseError;
 use PhpCsFixer\Linter\TokenizerLintingResult;
 use PhpCsFixer\Tests\TestCase;
 
@@ -35,7 +36,7 @@ final class TokenizerLintingResultTest extends TestCase
 
     public function testTokenizerLintingResultFail()
     {
-        $error = new \ParseError('PHPUnit', 567);
+        $error = new ParseError('PHPUnit', 567);
         $line = __LINE__ - 1;
 
         $result = new TokenizerLintingResult($error);

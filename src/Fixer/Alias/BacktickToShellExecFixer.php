@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -65,7 +67,7 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $backtickStarted = false;
         $backtickTokens = [];
@@ -108,7 +110,7 @@ EOT
 
         // Double-quoted strings are parsed differently if they contain
         // variables or not, so we need to build the new token array accordingly
-        $count = \count($backtickTokens);
+        $count = count($backtickTokens);
 
         $newTokens = [
             new Token([T_STRING, 'shell_exec']),

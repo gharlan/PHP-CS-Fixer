@@ -12,11 +12,13 @@
 
 namespace PhpCsFixer\Tests\AutoReview;
 
+use LogicException;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Tokens;
 use PHPUnit\Framework\Constraint\TraversableContains;
 use Symfony\Component\Yaml\Yaml;
+use function count;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -47,7 +49,7 @@ final class TravisTest extends TestCase
         $jobs = array_filter($this->getTravisJobs(), function ($job) {
             return false !== strpos($job['stage'], 'Test');
         });
-        static::assertGreaterThanOrEqual(1, \count($jobs));
+        static::assertGreaterThanOrEqual(1, count($jobs));
 
         $versions = array_map(function ($job) {
             return $job['php'];
@@ -72,7 +74,7 @@ final class TravisTest extends TestCase
         $jobs = array_filter($this->getTravisJobs(), function ($job) {
             return 'Deployment' === $job['stage'];
         });
-        static::assertGreaterThanOrEqual(1, \count($jobs));
+        static::assertGreaterThanOrEqual(1, count($jobs));
 
         $expectedPhp = $this->getMaxPhpVersionFromEntryFile();
 
@@ -89,7 +91,7 @@ final class TravisTest extends TestCase
     {
         $matchResult = Preg::match('/^(?<major>\d{1,2})(?<minor>\d{2})(?<patch>\d{2})$/', $verId, $capture);
         if (1 !== $matchResult) {
-            throw new \LogicException("Can't parse version id.");
+            throw new LogicException("Can't parse version id.");
         }
 
         return sprintf('%d.%d', $capture['major'], $capture['minor']);
@@ -105,7 +107,7 @@ final class TravisTest extends TestCase
         ]);
 
         if (null === $sequence) {
-            throw new \LogicException("Can't find version - perhaps entry file was modified?");
+            throw new LogicException("Can't find version - perhaps entry file was modified?");
         }
 
         $phpVerId = end($sequence)->getContent();
@@ -123,7 +125,7 @@ final class TravisTest extends TestCase
         ]);
 
         if (null === $sequence) {
-            throw new \LogicException("Can't find version - perhaps entry file was modified?");
+            throw new LogicException("Can't find version - perhaps entry file was modified?");
         }
 
         $phpVerId = end($sequence)->getContent();

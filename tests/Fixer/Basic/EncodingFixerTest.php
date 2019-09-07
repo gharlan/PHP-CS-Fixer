@@ -13,6 +13,7 @@
 namespace PhpCsFixer\Tests\Fixer\Basic;
 
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
+use SplFileInfo;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -24,9 +25,9 @@ use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 final class EncodingFixerTest extends AbstractFixerTestCase
 {
     /**
-     * @param string       $expected
-     * @param string       $input
-     * @param \SplFileInfo $file
+     * @param string      $expected
+     * @param string      $input
+     * @param SplFileInfo $file
      *
      * @dataProvider provideFixCases
      */

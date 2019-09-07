@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Tests\Tokenizer\Analyzer;
 
+use InvalidArgumentException;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Analyzer\CommentsAnalyzer;
 use PhpCsFixer\Tokenizer\Tokens;
@@ -31,7 +32,7 @@ final class CommentsAnalyzerTest extends TestCase
         $analyzer = new CommentsAnalyzer();
         $tokens = Tokens::fromCode('<?php $no; $comment; $here;');
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Given index must point to a comment.');
 
         $analyzer->getCommentBlockIndices($tokens, 4);
@@ -152,7 +153,7 @@ $bar;',
         $tokens = Tokens::fromCode('<?php 1; 2; 3;');
         $analyzer = new CommentsAnalyzer();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $analyzer->isHeaderComment($tokens, 2);
     }
@@ -178,7 +179,7 @@ $bar;',
         $tokens = Tokens::fromCode('<?php 1; 2; 3;');
         $analyzer = new CommentsAnalyzer();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $analyzer->isBeforeStructuralElement($tokens, 2);
     }

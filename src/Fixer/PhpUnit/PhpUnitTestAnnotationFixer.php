@@ -26,6 +26,10 @@ use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
+use function array_slice;
+use function count;
+use function strlen;
 
 /**
  * @author Gert de Pagter
@@ -83,7 +87,7 @@ public function testItDoesSomething() {}}'.$this->whitespacesConfig->getLineEndi
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $phpUnitTestCaseIndicator = new PhpUnitTestCaseIndicator();
         foreach ($phpUnitTestCaseIndicator->findPhpUnitClasses($tokens) as $indexes) {
@@ -237,7 +241,7 @@ public function testItDoesSomething() {}}'.$this->whitespacesConfig->getLineEndi
      */
     private function startsWith($needle, $haystack)
     {
-        $len = \strlen($needle);
+        $len = strlen($needle);
 
         return substr($haystack, 0, $len) === $needle;
     }
@@ -379,7 +383,7 @@ public function testItDoesSomething() {}}'.$this->whitespacesConfig->getLineEndi
         $needsAnnotation = 'annotation' === $this->configuration['style'];
 
         $doc = new DocBlock($tokens[$docBlockIndex]->getContent());
-        for ($i = 0; $i < \count($lines); ++$i) {
+        for ($i = 0; $i < count($lines); ++$i) {
             // If we need to add test annotation and it is a single line comment we need to deal with that separately
             if ($needsAnnotation && ($lines[$i]->isTheStart() && $lines[$i]->isTheEnd())) {
                 if (!$this->doesDocBlockContainTest($doc)) {
@@ -442,14 +446,14 @@ public function testItDoesSomething() {}}'.$this->whitespacesConfig->getLineEndi
         $line = str_replace('*/', '', $line);
         $line = trim($line);
         $line = str_split($line);
-        $i = \count($line);
+        $i = count($line);
         do {
             --$i;
         } while ('*' !== $line[$i] && '*' !== $line[$i - 1] && '/' !== $line[$i - 2]);
         if (' ' === $line[$i]) {
             ++$i;
         }
-        $line = \array_slice($line, $i);
+        $line = array_slice($line, $i);
 
         return implode('', $line);
     }
@@ -480,7 +484,7 @@ public function testItDoesSomething() {}}'.$this->whitespacesConfig->getLineEndi
         $line = str_split($line->getContent());
 
         $dependsIndex = $this->findWhereDependsFunctionNameStarts($line);
-        $dependsFunctionName = implode('', \array_slice($line, $dependsIndex));
+        $dependsFunctionName = implode('', array_slice($line, $dependsIndex));
 
         if ($this->startsWith('test', $dependsFunctionName)) {
             $dependsFunctionName = $this->removeTestPrefix($dependsFunctionName);
@@ -499,7 +503,7 @@ public function testItDoesSomething() {}}'.$this->whitespacesConfig->getLineEndi
     {
         $line = str_split($line->getContent());
         $dependsIndex = $this->findWhereDependsFunctionNameStarts($line);
-        $dependsFunctionName = implode('', \array_slice($line, $dependsIndex));
+        $dependsFunctionName = implode('', array_slice($line, $dependsIndex));
 
         if (!$this->startsWith('test', $dependsFunctionName)) {
             $dependsFunctionName = $this->addTestPrefix($dependsFunctionName);
@@ -519,7 +523,7 @@ public function testItDoesSomething() {}}'.$this->whitespacesConfig->getLineEndi
      */
     private function findWhereDependsFunctionNameStarts(array $line)
     {
-        $counter = \count($line);
+        $counter = count($line);
 
         do {
             --$counter;

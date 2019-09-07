@@ -12,6 +12,9 @@
 
 namespace PhpCsFixer\Cache;
 
+use function strlen;
+use const DIRECTORY_SEPARATOR;
+
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  *
@@ -38,16 +41,16 @@ final class Directory implements DirectoryInterface
 
         if (
             '' === $this->directoryName
-            || 0 !== stripos($file, $this->directoryName.\DIRECTORY_SEPARATOR)
+            || 0 !== stripos($file, $this->directoryName.DIRECTORY_SEPARATOR)
         ) {
             return $file;
         }
 
-        return substr($file, \strlen($this->directoryName) + 1);
+        return substr($file, strlen($this->directoryName) + 1);
     }
 
     private function normalizePath($path)
     {
-        return str_replace(['\\', '/'], \DIRECTORY_SEPARATOR, $path);
+        return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
     }
 }

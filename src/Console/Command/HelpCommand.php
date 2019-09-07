@@ -12,6 +12,7 @@
 
 namespace PhpCsFixer\Console\Command;
 
+use Closure;
 use PhpCsFixer\Console\Application;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
@@ -26,11 +27,16 @@ use PhpCsFixer\FixerFactory;
 use PhpCsFixer\Preg;
 use PhpCsFixer\RuleSet;
 use PhpCsFixer\Utils;
+use RuntimeException;
 use Symfony\Component\Console\Command\HelpCommand as BaseHelpCommand;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use function array_slice;
+use function count;
+use function is_array;
+use function strlen;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
@@ -284,7 +290,7 @@ EOF
             ),
             '%%%CI_INTEGRATION%%%' => implode("\n", array_map(
                 static function ($line) { return '    $ '.$line; },
-                \array_slice(file(__DIR__.'/../../../dev-tools/ci-integration.sh', FILE_IGNORE_NEW_LINES), 3)
+                array_slice(file(__DIR__.'/../../../dev-tools/ci-integration.sh', FILE_IGNORE_NEW_LINES), 3)
             )),
             '%%%FIXERS_DETAILS%%%' => self::getFixersHelp(),
         ]);
@@ -297,7 +303,7 @@ EOF
      */
     public static function toString($value)
     {
-        if (\is_array($value)) {
+        if (is_array($value)) {
             // Output modifications:
             // - remove new-lines
             // - combine multiple whitespaces
@@ -344,7 +350,7 @@ EOF
 
         if (null !== $allowed) {
             $allowed = array_filter($allowed, static function ($value) {
-                return !($value instanceof \Closure);
+                return !($value instanceof Closure);
             });
 
             usort($allowed, static function ($valueA, $valueB) {
@@ -362,7 +368,7 @@ EOF
                 );
             });
 
-            if (0 === \count($allowed)) {
+            if (0 === count($allowed)) {
                 $allowed = null;
             }
         }
@@ -371,7 +377,7 @@ EOF
     }
 
     /**
-     * @throws \RuntimeException when failing to parse the change log file
+     * @throws RuntimeException when failing to parse the change log file
      *
      * @return string
      */
@@ -394,7 +400,7 @@ EOF
         if (false === $changelog) {
             $error = error_get_last();
 
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Failed to read content of the changelog file "%s".%s',
                 $changelogFile,
                 $error ? ' '.$error['message'] : ''
@@ -410,7 +416,7 @@ EOF
         }
 
         if (null === $version) {
-            throw new \RuntimeException(sprintf('Failed to parse changelog data of "%s".', $changelogFile));
+            throw new RuntimeException(sprintf('Failed to parse changelog data of "%s".', $changelogFile));
         }
 
         return $version;
@@ -468,7 +474,7 @@ EOF
             return $sets;
         };
 
-        $count = \count($fixers) - 1;
+        $count = count($fixers) - 1;
         foreach ($fixers as $i => $fixer) {
             $sets = $getSetsWithRule($fixer->getName());
 
@@ -511,7 +517,7 @@ EOF
             if ($fixer instanceof ConfigurationDefinitionFixerInterface) {
                 $configurationDefinition = $fixer->getConfigurationDefinition();
                 $configurationDefinitionOptions = $configurationDefinition->getOptions();
-                if (\count($configurationDefinitionOptions)) {
+                if (count($configurationDefinitionOptions)) {
                     $help .= "   |\n   | Configuration options:\n";
 
                     usort(
@@ -601,7 +607,7 @@ EOF
         $currentLine = 0;
         $lineLength = 0;
         foreach (explode(' ', $string) as $word) {
-            $wordLength = \strlen(Preg::replace('~</?(\w+)>~', '', $word));
+            $wordLength = strlen(Preg::replace('~</?(\w+)>~', '', $word));
             if (0 !== $lineLength) {
                 ++$wordLength; // space before word
             }

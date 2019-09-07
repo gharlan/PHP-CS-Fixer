@@ -26,7 +26,11 @@ use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Tokenizer\TokensAnalyzer;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\Options;
+use function array_slice;
+use function count;
+use function strlen;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -294,7 +298,7 @@ switch($a) {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $this->tokens = $tokens;
         $this->tokensAnalyzer = new TokensAnalyzer($this->tokens);
@@ -380,10 +384,10 @@ switch($a) {
         $expected = $this->tokens[$index - 1]->isGivenKind(T_OPEN_TAG) && 1 === Preg::match('/\R$/', $this->tokens[$index - 1]->getContent()) ? 1 : 2;
 
         $parts = Preg::split('/(.*\R)/', $this->tokens[$index]->getContent(), -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $count = \count($parts);
+        $count = count($parts);
 
         if ($count > $expected) {
-            $this->tokens[$index] = new Token([T_WHITESPACE, implode('', \array_slice($parts, 0, $expected)).rtrim($parts[$count - 1], "\r\n")]);
+            $this->tokens[$index] = new Token([T_WHITESPACE, implode('', array_slice($parts, 0, $expected)).rtrim($parts[$count - 1], "\r\n")]);
         }
     }
 
@@ -430,7 +434,7 @@ switch($a) {
     private function removeEmptyLinesAfterLineWithTokenAt($index)
     {
         // find the line break
-        $tokenCount = \count($this->tokens);
+        $tokenCount = count($this->tokens);
         for ($end = $index; $end < $tokenCount; ++$end) {
             if (
                 $this->tokens[$end]->equals('}')
@@ -453,7 +457,7 @@ switch($a) {
             }
 
             $pos = strrpos($content, "\n");
-            if ($pos + 2 <= \strlen($content)) { // preserve indenting where possible
+            if ($pos + 2 <= strlen($content)) { // preserve indenting where possible
                 $newContent = $ending.substr($content, $pos + 1);
             } else {
                 $newContent = $ending;

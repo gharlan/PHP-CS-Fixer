@@ -12,9 +12,11 @@
 
 namespace PhpCsFixer\Linter;
 
+use RuntimeException;
+
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  */
-class LintingException extends \RuntimeException
+class LintingException extends RuntimeException
 {
 }

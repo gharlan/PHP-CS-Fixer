@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\Error;
 
+use Throwable;
+
 /**
  * An abstraction for errors that can occur before and during fixing.
  *
@@ -47,7 +49,7 @@ final class Error
     private $filePath;
 
     /**
-     * @var null|\Throwable
+     * @var null|Throwable
      */
     private $source;
 
@@ -62,11 +64,11 @@ final class Error
     private $diff;
 
     /**
-     * @param int             $type
-     * @param string          $filePath
-     * @param null|\Throwable $source
-     * @param array           $appliedFixers
-     * @param null|string     $diff
+     * @param int            $type
+     * @param string         $filePath
+     * @param null|Throwable $source
+     * @param array          $appliedFixers
+     * @param null|string    $diff
      */
     public function __construct($type, $filePath, $source = null, array $appliedFixers = [], $diff = null)
     {
@@ -86,7 +88,7 @@ final class Error
     }
 
     /**
-     * @return null|\Throwable
+     * @return null|Throwable
      */
     public function getSource()
     {

@@ -20,6 +20,9 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use function in_array;
 
 /**
  * @author Graham Campbell <graham@alt-three.com>
@@ -61,7 +64,7 @@ final class Foo
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($tokens as $index => $token) {
             if (!$token->isGivenKind(T_DOC_COMMENT)) {
@@ -71,14 +74,14 @@ final class Foo
             $doc = new DocBlock($token->getContent());
 
             // don't process single line docblocks
-            if (1 === \count($doc->getLines())) {
+            if (1 === count($doc->getLines())) {
                 continue;
             }
 
             $annotations = $doc->getAnnotationsOfType(['param', 'return', 'type', 'var']);
 
             // only process docblocks where the first meaningful annotation is @type or @var
-            if (!isset($annotations[0]) || !\in_array($annotations[0]->getTag()->getName(), ['type', 'var'], true)) {
+            if (!isset($annotations[0]) || !in_array($annotations[0]->getTag()->getName(), ['type', 'var'], true)) {
                 continue;
             }
 

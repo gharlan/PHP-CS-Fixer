@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Dave van der Brugge <dmvdbrugge@gmail.com>
@@ -72,9 +74,9 @@ EOT
         return $tokens->isTokenKindFound(T_DOLLAR_OPEN_CURLY_BRACES);
     }
 
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        for ($index = \count($tokens) - 3; $index > 0; --$index) {
+        for ($index = count($tokens) - 3; $index > 0; --$index) {
             $token = $tokens[$index];
 
             if (!$token->isGivenKind(T_DOLLAR_OPEN_CURLY_BRACES)) {

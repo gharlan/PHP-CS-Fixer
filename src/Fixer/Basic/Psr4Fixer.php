@@ -17,6 +17,8 @@ use PhpCsFixer\FixerDefinition\FileSpecificCodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function strlen;
 
 /**
  * @author Jordi Boggiano <j.boggiano@seld.be>
@@ -39,7 +41,7 @@ final class Psr4Fixer extends AbstractPsrAutoloadingFixer
 namespace PhpCsFixer\FIXER\Basic;
 class InvalidName {}
 ',
-                    new \SplFileInfo(__FILE__)
+                    new SplFileInfo(__FILE__)
                 ),
             ],
             null,
@@ -50,7 +52,7 @@ class InvalidName {}
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $isNamespaceFound = false;
         $classyIndex = 0;
@@ -90,7 +92,7 @@ class InvalidName {}
             }
         } else {
             $normClass = str_replace('_', '/', $classyName);
-            $filename = substr(str_replace('\\', '/', $file->getRealPath()), -\strlen($normClass) - 4, -4);
+            $filename = substr(str_replace('\\', '/', $file->getRealPath()), -strlen($normClass) - 4, -4);
 
             if ($normClass !== $filename && strtolower($normClass) === strtolower($filename)) {
                 $tokens[$classyIndex] = new Token([T_STRING, str_replace('/', '_', $filename)]);

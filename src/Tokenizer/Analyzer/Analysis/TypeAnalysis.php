@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\Tokenizer\Analyzer\Analysis;
 
+use function in_array;
+
 /**
  * @internal
  */
@@ -112,7 +114,7 @@ final class TypeAnalysis implements StartEndTokenAwareAnalysis
      */
     public function isReservedType()
     {
-        return \in_array($this->name, self::$reservedTypes, true);
+        return in_array($this->name, self::$reservedTypes, true);
     }
 
     /**

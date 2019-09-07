@@ -21,6 +21,7 @@ use PhpCsFixer\Console\Command\SelfUpdateCommand;
 use PhpCsFixer\Console\SelfUpdate\NewVersionChecker;
 use PhpCsFixer\Tests\TestCase;
 use Prophecy\Argument;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -251,7 +252,7 @@ OUTPUT;
                 return $newMajorVersion;
             }
 
-            throw new \RuntimeException('Foo.');
+            throw new RuntimeException('Foo.');
         });
 
         $newMinorVersion = $this->getNewMinorVersion();
@@ -262,7 +263,7 @@ OUTPUT;
                     return $newMinorVersion;
                 }
 
-                throw new \RuntimeException('Foo.');
+                throw new RuntimeException('Foo.');
             })
         ;
 

@@ -21,6 +21,8 @@ use PhpCsFixer\Tokenizer\Analyzer\Analysis\TypeAnalysis;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use const PHP_VERSION_ID;
 
 /**
  * @author SpacePossum
@@ -60,7 +62,7 @@ final class NativeFunctionTypeDeclarationCasingFixer extends AbstractFixer
             'self' => true,
         ];
 
-        if (\PHP_VERSION_ID >= 70000) {
+        if (PHP_VERSION_ID >= 70000) {
             $this->hints = array_merge(
                 $this->hints,
                 [
@@ -72,7 +74,7 @@ final class NativeFunctionTypeDeclarationCasingFixer extends AbstractFixer
             );
         }
 
-        if (\PHP_VERSION_ID >= 70100) {
+        if (PHP_VERSION_ID >= 70100) {
             $this->hints = array_merge(
                 $this->hints,
                 [
@@ -82,7 +84,7 @@ final class NativeFunctionTypeDeclarationCasingFixer extends AbstractFixer
             );
         }
 
-        if (\PHP_VERSION_ID >= 70200) {
+        if (PHP_VERSION_ID >= 70200) {
             $this->hints = array_merge($this->hints, ['object' => true]);
         }
 
@@ -125,11 +127,11 @@ final class NativeFunctionTypeDeclarationCasingFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = $tokens->count() - 1; $index >= 0; --$index) {
             if ($tokens[$index]->isGivenKind(T_FUNCTION)) {
-                if (\PHP_VERSION_ID >= 70000) {
+                if (PHP_VERSION_ID >= 70000) {
                     $this->fixFunctionReturnType($tokens, $index);
                 }
 

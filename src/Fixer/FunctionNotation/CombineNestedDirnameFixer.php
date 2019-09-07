@@ -19,6 +19,9 @@ use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use const PHP_VERSION_ID;
 
 /**
  * @author Gregor Harlan
@@ -48,7 +51,7 @@ final class CombineNestedDirnameFixer extends AbstractFixer
      */
     public function isCandidate(Tokens $tokens)
     {
-        return \PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(T_STRING);
+        return PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(T_STRING);
     }
 
     /**
@@ -72,7 +75,7 @@ final class CombineNestedDirnameFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = $tokens->count() - 1; 0 <= $index; --$index) {
             $token = $tokens[$index];
@@ -112,7 +115,7 @@ final class CombineNestedDirnameFixer extends AbstractFixer
                 $firstArgumentEnd = $dirnameInfo['end'];
             }
 
-            if (\count($dirnameInfoArray) > 1) {
+            if (count($dirnameInfoArray) > 1) {
                 $this->combineDirnames($tokens, $dirnameInfoArray);
             }
 

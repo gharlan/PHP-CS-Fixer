@@ -12,10 +12,13 @@
 
 namespace PhpCsFixer\Tests\Tokenizer;
 
+use InvalidArgumentException;
 use PhpCsFixer\Tests\Test\Assert\AssertTokensTrait;
 use PhpCsFixer\Tests\TestCase;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use function count;
+use function is_array;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -287,7 +290,7 @@ final class TokensTest extends TestCase
      */
     public function testFindSequenceException($message, array $sequence)
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($message);
 
         $tokens = Tokens::fromCode('<?php $x = 1;');
@@ -522,7 +525,7 @@ PHP;
     public function testClearTokenAndMergeSurroundingWhitespace($source, array $indexes, array $expected)
     {
         $this->doTestClearTokens($source, $indexes, $expected);
-        if (\count($indexes) > 1) {
+        if (count($indexes) > 1) {
             $this->doTestClearTokens($source, array_reverse($indexes), $expected);
         }
     }
@@ -754,7 +757,7 @@ PHP;
 
     public function testFindBlockEndInvalidType()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('/^Invalid param type: -1\.$/');
 
         Tokens::clearCache();
@@ -764,7 +767,7 @@ PHP;
 
     public function testFindBlockEndInvalidStart()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('/^Invalid param \$startIndex - not a proper block start\.$/');
 
         Tokens::clearCache();
@@ -867,7 +870,7 @@ PHP;
         static::assertTrue($tokens->isTokenKindFound(T_OPEN_TAG));
         static::assertTrue($tokensClone->isTokenKindFound(T_OPEN_TAG));
 
-        $count = \count($tokens);
+        $count = count($tokens);
         static::assertCount($count, $tokensClone);
 
         for ($i = 0; $i < $count; ++$i) {
@@ -1279,11 +1282,11 @@ $bar;',
             $tokens->clearTokenAndMergeSurroundingWhitespace($index);
         }
 
-        static::assertSame(\count($expected), $tokens->count());
+        static::assertSame(count($expected), $tokens->count());
         foreach ($expected as $index => $expectedToken) {
             $token = $tokens[$index];
             $expectedPrototype = $expectedToken->getPrototype();
-            if (\is_array($expectedPrototype)) {
+            if (is_array($expectedPrototype)) {
                 unset($expectedPrototype[2]); // don't compare token lines as our token mutations don't deal with line numbers
             }
 

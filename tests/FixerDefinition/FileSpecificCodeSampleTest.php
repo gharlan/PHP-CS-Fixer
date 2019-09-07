@@ -14,6 +14,7 @@ namespace PhpCsFixer\Tests\FixerDefinition;
 
 use PhpCsFixer\FixerDefinition\FileSpecificCodeSample;
 use PhpCsFixer\Tests\TestCase;
+use SplFileInfo;
 
 /**
  * @author Andreas Möller <am@localheinz.com>
@@ -28,7 +29,7 @@ final class FileSpecificCodeSampleTest extends TestCase
     {
         $sample = new FileSpecificCodeSample(
             file_get_contents(__FILE__),
-            new \SplFileInfo(__FILE__)
+            new SplFileInfo(__FILE__)
         );
 
         static::assertInstanceOf(\PhpCsFixer\FixerDefinition\FileSpecificCodeSampleInterface::class, $sample);
@@ -37,7 +38,7 @@ final class FileSpecificCodeSampleTest extends TestCase
     public function testDefaults()
     {
         $code = file_get_contents(__FILE__);
-        $splFileInfo = new \SplFileInfo(__FILE__);
+        $splFileInfo = new SplFileInfo(__FILE__);
 
         $sample = new FileSpecificCodeSample(
             $code,
@@ -52,7 +53,7 @@ final class FileSpecificCodeSampleTest extends TestCase
     public function testConstructorSetsValues()
     {
         $code = file_get_contents(__FILE__);
-        $splFileInfo = new \SplFileInfo(__FILE__);
+        $splFileInfo = new SplFileInfo(__FILE__);
         $configuration = [
             'foo' => 'bar',
             'bar' => 'baz',

@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer\FixerConfiguration;
 
+use Closure;
+
 /**
  * @author ntzm
  *
@@ -74,11 +76,11 @@ final class AliasedFixerOptionBuilder
     }
 
     /**
-     * @param \Closure $normalizer
+     * @param Closure $normalizer
      *
      * @return $this
      */
-    public function setNormalizer(\Closure $normalizer)
+    public function setNormalizer(Closure $normalizer)
     {
         $this->optionBuilder->setNormalizer($normalizer);
 

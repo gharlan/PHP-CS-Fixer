@@ -17,6 +17,7 @@ use PhpCsFixer\Tokenizer\Analyzer\Analysis\ArgumentAnalysis;
 use PhpCsFixer\Tokenizer\Analyzer\Analysis\TypeAnalysis;
 use PhpCsFixer\Tokenizer\Analyzer\ArgumentsAnalyzer;
 use PhpCsFixer\Tokenizer\Tokens;
+use function count;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -40,7 +41,7 @@ final class ArgumentsAnalyzerTest extends TestCase
         $tokens = Tokens::fromCode($code);
         $analyzer = new ArgumentsAnalyzer();
 
-        static::assertSame(\count($arguments), $analyzer->countArguments($tokens, $openIndex, $closeIndex));
+        static::assertSame(count($arguments), $analyzer->countArguments($tokens, $openIndex, $closeIndex));
         static::assertSame($arguments, $analyzer->getArguments($tokens, $openIndex, $closeIndex));
     }
 
@@ -177,7 +178,7 @@ final class ArgumentsAnalyzerTest extends TestCase
         $tokens = Tokens::fromCode($code);
         $analyzer = new ArgumentsAnalyzer();
 
-        static::assertSame(\count($arguments), $analyzer->countArguments($tokens, $openIndex, $closeIndex));
+        static::assertSame(count($arguments), $analyzer->countArguments($tokens, $openIndex, $closeIndex));
         static::assertSame($arguments, $analyzer->getArguments($tokens, $openIndex, $closeIndex));
     }
 

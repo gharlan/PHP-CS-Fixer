@@ -20,6 +20,9 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
+use function strlen;
 
 /**
  * @author Dave van der Brugge <dmvdbrugge@gmail.com>
@@ -116,7 +119,7 @@ final class OrderedInterfacesFixer extends AbstractFixer implements Configuratio
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($tokens as $index => $token) {
             if (!$token->isGivenKind(T_IMPLEMENTS)) {
@@ -151,7 +154,7 @@ final class OrderedInterfacesFixer extends AbstractFixer implements Configuratio
                 $interfaces[$interfaceIndex]['tokens'][] = $tokens[$i];
             }
 
-            if (1 === \count($interfaces)) {
+            if (1 === count($interfaces)) {
                 continue;
             }
 
@@ -178,7 +181,7 @@ final class OrderedInterfacesFixer extends AbstractFixer implements Configuratio
 
             usort($interfaces, function (array $first, array $second) {
                 $score = self::ORDER_LENGTH === $this->configuration[self::OPTION_ORDER]
-                    ? \strlen($first['normalized']) - \strlen($second['normalized'])
+                    ? strlen($first['normalized']) - strlen($second['normalized'])
                     : strcasecmp($first['normalized'], $second['normalized']);
 
                 if (self::DIRECTION_DESCEND === $this->configuration[self::OPTION_DIRECTION]) {

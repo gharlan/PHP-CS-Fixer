@@ -13,6 +13,8 @@
 namespace PhpCsFixer\Tests\Test;
 
 use Symfony\Component\Finder\SplFileInfo;
+use function in_array;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -28,7 +30,7 @@ final class InternalIntegrationCaseFactory extends AbstractIntegrationCaseFactor
     {
         $parsed = parent::determineSettings($file, $config);
 
-        $parsed['isExplicitPriorityCheck'] = \in_array('priority', explode(\DIRECTORY_SEPARATOR, $file->getRelativePathname()), true);
+        $parsed['isExplicitPriorityCheck'] = in_array('priority', explode(DIRECTORY_SEPARATOR, $file->getRelativePathname()), true);
 
         return $parsed;
     }

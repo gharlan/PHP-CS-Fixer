@@ -21,6 +21,7 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
@@ -93,7 +94,7 @@ final class NoMixedEchoPrintFixer extends AbstractFixer implements Configuration
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $callBack = $this->callBack;
         foreach ($tokens as $index => $token) {

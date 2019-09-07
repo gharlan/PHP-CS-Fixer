@@ -17,6 +17,8 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * Fixer for rules defined in PSR2 ¶2.2.
@@ -47,9 +49,9 @@ final class NoClosingTagFixer extends AbstractFixer
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
-        if (\count($tokens) < 2 || !$tokens->isMonolithicPhp()) {
+        if (count($tokens) < 2 || !$tokens->isMonolithicPhp()) {
             return;
         }
 

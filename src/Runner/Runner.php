@@ -12,6 +12,9 @@
 
 namespace PhpCsFixer\Runner;
 
+use Exception;
+use IteratorAggregate;
+use ParseError;
 use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\Cache\CacheManagerInterface;
 use PhpCsFixer\Cache\Directory;
@@ -26,9 +29,12 @@ use PhpCsFixer\Linter\LinterInterface;
 use PhpCsFixer\Linter\LintingException;
 use PhpCsFixer\Linter\LintingResultInterface;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
+use Throwable;
+use Traversable;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -71,7 +77,7 @@ final class Runner
     private $linter;
 
     /**
-     * @var \Traversable
+     * @var Traversable
      */
     private $finder;
 
@@ -117,7 +123,7 @@ final class Runner
         $changed = [];
 
         $finder = $this->finder;
-        $finderIterator = $finder instanceof \IteratorAggregate ? $finder->getIterator() : $finder;
+        $finderIterator = $finder instanceof IteratorAggregate ? $finder->getIterator() : $finder;
         $fileFilteredFileIterator = new FileFilterIterator(
             $finderIterator,
             $this->eventDispatcher,
@@ -147,7 +153,7 @@ final class Runner
         return $changed;
     }
 
-    private function fixFile(\SplFileInfo $file, LintingResultInterface $lintingResult)
+    private function fixFile(SplFileInfo $file, LintingResultInterface $lintingResult)
     {
         $name = $file->getPathname();
 
@@ -195,11 +201,11 @@ final class Runner
                     $appliedFixers[] = $fixer->getName();
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->processException($name, $e);
 
             return;
-        } catch (\ParseError $e) {
+        } catch (ParseError $e) {
             $this->dispatchEvent(
                 FixerFileProcessedEvent::NAME,
                 new FixerFileProcessedEvent(FixerFileProcessedEvent::STATUS_LINT)
@@ -208,7 +214,7 @@ final class Runner
             $this->errorsManager->report(new Error(Error::TYPE_LINT, $name, $e));
 
             return;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->processException($name, $e);
 
             return;
@@ -271,8 +277,8 @@ final class Runner
     /**
      * Process an exception that occurred.
      *
-     * @param string     $name
-     * @param \Throwable $e
+     * @param string    $name
+     * @param Throwable $e
      */
     private function processException($name, $e)
     {

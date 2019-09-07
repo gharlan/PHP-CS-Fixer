@@ -19,6 +19,8 @@ use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use const PHP_VERSION_ID;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -54,13 +56,13 @@ EOT
      */
     public function isCandidate(Tokens $tokens)
     {
-        return \PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(T_VARIABLE);
+        return PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(T_VARIABLE);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         for ($index = $tokens->count() - 1; $index > 1; --$index) {
             $token = $tokens[$index];

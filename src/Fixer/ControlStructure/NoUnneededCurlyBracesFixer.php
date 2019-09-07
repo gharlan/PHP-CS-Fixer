@@ -16,6 +16,8 @@ use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author SpacePossum
@@ -66,7 +68,7 @@ switch ($b) {
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         foreach ($this->findCurlyBraceOpen($tokens) as $index) {
             if ($this->isOverComplete($tokens, $index)) {
@@ -88,7 +90,7 @@ switch ($b) {
 
     private function findCurlyBraceOpen(Tokens $tokens)
     {
-        for ($i = \count($tokens) - 1; $i > 0; --$i) {
+        for ($i = count($tokens) - 1; $i > 0; --$i) {
             if ($tokens[$i]->equals('{')) {
                 yield $i;
             }

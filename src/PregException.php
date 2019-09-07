@@ -12,6 +12,8 @@
 
 namespace PhpCsFixer;
 
+use RuntimeException;
+
 /**
  * Exception that is thrown when PCRE function encounters an error.
  *
@@ -19,6 +21,6 @@ namespace PhpCsFixer;
  *
  * @internal
  */
-final class PregException extends \RuntimeException
+final class PregException extends RuntimeException
 {
 }

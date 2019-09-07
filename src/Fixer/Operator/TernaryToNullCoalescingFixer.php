@@ -18,6 +18,8 @@ use PhpCsFixer\FixerDefinition\VersionSpecification;
 use PhpCsFixer\FixerDefinition\VersionSpecificCodeSample;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use const PHP_VERSION_ID;
 
 /**
  * @author Filippo Tessarotto <zoeslam@gmail.com>
@@ -45,13 +47,13 @@ final class TernaryToNullCoalescingFixer extends AbstractFixer
      */
     public function isCandidate(Tokens $tokens)
     {
-        return \PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(T_ISSET);
+        return PHP_VERSION_ID >= 70000 && $tokens->isTokenKindFound(T_ISSET);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $issetIndexes = array_keys($tokens->findGivenKind(T_ISSET));
         while ($issetIndex = array_pop($issetIndexes)) {

@@ -14,6 +14,8 @@ namespace PhpCsFixer\Tests\Smoke;
 
 use Keradus\CliExecutor\CommandExecutor;
 use Keradus\CliExecutor\ScriptExecutor;
+use RuntimeException;
+use function strlen;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -37,13 +39,13 @@ final class CiIntegrationTest extends AbstractSmokeTest
 
         try {
             CommandExecutor::create('composer --version', __DIR__)->getResult();
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             static::markTestSkippedOrFail('Missing `composer` env script. Details:'."\n".$e->getMessage());
         }
 
         try {
             CommandExecutor::create('composer check', __DIR__.'/../..')->getResult();
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             static::markTestSkippedOrFail('Composer check failed. Details:'."\n".$e->getMessage());
         }
 
@@ -56,7 +58,7 @@ final class CiIntegrationTest extends AbstractSmokeTest
                 'git add .',
                 'git commit -m "init" -q',
             ]);
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             static::markTestSkippedOrFail($e->getMessage());
         }
     }
@@ -152,7 +154,7 @@ If you need help while solving warnings, ask at https://gitter.im/PHP-CS-Fixer, 
             preg_quote($optionalIncompatibilityWarning, '/'),
             preg_quote($optionalXdebugWarning, '/'),
             preg_quote('Loaded config default from ".php_cs.dist".', '/'),
-            \strlen($expectedResult3Files),
+            strlen($expectedResult3Files),
             preg_quote('Legend: ?-unknown, I-invalid file syntax, file ignored, S-Skipped, .-no changes, F-fixed, E-error', '/')
         );
 

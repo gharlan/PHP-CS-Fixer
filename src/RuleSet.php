@@ -12,8 +12,13 @@
 
 namespace PhpCsFixer;
 
+use InvalidArgumentException;
 use PhpCsFixer\Fixer\FunctionNotation\NativeFunctionInvocationFixer;
 use PhpCsFixer\Fixer\PhpUnit\PhpUnitTargetVersion;
+use UnexpectedValueException;
+use function array_key_exists;
+use function is_bool;
+use function is_int;
 
 /**
  * Set of rules to be used by fixer.
@@ -400,8 +405,8 @@ final class RuleSet implements RuleSetInterface
     public function __construct(array $set = [])
     {
         foreach ($set as $key => $value) {
-            if (\is_int($key)) {
-                throw new \InvalidArgumentException(sprintf('Missing value for "%s" rule/set.', $value));
+            if (is_int($key)) {
+                throw new InvalidArgumentException(sprintf('Missing value for "%s" rule/set.', $value));
             }
         }
 
@@ -419,7 +424,7 @@ final class RuleSet implements RuleSetInterface
      */
     public function hasRule($rule)
     {
-        return \array_key_exists($rule, $this->rules);
+        return array_key_exists($rule, $this->rules);
     }
 
     /**
@@ -428,7 +433,7 @@ final class RuleSet implements RuleSetInterface
     public function getRuleConfiguration($rule)
     {
         if (!$this->hasRule($rule)) {
-            throw new \InvalidArgumentException(sprintf('Rule "%s" is not in the set.', $rule));
+            throw new InvalidArgumentException(sprintf('Rule "%s" is not in the set.', $rule));
         }
 
         if (true === $this->rules[$rule]) {
@@ -462,7 +467,7 @@ final class RuleSet implements RuleSetInterface
     private function getSetDefinition($name)
     {
         if (!isset($this->setDefinitions[$name])) {
-            throw new \InvalidArgumentException(sprintf('Set "%s" does not exist.', $name));
+            throw new InvalidArgumentException(sprintf('Set "%s" does not exist.', $name));
         }
 
         return $this->setDefinitions[$name];
@@ -481,8 +486,8 @@ final class RuleSet implements RuleSetInterface
         // expand sets
         foreach ($rules as $name => $value) {
             if ('@' === $name[0]) {
-                if (!\is_bool($value)) {
-                    throw new \UnexpectedValueException(sprintf('Nested rule set "%s" configuration must be a boolean.', $name));
+                if (!is_bool($value)) {
+                    throw new UnexpectedValueException(sprintf('Nested rule set "%s" configuration must be a boolean.', $name));
                 }
 
                 $set = $this->resolveSubset($name, $value);

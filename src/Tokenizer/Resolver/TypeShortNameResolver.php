@@ -17,6 +17,7 @@ use PhpCsFixer\Tokenizer\Analyzer\Analysis\NamespaceAnalysis;
 use PhpCsFixer\Tokenizer\Analyzer\NamespacesAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\NamespaceUsesAnalyzer;
 use PhpCsFixer\Tokenizer\Tokens;
+use function count;
 
 /**
  * @internal
@@ -46,7 +47,7 @@ final class TypeShortNameResolver
         // Next try to match (partial) classes inside the same namespace
         // For now only support one namespace per file:
         $namespaces = $this->getNamespacesFromTokens($tokens);
-        if (1 === \count($namespaces)) {
+        if (1 === count($namespaces)) {
             foreach ($namespaces as $fullName) {
                 $matches = [];
                 $regex = '/^\\\\?'.preg_quote($fullName, '/').'\\\\(?P<className>.+)$/';

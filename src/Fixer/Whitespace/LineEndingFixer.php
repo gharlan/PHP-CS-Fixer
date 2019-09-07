@@ -19,6 +19,8 @@ use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * Fixer for rules defined in PSR2 ¶2.2.
@@ -55,11 +57,11 @@ final class LineEndingFixer extends AbstractFixer implements WhitespacesAwareFix
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $ending = $this->whitespacesConfig->getLineEnding();
 
-        for ($index = 0, $count = \count($tokens); $index < $count; ++$index) {
+        for ($index = 0, $count = count($tokens); $index < $count; ++$index) {
             $token = $tokens[$index];
 
             if ($token->isGivenKind(T_ENCAPSED_AND_WHITESPACE)) {

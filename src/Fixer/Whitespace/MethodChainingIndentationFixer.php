@@ -20,6 +20,8 @@ use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
+use SplFileInfo;
+use function count;
 
 /**
  * @author Vladimir Boliev <voff.web@gmail.com>
@@ -58,11 +60,11 @@ final class MethodChainingIndentationFixer extends AbstractFixer implements Whit
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(\SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens)
     {
         $lineEnding = $this->whitespacesConfig->getLineEnding();
 
-        for ($index = 1, $count = \count($tokens); $index < $count; ++$index) {
+        for ($index = 1, $count = count($tokens); $index < $count; ++$index) {
             if (!$tokens[$index]->isGivenKind(T_OBJECT_OPERATOR)) {
                 continue;
             }
