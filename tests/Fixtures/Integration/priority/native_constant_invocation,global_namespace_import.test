@@ -1,5 +1,5 @@
 --TEST--
-Integration of fixers: global_namespace_import,ordered_imports.
+Integration of fixers: native_constant_invocation,global_namespace_import.
 --RULESET--
 {"native_constant_invocation": true, "global_namespace_import": {"import_constants": true}}
 --EXPECT--
