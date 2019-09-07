@@ -23,6 +23,7 @@ use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Analyzer\Analysis\NamespaceUseAnalysis;
+use PhpCsFixer\Tokenizer\Analyzer\ClassyAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\NamespacesAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\NamespaceUsesAnalyzer;
@@ -332,6 +333,8 @@ if (count($x)) {
             }
         }
 
+        $analyzer = new ClassyAnalyzer();
+
         $indexes = [];
 
         for ($index = $tokens->count() - 1; $index >= 0; --$index) {
@@ -347,7 +350,7 @@ if (count($x)) {
                 continue;
             }
 
-            if (!self::isGlobalOrImportedClassyInvocation($tokens, $index)) {
+            if (!$analyzer->isClassyInvocation($tokens, $index)) {
                 continue;
             }
 
@@ -357,6 +360,10 @@ if (count($x)) {
                     $other[$name] = true;
                 }
 
+                continue;
+            }
+
+            if ($tokens[$tokens->getPrevMeaningfulToken($nsSeparatorIndex)]->isGivenKind([CT::T_NAMESPACE_OPERATOR, T_STRING])) {
                 continue;
             }
 
@@ -576,6 +583,8 @@ if (count($x)) {
             return;
         }
 
+        $analyzer = new ClassyAnalyzer();
+
         for ($index = $tokens->count() - 1; $index >= 0; --$index) {
             $token = $tokens[$index];
 
@@ -609,7 +618,7 @@ if (count($x)) {
                 continue;
             }
 
-            if (!self::isGlobalOrImportedClassyInvocation($tokens, $index)) {
+            if (!$analyzer->isClassyInvocation($tokens, $index)) {
                 continue;
             }
 
@@ -733,64 +742,5 @@ if (count($x)) {
         }
 
         return $changed;
-    }
-
-    private static function isGlobalOrImportedClassyInvocation(Tokens $tokens, $index)
-    {
-        $token = $tokens[$index];
-
-        if (!$token->isGivenKind(T_STRING)) {
-            throw new \LogicException(sprintf('No T_STRING at given index %d, got %s.', $index, $tokens[$index]->getName()));
-        }
-
-        if (\in_array(strtolower($token->getContent()), ['bool', 'float', 'int', 'iterable', 'object', 'parent', 'self', 'string', 'void'], true)) {
-            return false;
-        }
-
-        $next = $tokens->getNextMeaningfulToken($index);
-        $nextToken = $tokens[$next];
-
-        if ($nextToken->isGivenKind(T_NS_SEPARATOR)) {
-            return false;
-        }
-
-        $prev = $tokens->getPrevMeaningfulToken($index);
-
-        if ($tokens[$prev]->isGivenKind(T_NS_SEPARATOR)) {
-            $prev = $tokens->getPrevMeaningfulToken($prev);
-        }
-
-        $prevToken = $tokens[$prev];
-
-        if ($prevToken->isGivenKind([T_EXTENDS, T_INSTANCEOF, T_INSTEADOF, T_IMPLEMENTS, T_NEW, CT::T_NULLABLE_TYPE, CT::T_TYPE_ALTERNATION, CT::T_TYPE_COLON, CT::T_USE_TRAIT])) {
-            return true;
-        }
-
-        if ($prevToken->isGivenKind([CT::T_NAMESPACE_OPERATOR, T_STRING])) {
-            return false;
-        }
-
-        if ($nextToken->isGivenKind([T_DOUBLE_COLON, T_ELLIPSIS, CT::T_TYPE_ALTERNATION, T_VARIABLE])) {
-            return true;
-        }
-
-        // `Foo & $bar` could be:
-        //   - function reference parameter: function baz(Foo & $bar) {}
-        //   - bit operator: $x = Foo & $bar;
-        if ($nextToken->equals('&') && $tokens[$tokens->getNextMeaningfulToken($next)]->isGivenKind(T_VARIABLE)) {
-            $checkIndex = $tokens->getPrevTokenOfKind($index, [';', '{', '}', [T_FUNCTION], [T_OPEN_TAG], [T_OPEN_TAG_WITH_ECHO]]);
-
-            return $tokens[$checkIndex]->isGivenKind(T_FUNCTION);
-        }
-
-        if (!$prevToken->equals(',')) {
-            return false;
-        }
-
-        do {
-            $prev = $tokens->getPrevMeaningfulToken($prev);
-        } while ($tokens[$prev]->equalsAny([',', [T_NS_SEPARATOR], [T_STRING], [CT::T_NAMESPACE_OPERATOR]]));
-
-        return $tokens[$prev]->isGivenKind([T_IMPLEMENTS, CT::T_USE_TRAIT]);
     }
 }
